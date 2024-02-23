@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/dotnet/sdk:7.0 as build
+WORKDIR /app
+EXPOSE 80
+
+# copy all. csproj files and restore as distinct layers. Use of the same COPY command
+# for every dockerfile in the project to take advantage of docker caching
+COPY DiabetesApp.sln DiabetesApp.sln
+COPY API/API.csproj API/API.csproj 
+COPY Application/Application.csproj Application/Application.csproj 
+COPY MLDiabetesService/MLDiabetesService.csproj MLDiabetesService/MLDiabetesService.csproj
+
+# Restore package deps
+RUN dotnet restore DiabetesApp.sln
+
+# Copy the app folders over
+COPY API API  
+WORKDIR /app/API/API
+RUN dotnet publish -c Release -o /app/API/out
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
+WORKDIR /app
+COPY --from=build /app/API/out .
+ENTRYPOINT [ "dotnet", "DiabetesApp.dll" ]
