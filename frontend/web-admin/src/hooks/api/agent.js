@@ -16,6 +16,15 @@ axios.interceptors.response.use(async (res) => {
   return res;
 });
 
+axios.interceptors.request.use(async (res) => {
+  const pagination = res.headers["pagination"];
+  if (pagination) {
+    res.data = { data: res.data, pagination: JSON.parse(pagination) };
+    return res;
+  }
+  return res;
+});
+
 const request = {
   get: (url, options = {}) => axios.get(url, options).then(responseBody),
   post: (url, data = {}) => axios.post(url, data).then(responseBody),
