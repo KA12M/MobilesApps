@@ -9,8 +9,8 @@ public class Diabetes
     public int Id { get; set; }
     public string Note { get; set; } = String.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-    public ICollection<DiabetesItem> Items { get; set; } = new List<DiabetesItem>();
+    public DiabetesItem EyeLeft { get; set; }
+    public DiabetesItem EyeRight { get; set; }
 }
 
 public class DiabetesItem
