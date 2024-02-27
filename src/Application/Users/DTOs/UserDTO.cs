@@ -16,6 +16,7 @@ public class UserDTO
     public string Note { get; set; } = String.Empty;
 
     public ICollection<Domain.Entity.Sickness> Sicknesses { get; set; }
+    public ICollection<Domain.Entity.Diabetes> Diabetes { get; set; }
 }
 
 public class UserCreateDTO

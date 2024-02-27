@@ -32,6 +32,7 @@ public class List
             var query = context.Users
                     .Include(a => a.UserSicknessList)
                         .ThenInclude(a => a.Sickness)
+                    .Include(x => x.Diabetes)
                     .Where(a => a.IsUsed)
                     .OrderByDescending(a => a.CreatedAt)
                     .AsQueryable();
