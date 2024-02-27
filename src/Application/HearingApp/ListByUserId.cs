@@ -1,5 +1,5 @@
-
 using Application.Core;
+using Application.HearingApp.DTOs;
 using AutoMapper;
 using Domain;
 using Domain.Entity;
@@ -10,12 +10,12 @@ namespace Application.HearingApp;
 
 public class ListByUserId
 {
-    public class Command : IRequest<Result<List<Hearing>>>
+    public class Command : IRequest<Result<UserResults>>
     {
         public int UserId { get; set; }
     }
 
-    public class Handler : IRequestHandler<Command, Result<List<Hearing>>>
+    public class Handler : IRequestHandler<Command, Result<UserResults>>
     {
         private readonly DataContext context;
 
@@ -24,15 +24,22 @@ public class ListByUserId
             this.context = context;
         }
 
-        public async Task<Result<List<Hearing>>> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result<UserResults>> Handle(Command request, CancellationToken cancellationToken)
         {
             var user = await context.Users
                 .Include(a => a.Hearings)
                     .ThenInclude(a => a.Items)
+                .Include(x => x.Diabetes)
                 .FirstOrDefaultAsync(a => a.Id == request.UserId);
             if (user == null) return null;
 
-            return Result<List<Hearing>>.Success(user.Hearings.OrderByDescending(a => a.CreatedAt).ToList());
+            var results = new UserResults
+            {
+                Hearing = Result<List<Hearing>>.Success(user.Hearings.OrderByDescending(a => a.CreatedAt).ToList()),
+                Diabetes = Result<List<Diabetes>>.Success(user.Diabetes.OrderByDescending(a => a.CreatedAt).ToList())
+            };
+
+            return Result<UserResults>.Success(results);
         }
     }
 }

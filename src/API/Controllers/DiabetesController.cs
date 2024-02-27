@@ -73,10 +73,8 @@ public class DiabetesController : BaseApiController
 
         // Make a single prediction on the sample data and print results.
         var sortedScoresWithLabel = MLModel4Groups.PredictAllLabels(sampleData);
-
-        string jsonResult = JsonSerializer.Serialize(sortedScoresWithLabel);
-
-        return jsonResult;
+        
+        return JsonSerializer.Serialize(sortedScoresWithLabel);
     }
 
     private async Task<Dictionary<string, double>> PredictTrueFalse(IFormFile file)
