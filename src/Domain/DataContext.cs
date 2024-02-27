@@ -39,6 +39,6 @@ public class DataContext : DbContext
         builder.Entity<User>().HasMany(a => a.Hearings).GetInfrastructure().OnDelete(DeleteBehavior.Cascade);
         builder.Entity<User>().HasMany(a => a.Diabetes).GetInfrastructure().OnDelete(DeleteBehavior.Cascade);
         builder.Entity<Hearing>().HasMany(a => a.Items).GetInfrastructure().OnDelete(DeleteBehavior.Cascade);
-        builder.Entity<Diabetes>().HasMany(a => a.Items).GetInfrastructure().OnDelete(DeleteBehavior.Cascade);
+        //builder.Entity<Diabetes>().HasMany(a => a.Items).GetInfrastructure().OnDelete(DeleteBehavior.Cascade);
     }
 }

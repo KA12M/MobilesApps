@@ -9,6 +9,7 @@ public class Diabetes
     public int Id { get; set; }
     public string Note { get; set; } = String.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
+
     public DiabetesItem EyeLeft { get; set; }
     public DiabetesItem EyeRight { get; set; }
 }

@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Eyes\DRClassLibrary\ClassLibrary1\ClassLibrary1.csproj" />
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\MLDiabetesService\MLDiabetesService.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
