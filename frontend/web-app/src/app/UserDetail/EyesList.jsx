@@ -1,8 +1,9 @@
-import React from "react";
 import { Button, Card, Table } from "react-bootstrap";
-import { formatISODateToThaiDate } from "../../utils/dateFormat";
 
-const HearingList = ({ hearings }) => {
+const EyesList = ({setMode,user}) => {
+ 
+  console.log("useruser",user)
+ 
   return (
     <Card>
       <Card.Body
@@ -13,10 +14,10 @@ const HearingList = ({ hearings }) => {
         }}
       >
         <div>
-          <Card.Text>ผลการทดสอบการได้ยิน</Card.Text>
+          <Card.Text>ผลการทดสอบการมองเห็น</Card.Text>
         </div>
         <div>
-          <Button>ตรวจสอบหู</Button>
+          <Button onClick={setMode}>ตรวจสอบตา</Button>
         </div>
       </Card.Body>
       <Card.Body>
@@ -25,12 +26,13 @@ const HearingList = ({ hearings }) => {
             <tr style={{ textAlign: "center" }}>
               <th>รหัส</th>
               <th>วันที่</th>
-              <th>ผล</th>
+              <th>รูปภาพตาซ้าย</th>
+              <th>รูปภาพตาขวา</th>
               <th>หมายเหตุ</th>
             </tr>
           </thead>
           <tbody>
-            {hearings.map((item) => (
+            {/* {hearings.map((item) => (
               <tr key={item.id}>
                 <td>{item.id}</td>
                 <td>{formatISODateToThaiDate(item.createdAt)}</td>
@@ -67,7 +69,7 @@ const HearingList = ({ hearings }) => {
                 </td>
                 <td>{item.note}</td>
               </tr>
-            ))}
+            ))} */}
           </tbody>
         </Table>
       </Card.Body>
@@ -75,4 +77,4 @@ const HearingList = ({ hearings }) => {
   );
 };
 
-export default HearingList;
+export default EyesList;
