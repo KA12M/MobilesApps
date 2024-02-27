@@ -9,12 +9,14 @@ import App from "../app/App";
 import { RoutePath } from "../utils/RoutePath";
 import UserPage from "./../app/UserManage/UserPage";
 import UserDetailPage from "../app/UserDetail/UserDetailPage";
+import EyesCreate from "../app/UserDetail/EyesCreate";
 
 export const Routes = (
   <Route path={RoutePath.home} element={<App />}>
     <Route path="*" element={<div>Page Not Found </div>} />
 
     <Route path="" element={<UserPage />} />
+    <Route path="/EyesCreate" element={<EyesCreate />} />
     <Route path="/user/:userId" element={<UserDetailPage />} />
   </Route>
 );
