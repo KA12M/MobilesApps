@@ -37,12 +37,10 @@ public class DiabetesController : BaseApiController
             ImageEyeRight = await ConvertImageToBase64(request.ImageEyeRight),
             ResultRight = ImageEyeRight.ElementAt(0).Key == ("No_DR") ? "ไม่เป็นเบาหวาน" : await PredictAll(request.ImageEyeRight)
         };
-        
-        //user.Diabetes.Add(diabete);
 
-        //return Ok(await _context.SaveChangesAsync() > 0 ? diabete : null);
+        user.Diabetes.Add(diabete);
 
-        return Ok(diabete);
+        return Ok(await _context.SaveChangesAsync() > 0 ? diabete : null); 
     }
 
     [HttpDelete]
