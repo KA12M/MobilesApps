@@ -25,7 +25,11 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
-            .WithOrigins("http://10.103.0.15", "http://coms.kru.ac.th", "http://localhost:5173", "http://localhost:3000");
+            .WithOrigins("http://10.103.0.15",
+                        "http://coms.kru.ac.th",
+                        "http://localhost:5173",
+                        "http://localhost:3000",
+                        "http://localhost:5255");
     });
 });
 
