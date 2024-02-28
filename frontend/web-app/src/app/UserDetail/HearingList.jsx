@@ -3,6 +3,8 @@ import { Button, Card, Table } from "react-bootstrap";
 import { formatISODateToThaiDate } from "../../utils/dateFormat";
 
 const HearingList = ({ hearings }) => {
+
+  // console.log("hearings",hearings)
   return (
     <Card>
       <Card.Body
@@ -30,7 +32,7 @@ const HearingList = ({ hearings }) => {
             </tr>
           </thead>
           <tbody>
-            {hearings.map((item) => (
+            {hearings?.hearing?.value?.map((item) => (
               <tr key={item.id}>
                 <td>{item.id}</td>
                 <td>{formatISODateToThaiDate(item.createdAt)}</td>

@@ -60,7 +60,7 @@ const UserDetailPage = () => {
 
 <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example" className="mb-3">
   <Tab eventKey="profile" title="ตรวจตา"  >
-    {formMode ? <EyesCreate setMode={setMode} user={user} /> : <EyesList setMode={setMode} />}
+    {formMode ? <EyesCreate setMode={setMode} userId={userId} /> : <EyesList setMode={setMode} hearings={hearings} />}
   
   </Tab>
   <Tab eventKey="hearings" title="ตรวจหู">

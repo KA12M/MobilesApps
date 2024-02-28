@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 
-function EyesCreate({ setMode }) {
+function EyesCreate({ setMode, userId }) {
   const [leftEyeImage, setLeftEyeImage] = useState(null);
   const [rightEyeImage, setRightEyeImage] = useState(null);
   const [note, setNote] = useState("");
@@ -20,7 +20,7 @@ function EyesCreate({ setMode }) {
     setLeftEyeImageUrl(URL.createObjectURL(file));
   };
 
-  //   console.log("userId",userId)
+    console.log("userId",userId)
 
   const handleRightEyeChange = (e) => {
     const file = e.target.files[0];
@@ -86,11 +86,11 @@ function EyesCreate({ setMode }) {
             boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
           }}
         >
-          {/* <div style={{ paddingLeft: 30, paddingTop: 20 }}>
+          <div style={{ paddingLeft: 30, paddingTop: 20 }}>
             <Button className="btn btn-danger" onClick={setMode}>
               กลับ
             </Button>
-          </div> */}
+          </div>
 
           <div style={{ padding: 30 }}>
             <span style={{ fontWeight: 600, fontSize: 25 }}>ตรวจสอบสภาพตา</span>
@@ -151,6 +151,7 @@ function EyesCreate({ setMode }) {
               cols="100"
               value={note}
               onChange={handleNoteChange}
+              disabled={disableButton}
             ></textarea>
           </div>
 
@@ -168,24 +169,23 @@ function EyesCreate({ setMode }) {
             <div style={{ display: "flex", justifyContent: "space-around" }}>
               <p>
                 ตาซ้าย:{" "}
-                {diabetesDataConvertLeft
+                {diabetesDataConvertLeft.length
                   ? diabetesDataConvertLeft.map((item) => (
                       <>
                         <p>
-                          {item.Key}: {item.Value}
+                          {item.Key}: {(item.Value * 100).toFixed(3)} %
                         </p>
                       </>
                     ))
                   : "ไม่เป็นเบาหวาน"}
               </p>
-
               <p>
                 ตาขวา:{" "}
-                {diabetesDataConvertRight
+                {diabetesDataConvertRight.length
                   ? diabetesDataConvertRight.map((item) => (
                       <>
                         <p>
-                          {item.Key}: {item.Value}
+                          {item.Key}: {(item.Value * 100).toFixed(3)}  %
                         </p>
                       </>
                     ))
