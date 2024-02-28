@@ -1,8 +1,14 @@
 import { Button, Card, Table } from "react-bootstrap";
+import { formatISODateToThaiDate } from "../../utils/dateFormat";
 
-const EyesList = ({setMode,user}) => {
+const EyesList = ({setMode,hearings}) => {
  
-  console.log("useruser",user)
+  console.log("useruser",hearings)
+
+  const renderBase64Image = (base64String) => {
+    return `data:image/jpeg;base64,${base64String}`;
+  };
+  
  
   return (
     <Card>
@@ -32,11 +38,13 @@ const EyesList = ({setMode,user}) => {
             </tr>
           </thead>
           <tbody>
-            {/* {hearings.map((item) => (
+            {hearings?.diabetes?.value?.map((item) => (
               <tr key={item.id}>
                 <td>{item.id}</td>
-                <td>{formatISODateToThaiDate(item.createdAt)}</td>
-                <td>
+               <td>{formatISODateToThaiDate(item.createdAt)}</td>
+               <td> <img src={renderBase64Image(item.imageEyeLeft)} alt="Left Eye" /></td>
+               <td> <img src={renderBase64Image(item.imageEyeRight)} alt="Left Eye" /></td>
+               {/*  <td>
                   <Table style={{}}>
                     <thead>
                       <tr>
@@ -67,9 +75,9 @@ const EyesList = ({setMode,user}) => {
                     </tbody>
                   </Table>
                 </td>
-                <td>{item.note}</td>
+                <td>{item.note}</td> */}
               </tr>
-            ))} */}
+            ))}
           </tbody>
         </Table>
       </Card.Body>
