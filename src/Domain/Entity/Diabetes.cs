@@ -10,9 +10,9 @@ public class Diabetes
     public string Note { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-    public string ImageEyeLeft { get; set; } = string.Empty;
+    public string? ImageEyeLeft { get; set; }
     public string ResultLeft { get; set; } = string.Empty;
-    public string ImageEyeRight { get; set; } = string.Empty;
+    public string? ImageEyeRight { get; set; }
     public string ResultRight { get; set; } = string.Empty;
 
     //public DiabetesItem EyeLeft { get; set; } = new DiabetesItem();

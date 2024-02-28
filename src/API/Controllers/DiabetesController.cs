@@ -8,39 +8,66 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using ClassLibrary4Groups;
 using System.IO;
+using AutoMapper;
+using System.Buffers.Text;
 
 namespace API.Controllers;
 
 public class DiabetesController : BaseApiController
 {
     private readonly DataContext _context;
+    private readonly IMapper _mapper;
 
-    public DiabetesController(DataContext context)
+    public DiabetesController(DataContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateDiabete([FromForm] AddDiabete request)
+    [HttpPost("[action]")]
+    public async Task<IActionResult> RecheckDiabete([FromForm] TestDiabete request)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id.Equals(request.UserId));
+        Dictionary<string, double> ImageEyeLeft = null;
+        Dictionary<string, double> ImageEyeRight = null;
+         
+        if (request.ImageEyeLeft is not null)
+        {
+            ImageEyeLeft = await PredictTrueFalse(request.ImageEyeLeft);
+        }
 
-        var ImageEyeLeft = await PredictTrueFalse(request.ImageEyeLeft);
-        var ImageEyeRight = await PredictTrueFalse(request.ImageEyeRight);
-
+        if(request.ImageEyeRight is not null)
+        {
+            ImageEyeRight = await PredictTrueFalse(request.ImageEyeRight);
+        }
+        
         var diabete = new Diabetes()
         {
             Note = request.Note,
             CreatedAt = DateTime.Now,
-            ImageEyeLeft = await ConvertImageToBase64(request.ImageEyeLeft),
-            ResultLeft = ImageEyeLeft.ElementAt(0).Key == ("No_DR") ? "ไม่เป็นเบาหวาน" : await PredictAll(request.ImageEyeLeft),
-            ImageEyeRight = await ConvertImageToBase64(request.ImageEyeRight),
-            ResultRight = ImageEyeRight.ElementAt(0).Key == ("No_DR") ? "ไม่เป็นเบาหวาน" : await PredictAll(request.ImageEyeRight)
+            ImageEyeLeft = request.ImageEyeLeft is null ? null : "data:image/jpeg;base64," +  await ConvertImageToBase64(request.ImageEyeLeft),
+            ResultLeft = request.ImageEyeLeft is null 
+            ? "" : ImageEyeLeft.ElementAt(0).Key == ("No_DR") 
+            ? "ไม่เป็นเบาหวาน" : await PredictAll(request.ImageEyeLeft),
+            ImageEyeRight = request.ImageEyeRight is null ? null : "data:image/jpeg;base64," + await ConvertImageToBase64(request.ImageEyeRight),
+            ResultRight = request.ImageEyeRight is null 
+            ? "" : ImageEyeRight.ElementAt(0).Key == ("No_DR") 
+            ? "ไม่เป็นเบาหวาน" : await PredictAll(request.ImageEyeRight)
         };
 
-        user.Diabetes.Add(diabete);
+        return Ok(diabete);
+    }
+    
+    [HttpPost("[action]")]
+    public async Task<IActionResult> CreateDiabete(AddDiabete request)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id.Equals(request.UserId));
 
-        return Ok(await _context.SaveChangesAsync() > 0 ? diabete : null); 
+        var diabete = _mapper.Map<Diabetes>(request);
+        diabete.CreatedAt = DateTime.Now;
+
+        user.Diabetes.Add(diabete);
+        
+        return Ok(await _context.SaveChangesAsync() > 0 ? StatusCode(StatusCodes.Status200OK) : StatusCode(StatusCodes.Status404NotFound)); 
     }
 
     [HttpDelete]

@@ -7,11 +7,22 @@ namespace Application.Diabete.DTOs
         //public int Id { get; set; }
         public string Note { get; set; } = string.Empty;
 
-        public IFormFile ImageEyeLeft { get; set; }
-        //public string ResultLeft { get; set; } = string.Empty;
-        public IFormFile ImageEyeRight { get; set; }
-        //public string ResultRight { get; set; } = string.Empty;
+        public string? ImageEyeLeft { get; set; }
+        public string ResultLeft { get; set; } = string.Empty;
+        public string? ImageEyeRight { get; set; }
+        public string ResultRight { get; set; } = string.Empty;
 
         public int UserId { get; set; }
+    }
+
+    public class TestDiabete
+    {
+        //public int Id { get; set; }
+        public string Note { get; set; } = string.Empty;
+
+        public IFormFile? ImageEyeLeft { get; set; }
+        //public string ResultLeft { get; set; } = string.Empty;
+        public IFormFile? ImageEyeRight { get; set; }
+        //public string ResultRight { get; set; } = string.Empty; 
     }
 }

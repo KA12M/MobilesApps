@@ -1,4 +1,5 @@
 
+using Application.Diabete.DTOs;
 using Application.HearingApp.DTOs;
 using Application.Users.DTOs;
 using Domain.Entity;
@@ -17,5 +18,6 @@ public class MappingProfiles : AutoMapper.Profile
         CreateMap<UserCreateDTO, User>();
 
         CreateMap<HearingCreateDTO, Hearing>();
+        CreateMap<AddDiabete, Diabetes>();
     }
 }
