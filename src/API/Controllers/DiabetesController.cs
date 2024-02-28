@@ -46,11 +46,11 @@ public class DiabetesController : BaseApiController
             CreatedAt = DateTime.Now,
             ImageEyeLeft = request.ImageEyeLeft is null ? null : "data:image/jpeg;base64," +  await ConvertImageToBase64(request.ImageEyeLeft),
             ResultLeft = request.ImageEyeLeft is null 
-            ? "" : ImageEyeLeft.ElementAt(0).Key == ("No_DR") 
+            ? "ไม่มีรูปภาพ" : ImageEyeLeft.ElementAt(0).Key == ("No_DR") 
             ? "ไม่เป็นเบาหวาน" : await PredictAll(request.ImageEyeLeft),
             ImageEyeRight = request.ImageEyeRight is null ? null : "data:image/jpeg;base64," + await ConvertImageToBase64(request.ImageEyeRight),
             ResultRight = request.ImageEyeRight is null 
-            ? "" : ImageEyeRight.ElementAt(0).Key == ("No_DR") 
+            ? "ไม่มีรูปภาพ" : ImageEyeRight.ElementAt(0).Key == ("No_DR") 
             ? "ไม่เป็นเบาหวาน" : await PredictAll(request.ImageEyeRight)
         };
 

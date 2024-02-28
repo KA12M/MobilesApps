@@ -7,10 +7,27 @@ export default class CommonStore {
   loading = false;
   dataResponse = null;
   user = null;
+  diabete = [];
 
   constructor() {
     makeAutoObservable(this);
   }
+
+  setLoading = (state) => (this.loading = state);
+
+  getDiabete = async (userId) => {
+    this.setLoading(true);
+    try {
+      var res = await API.diabete.hearingWithDiabeteList(userId);
+      runInAction(() => {
+        this.diabete = res?.diabetes?.value;
+      });
+      this.setLoading(false);
+    } catch (error) {
+      this.setLoading(false);
+      throw error;
+    }
+  };
 
   handleCalculate = async (img) => {
     this.loading = true;
@@ -29,7 +46,7 @@ export default class CommonStore {
       });
     }
   };
-  
+
   clearResponse = () => (this.dataResponse = null);
 
   initialUser = async () => {

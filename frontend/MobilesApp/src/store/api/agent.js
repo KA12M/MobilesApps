@@ -1,6 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "https://0f0a-180-183-96-244.ngrok-free.app/api";
+axios.defaults.baseURL = "https://e373-202-28-123-199.ngrok-free.app/api";
 
 const multipartForm = {
   headers: { "Content-Type": "multipart/form-data" },
@@ -30,6 +30,9 @@ export default {
     newByName: (data) => req.post("/user/new-user-by-name", data),
   },
   hearing: {
-    createHearing: (data) => req.post("/hearing", data)
-  }
+    createHearing: (data) => req.post("/hearing", data),
+  },
+  diabete: {
+    hearingWithDiabeteList: (userId) => req.get("/hearing?userId=" + userId),
+  },
 };
