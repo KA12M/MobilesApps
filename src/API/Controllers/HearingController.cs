@@ -8,19 +8,19 @@ namespace API.Controllers;
 
 public class HearingController : BaseApiController
 {
-    [HttpGet]
+    [HttpGet("[action]")]
     public async Task<ActionResult> GetAllByUserId([FromQuery] int userId)
     {
         return HandleResult(await Mediator.Send(new ListByUserId.Command { UserId = userId }));
     }
 
-    [HttpPost]
+    [HttpPost("[action]")]
     public async Task<ActionResult> AddHearingByUserId([FromBody] HearingCreateDTO hearing)
     {
         return HandleResult(await Mediator.Send(new AddHearingWithUserId.Command { hearing = hearing }));
     }
 
-    [HttpPut]
+    [HttpPut("[action]")]
     public async Task<ActionResult> EditHearingByUserId([FromBody] Hearing hearing, [FromQuery] int userId)
     {
         return HandleResult(await Mediator.Send(new EditHearing.Command { UserId = userId, Hearing = hearing }));

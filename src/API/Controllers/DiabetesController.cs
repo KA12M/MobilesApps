@@ -70,7 +70,7 @@ public class DiabetesController : BaseApiController
         return Ok(await _context.SaveChangesAsync() > 0 ? StatusCode(StatusCodes.Status200OK) : StatusCode(StatusCodes.Status404NotFound)); 
     }
 
-    [HttpDelete]
+    [HttpDelete("[action]")]
     public async Task<IActionResult> RemoveDiabete(int eyeId)
     {
         var result = await _context.Diabetes.FirstOrDefaultAsync(x => x.Id.Equals(eyeId));

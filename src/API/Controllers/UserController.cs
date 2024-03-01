@@ -17,7 +17,7 @@ public class UserController : BaseApiController
         _context = context;
     }
 
-    [HttpGet]
+    [HttpGet("[action]")]
     public async Task<ActionResult> GetUsers([FromQuery] PagingParams param)
     {
         return HandlePagedResult(await Mediator.Send(new List.Query { Params = param }));
@@ -29,19 +29,20 @@ public class UserController : BaseApiController
         return HandleResult(await Mediator.Send(new One.Query { UserId = userId }));
     }
 
-    [HttpPost("new-user-by-name")]
+    //[HttpPost("new-user-by-name")]
+    [HttpPost("[action]")]
     public async Task<ActionResult> NewUserByName(UserCreateDTO user)
     {
         return HandleResult(await Mediator.Send(new CreateByName.Command { User = user }));
     }
 
-    [HttpPut]
+    [HttpPut("[action]")]
     public async Task<ActionResult> EditUser(UserDTO user)
     {
         return HandleResult(await Mediator.Send(new EditUser.Command { User = user }));
     }
 
-    [HttpDelete]
+    [HttpDelete("[action]")]
     public async Task<ActionResult> RemoveUser(int userId)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));

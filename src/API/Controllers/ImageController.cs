@@ -6,7 +6,7 @@ namespace API.Controllers
 {
     public class ImageController : BaseApiController
     {  
-        [HttpPost]
+        [HttpPost("[action]")]
         public async Task<ActionResult> CalulateDiabetes([FromForm] IFormFileCollection fileImages)
         {
             return HandleResult(await Mediator.Send(new CalDiabete.Command { FileImages = fileImages }));
