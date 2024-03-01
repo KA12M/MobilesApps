@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 
 function EyesCreate({ setMode, userId, selectedUserDetail }) {
