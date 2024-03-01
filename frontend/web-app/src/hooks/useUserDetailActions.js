@@ -22,6 +22,8 @@ export default class useUserDetailActions {
       }
     );
   }
+
+
   setUserId = (id) => (this.userId = id);
 
   loadHearing = async (userId) => {
@@ -29,7 +31,7 @@ export default class useUserDetailActions {
     try {
       var response = await agent.hearing.list(userId);
       var user = await store.useUserActions.loadById(userId);
-      runInAction(() => { 
+      runInAction(() => {
         this.user = user;
         this.hearings = response; 
       });
@@ -39,4 +41,6 @@ export default class useUserDetailActions {
       runInAction(() => (this.loading = false));
     }
   };
+
+
 }

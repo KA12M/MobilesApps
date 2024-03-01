@@ -15,45 +15,79 @@ body {
 
 
 
-.custum-file-upload {
-  height: 200px;
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: space-between;
-  gap: 20px;
+.file-input-wrapperleft {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: 150px; 
+  height: 40px; 
+  background-color: #f0f0f0; 
+  border: 2px solid #ccc;
+  border-radius: 5px;
   cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  border: 2px dashed #cacaca;
-  background-color: rgba(255, 255, 255, 1);
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+  text-align: center;
+  line-height: 35px; 
+  font-size: 16px;
+  color: #333; 
+  left: -10px;
 }
 
-.custum-file-upload .icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.file-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
 }
 
-.custum-file-upload .icon svg {
-  height: 80px;
-  fill: rgba(75, 85, 99, 1);
+.file-input-wrapperleft:hover {
+  background-color: #e0e0e0; 
 }
 
-.custum-file-upload .text {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.file-input-wrapperleft:active {
+  background-color: #d0d0d0; 
 }
 
-.custum-file-upload .text span {
-  font-weight: 400;
-  color: rgba(75, 85, 99, 1);
+
+
+.file-input-wrapperright {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: 150px; 
+  height: 40px;
+  background-color: #f0f0f0;
+  border: 2px solid #ccc;
+  border-radius: 5px; 
+  cursor: pointer;
+  text-align: center;
+  line-height: 35px; 
+  font-size: 16px;
+  color: #333;
 }
 
-.custum-file-upload input {
-  display: none;
+.file-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
 }
+
+.file-input-wrapperright:hover {
+  background-color: #e0e0e0;
+}
+
+.file-input-wrapperright:active {
+  background-color: #d0d0d0;
+}
+
+

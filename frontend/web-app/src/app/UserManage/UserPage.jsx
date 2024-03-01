@@ -35,21 +35,73 @@ const UserPage = () => {
     });
   }
 
+
+  const [sortOrder, setSortOrder] = useState("asc");
+
+const handleSort = () => {
+  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+};
+
+
+
+
+  const [searchTerm, setSearchTerm] = useState("");
+const handleSearchChange = (event) => {
+  setSearchTerm(event.target.value);
+};
+
+const filteredData = data.filter(user =>
+  (user.firstName && user.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+  (user.lastName && user.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+  (user.phone && user.phone.toLowerCase().includes(searchTerm.toLowerCase()))
+);
+
+
+const sortedData = filteredData.sort((a, b) => {
+  const nameA = (a.firstName || "").toUpperCase();
+  const nameB = (b.firstName || "").toUpperCase();
+  if (nameA < nameB) {
+    return sortOrder === "asc" ? -1 : 1;
+  }
+  if (nameA > nameB) {
+    return sortOrder === "asc" ? 1 : -1;
+  }
+  return 0;
+});
+
+
   return (
     <Container className="main pt-4">
-      <Card className="mb-4" body>
+      <div className="mb-4" style={{width:'700',fontSize:28}}>
         ข้อมูลผู้ใช้งาน
-      </Card>
+      </div>
 
-      <Button className="mb-2" variant="success" onClick={handleShow}>
-        + เพิ่มข้อมูลผู้ใช้
-      </Button>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+    
+
+    <Form.Group className="mb-0" style={{ width: '50%' }}>
+      <Form.Control
+        type="text"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        placeholder="ค้นหาชื่อผู้ใช้..."
+      />
+    </Form.Group>
+
+    <Button className="mb-2" variant="success" onClick={handleShow}>
+      + เพิ่มข้อมูลผู้ใช้
+    </Button>
+  </div>
+
 
       <Table striped bordered hover>
         <thead>
           <tr>
             <th>รหัส</th>
-            <th>ชื่อ-นามสกุล</th>
+            <th onClick={handleSort}>
+              ชื่อ-นามสกุล {sortOrder === "asc" ? <span style={{float:'right',cursor:'pointer'}}>▲</span > : <span  style={{float:'right',cursor:'pointer'}}>▼</span>}
+            </th>
+
             <th>เบอร์</th>
             <th>วันเกิด</th>
             <th>อายุ</th>
@@ -57,21 +109,22 @@ const UserPage = () => {
           </tr>
         </thead>
         <tbody>
-          {data.map((el) => (
-            <tr key={el.id}>
-              <td>{el.id}</td>
-              <td>
-                <Link to={RoutePath.userDetail(el.id)}>
-                  {el.firstName} {el.lastName}
-                </Link>
-              </td>
-              <td>{el.phone}</td>
-              <td>{formatISODateToThaiDate(el.birthday)}</td>
-              <td>{el.age}</td>
-              <td>{el.note}</td>
-            </tr>
-          ))}
-        </tbody>
+  {sortedData.map((el) => (
+    <tr key={el.id}>
+      <td>{el.id}</td>
+      <td>
+        <Link to={RoutePath.userDetail(el.id)}>
+          {el.firstName} {el.lastName}
+        </Link>
+      </td>
+      <td>{el.phone}</td>
+      <td>{formatISODateToThaiDate(el.birthday)}</td>
+      <td>{el.age}</td>
+      <td>{el.note}</td>
+    </tr>
+  ))}
+</tbody>
+
       </Table>
 
       <PaginationWidget pagination={pagination} />
