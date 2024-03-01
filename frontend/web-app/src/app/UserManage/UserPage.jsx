@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Container, Table, Card, Button, Modal, Form } from "react-bootstrap";
+import {
+  Container,
+  Table,
+  Card,
+  Button,
+  Modal,
+  Form,
+  DropdownButton,
+  Dropdown,
+} from "react-bootstrap";
 import { observer } from "mobx-react-lite";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -8,6 +17,8 @@ import { useStore } from "../../utils/store";
 import PaginationWidget from "../../components/PaginationWidget";
 import { formatISODateToThaiDate } from "./../../utils/dateFormat";
 import { RoutePath } from "./../../utils/RoutePath";
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 const UserPage = () => {
   const { loadUsers, data, pagination, createUser } = useStore().useUserActions;
@@ -35,97 +46,135 @@ const UserPage = () => {
     });
   }
 
-
   const [sortOrder, setSortOrder] = useState("asc");
 
-const handleSort = () => {
-  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-};
-
-
-
+  const handleSort = () => {
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
 
   const [searchTerm, setSearchTerm] = useState("");
-const handleSearchChange = (event) => {
-  setSearchTerm(event.target.value);
-};
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
 
-const filteredData = data.filter(user =>
-  (user.firstName && user.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-  (user.lastName && user.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-  (user.phone && user.phone.toLowerCase().includes(searchTerm.toLowerCase()))
-);
+  const filteredData = data.filter(
+    (user) =>
+      (user.firstName &&
+        user.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.lastName &&
+        user.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.phone &&
+        user.phone.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  const sortedData = filteredData.sort((a, b) => {
+    const nameA = (a.firstName || "").toUpperCase();
+    const nameB = (b.firstName || "").toUpperCase();
+    if (nameA < nameB) {
+      return sortOrder === "asc" ? -1 : 1;
+    }
+    if (nameA > nameB) {
+      return sortOrder === "asc" ? 1 : -1;
+    }
+    return 0;
+  });
 
 
-const sortedData = filteredData.sort((a, b) => {
-  const nameA = (a.firstName || "").toUpperCase();
-  const nameB = (b.firstName || "").toUpperCase();
-  if (nameA < nameB) {
-    return sortOrder === "asc" ? -1 : 1;
-  }
-  if (nameA > nameB) {
-    return sortOrder === "asc" ? 1 : -1;
-  }
-  return 0;
-});
+  const handleDelete = async (item) => {
+    const swalOptions = {
+      title: 'คุณแน่ใจหรือไม่?',
+      text: 'คุณต้องการลบรายการนี้หรือไม่?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, ลบทิ้ง',
+      cancelButtonText: 'ยกเลิก',
+      reverseButtons: true
+    };
+    const result = await Swal.fire(swalOptions);
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`http://localhost:5255/api/User?userId=${item}`);
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการลบ:', error);
+        Swal.fire('ข้อผิดพลาด!', 'มีบางอย่างผิดพลาดในการลบรายการ', 'error');
+      }
+      loadUsers()
+    }
+  };
+  
 
 
   return (
     <Container className="main pt-4">
-      <div className="mb-4" style={{width:'700',fontSize:28}}>
+      <div className="mb-4" style={{ width: "700", fontSize: 28 }}>
         ข้อมูลผู้ใช้งาน
       </div>
 
       <div className="d-flex justify-content-between align-items-center mb-3">
-    
+        <Form.Group className="mb-0" style={{ width: "50%" }}>
+          <Form.Control
+            type="text"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            placeholder="ค้นหาชื่อผู้ใช้..."
+          />
+        </Form.Group>
 
-    <Form.Group className="mb-0" style={{ width: '50%' }}>
-      <Form.Control
-        type="text"
-        value={searchTerm}
-        onChange={handleSearchChange}
-        placeholder="ค้นหาชื่อผู้ใช้..."
-      />
-    </Form.Group>
+        <Button className="mb-2" variant="success" onClick={handleShow}>
+          + เพิ่มข้อมูลผู้ใช้
+        </Button>
+      </div>
 
-    <Button className="mb-2" variant="success" onClick={handleShow}>
-      + เพิ่มข้อมูลผู้ใช้
-    </Button>
-  </div>
-
-
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>รหัส</th>
-            <th onClick={handleSort}>
-              ชื่อ-นามสกุล {sortOrder === "asc" ? <span style={{float:'right',cursor:'pointer'}}>▲</span > : <span  style={{float:'right',cursor:'pointer'}}>▼</span>}
-            </th>
-
-            <th>เบอร์</th>
-            <th>วันเกิด</th>
-            <th>อายุ</th>
-            <th>หมายเหตุ</th>
-          </tr>
-        </thead>
-        <tbody>
-  {sortedData.map((el) => (
-    <tr key={el.id}>
-      <td>{el.id}</td>
-      <td>
-        <Link to={RoutePath.userDetail(el.id)}>
-          {el.firstName} {el.lastName}
-        </Link>
-      </td>
-      <td>{el.phone}</td>
-      <td>{formatISODateToThaiDate(el.birthday)}</td>
-      <td>{el.age}</td>
-      <td>{el.note}</td>
+      {/* <Table striped bordered hover style={{ backgroundColor: "#f5f5f5" }}> */}
+      <Table style={{ backgroundColor: "#f5f5f5" }}>
+  <thead>
+    <tr>
+      <th style={{ backgroundColor: "#007bff", color: "#ffffff" }}>รหัส</th>
+      <th onClick={handleSort} style={{ backgroundColor: "#007bff", color: "#ffffff", cursor: "pointer" }}>
+        ชื่อ-นามสกุล{" "}
+        {sortOrder === "asc" ? (
+          <span style={{ float: "right" }}>▲</span>
+        ) : (
+          <span style={{ float: "right" }}>▼</span>
+        )}
+      </th>
+      <th style={{ backgroundColor: "#007bff", color: "#ffffff" }}>เบอร์</th>
+      <th style={{ backgroundColor: "#007bff", color: "#ffffff", width: 220 }}>วันเกิด</th>
+      <th style={{ backgroundColor: "#007bff", color: "#ffffff" }}>อายุ</th>
+      <th style={{ backgroundColor: "#007bff", color: "#ffffff" }}>หมายเหตุ</th>
+      <th style={{ backgroundColor: "#007bff", color: "#ffffff" }}>อื่นๆ</th>
     </tr>
-  ))}
-</tbody>
+  </thead>
+  <tbody>
+    {sortedData.map((el) => (
+      <tr key={el.id}>
+        <td>{el.id}</td>
+        <td>
+            {el.firstName} {el.lastName}
+        </td>
+        <td>{el.phone}</td>
+        <td>{formatISODateToThaiDate(el.birthday)}</td>
+        <td>{el.age}</td>
+        <td>{el.note}</td>
+        <td>
+          <DropdownButton title="เลือก" variant="secondary">
 
-      </Table>
+
+          
+            <Dropdown.Item onClick={() =>handleDelete(el.id)}>ลบ</Dropdown.Item>
+
+
+            <Dropdown.Item as={Link} to={RoutePath.userDetail(el.id)}>รายละเอียด</Dropdown.Item>
+
+
+
+          </DropdownButton>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</Table>
+
 
       <PaginationWidget pagination={pagination} />
 

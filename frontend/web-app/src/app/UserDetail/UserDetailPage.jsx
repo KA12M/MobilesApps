@@ -14,8 +14,8 @@ const UserDetailPage = () => {
   const { userId } = useParams();
   const [formMode, setFormMode] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [searchedUser, setSearchedUser] = useState(null);
-  const [searchInput, setSearchInput] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedUserData, setEditedUserData] = useState({});
 
   const setMode = (item) => {
     setFormMode(!formMode);
@@ -33,6 +33,43 @@ const UserDetailPage = () => {
 
   if (loading || !user) return;
 
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const bodyData = {
+      id: userId,
+      firstName: 
+    };
+    try {
+      const response = await fetch(
+        "http://localhost:5255/api/User/EditUser",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyData),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Upload success:", data);
+
+        window.location.reload();
+
+        setIsEditMode(false)
+      } else {
+        console.error("Upload failed:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error uploading:", error);
+    }
+  };
+
+
+
   console.log("user", user);
   return (
     <Container className="main pt-4">
@@ -49,8 +86,11 @@ const UserDetailPage = () => {
               alignItems: "center",
             }}
           >
-            <Card.Title className="mb-0" style={{fontSize:23}}>
-              ชื่อผู้ป่วย : <span style={{fontWeight:700}}>{user.firstName} {user.lastName}</span>
+            <Card.Title className="mb-0" style={{ fontSize: 23 }}>
+              ชื่อผู้ป่วย :{" "}
+              <span style={{ fontWeight: 700 }}>
+                {user.firstName} {user.lastName}
+              </span>
             </Card.Title>
           </div>
         </Card.Body>
@@ -73,20 +113,44 @@ const UserDetailPage = () => {
           <div className="row">
             <div className="">
               <div className="p-3 py-5">
+              <div className="row mt-2">
+                  <div className="col-md-6">
+                    <p style={{ fontSize: 18, fontWeight: 600 }}>ชื่อ</p>
+                    <input
+                      type="text"
+                      style={{ height: 50 }}
+                      defaultValue={user.firstName}
+                      className="form-control"
+                      placeholder="ชื่อ ..."
+                      disabled={!isEditMode}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <p style={{ fontSize: 18, fontWeight: 600 }}>นามสกุล</p>
+                    <input
+                      type="text"
+                      style={{ height: 50 }}
+                      className="form-control"
+                      placeholder="นามสกุล ..."
+                      disabled={!isEditMode}
+                      defaultValue={user.lastName}
+                    />
+                  </div>
+                </div>
                 <div className="row mt-2">
                   <div className="col-md-6">
-                    <p style={{fontSize:18,fontWeight:600}}>วันเกิด</p>
+                    <p style={{ fontSize: 18, fontWeight: 600 }}>วันเกิด</p>
                     <input
                       type="text"
                       style={{ height: 50 }}
                       defaultValue={formatISODateToThaiDate(user.birthday)}
                       className="form-control"
                       placeholder="วันเกิด ..."
-                      disabled
+                      disabled={!isEditMode}
                     />
                   </div>
                   <div className="col-md-6">
-                  <p style={{fontSize:18,fontWeight:600}}>อายุ</p>
+                    <p style={{ fontSize: 18, fontWeight: 600 }}>อายุ</p>
                     <input
                       type="text"
                       style={{ height: 50 }}
@@ -98,34 +162,56 @@ const UserDetailPage = () => {
                 </div>
                 <div className="row mt-3">
                   <div className="col-md-6">
-                  <p style={{fontSize:18,fontWeight:600}}>เบอร์โทรศัพท์</p>
+                    <p style={{ fontSize: 18, fontWeight: 600 }}>
+                      เบอร์โทรศัพท์
+                    </p>
                     <input
                       type="text"
                       style={{ height: 50 }}
                       defaultValue={user.phone}
                       className="form-control"
                       placeholder="เบอร์โทรศัพท์ ..."
-                      disabled
+                      disabled={!isEditMode}
                     />
                   </div>
                   <div className="col-md-6">
-                  <p style={{fontSize:18,fontWeight:600}}>หมายเหตุ</p>
+                    <p style={{ fontSize: 18, fontWeight: 600 }}>หมายเหตุ</p>
                     <input
                       type="text"
                       style={{ height: 50 }}
                       defaultValue={user.note}
                       className="form-control"
                       placeholder="หมายเหตุ ..."
-                      disabled
+                      disabled={!isEditMode}
                     />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-              <div style={{marginBottom:20}}>
-              <Button>แก้ไข</Button>
+          <div style={{ marginBottom: 20 }}>
+            {isEditMode ? (
+              <div style={{marginLeft:20}}>
+                <Button
+                  onClick={() => {handleSubmit}}
+
+                  style={{marginRight:30,backgroundColor:'#00be26'}}
+                >
+                  บันทึก
+                </Button>
+                <Button
+                  onClick={() => {
+                    setIsEditMode(false);
+                  }}
+                  style={{backgroundColor:'#fe0000'}}
+                >
+                  ยกเลิก
+                </Button>
               </div>
+            ) : (
+              <Button onClick={() => setIsEditMode(true)} style={{marginLeft:18,backgroundColor:'#e45b00'}}>แก้ไข</Button>
+            )}
+          </div>
         </div>
       </Card>
 
