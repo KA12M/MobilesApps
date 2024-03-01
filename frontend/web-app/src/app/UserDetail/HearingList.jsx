@@ -15,7 +15,7 @@ const HearingList = ({ hearings }) => {
         }}
       >
         <div>
-          <Card.Text>ผลการทดสอบการได้ยิน</Card.Text>
+          <Card.Text style={{fontSize:18,fontWeight:700}}>ผลการทดสอบการได้ยิน</Card.Text>
         </div>
         <div>
           <Button>ตรวจสอบหู</Button>
