@@ -2,19 +2,25 @@
 using Application.Core;
 using Application.Users;
 using Application.Users.DTOs;
+using AutoMapper;
 using Domain;
+using Domain.Entity;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Tensorflow.Contexts;
 
 namespace API.Controllers;
 
 public class UserController : BaseApiController
 {
     private readonly DataContext _context;
+    private readonly IMapper _mapper;
 
-    public UserController(DataContext context)
+    public UserController(DataContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
     [HttpGet("[action]")]
@@ -29,6 +35,15 @@ public class UserController : BaseApiController
         return HandleResult(await Mediator.Send(new One.Query { UserId = userId }));
     }
 
+    [HttpPost("[action]")]
+    public async Task<ActionResult> LoginByPhone(string phone)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Phone.Equals(phone));
+
+        if (user is null) return Ok(StatusCode(StatusCodes.Status404NotFound));
+        else return Ok(user);
+    }
+
     //[HttpPost("new-user-by-name")]
     [HttpPost("[action]")]
     public async Task<ActionResult> NewUserByName(UserCreateDTO user)
@@ -40,6 +55,22 @@ public class UserController : BaseApiController
     public async Task<ActionResult> EditUser(UserDTO user)
     {
         return HandleResult(await Mediator.Send(new EditUser.Command { User = user }));
+    }
+
+    [HttpPost("[action]")]
+    public async Task<ActionResult> Register(RegisterDto request)
+    {
+        var currentUser = await _context.Users
+            .Include(x => x.UserSicknessList)
+            .FirstOrDefaultAsync(x => x.Phone.Equals(request.Phone));
+        
+        if (currentUser is not null) return null;
+
+        var user = _mapper.Map<User>(request);
+
+        await _context.Users.AddAsync(user);
+        
+        return Ok(await _context.SaveChangesAsync() > 0 ? user : StatusCode(StatusCodes.Status400BadRequest));
     }
 
     [HttpDelete("[action]")]
