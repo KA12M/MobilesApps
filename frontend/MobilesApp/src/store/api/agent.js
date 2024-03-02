@@ -11,6 +11,7 @@ const responseBody = (res) => res.data;
 const req = {
   get: (url, options = {}) => axios.get(url, options).then(responseBody),
   post: (url, data) => axios.post(url, data).then(responseBody),
+  onlypost: (url) => axios.post(url).then(responseBody),
   postForm: (url, data) =>
     axios.post(url, data, multipartForm).then(responseBody),
 };
@@ -28,13 +29,14 @@ export default {
   },
   user: {
     newByName: (data) => req.post("/user/newUserByName", data),
-    loginByPhone: (data) => req.post("/user/loginByPhone", data),
+    loginByPhone: (phone) => req.onlypost(`/user/loginByPhone?phone=${phone}`),
     register: (data) => req.post("/user/register", data),
   },
   hearing: {
     createHearing: (data) => req.post("/hearing/addHearingByUserId", data),
   },
   diabete: {
-    hearingWithDiabeteList: (userId) => req.get("/hearing/getAllByUserId?userId=" + userId),
+    hearingWithDiabeteList: (userId) =>
+      req.get("/hearing/getAllByUserId?userId=" + userId),
   },
 };

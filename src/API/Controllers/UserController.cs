@@ -40,8 +40,7 @@ public class UserController : BaseApiController
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Phone.Equals(phone));
 
-        if (user is null) return Ok(StatusCode(StatusCodes.Status404NotFound));
-        else return Ok(user);
+        return Ok(user is null ? StatusCode(StatusCodes.Status404NotFound) : user); 
     }
 
     //[HttpPost("new-user-by-name")]

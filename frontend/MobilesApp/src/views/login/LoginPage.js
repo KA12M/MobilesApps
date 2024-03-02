@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  ToastAndroid,
+} from "react-native";
 import { Button, FormControl, Heading, Input } from "native-base";
 import { observer } from "mobx-react-lite";
 import DatePicker from "@dietime/react-native-date-picker";
@@ -13,11 +20,8 @@ import { useStore } from "./../../store/store";
 function LoginPage({ navigation }) {
   const { loading, register, loginByPhone } = useStore().commonStore;
 
-  const today = moment(new Date()).add(543, "year").toDate();
+  const today = moment(new Date()).add(543, "year").format();
   const [date, setDate] = useState(today);
-
-  console.log("today", today);
-  console.log("date", date);
 
   const [formData, setFormData] = React.useState({
     firstName: "",
@@ -39,17 +43,24 @@ function LoginPage({ navigation }) {
     });
   };
 
+  const showToastWithGravity = () => {
+    ToastAndroid.showWithGravity(
+      "เบอร์โทรศัพท์ไม่ถูกต้อง",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
+  };
+
   const handleSubmit = () => {
     validateForm();
     if (!isValid) return;
 
     if (loginMode) {
-      loginByPhone(formData.phone).then(() => {
-        navigation.replace("home");
-      });
+      console.log("login");
+      loginByPhone(formData.phone, navigation, showToastWithGravity);
     } else {
       // ทำบางอย่างเมื่อกด Submit
-
+      console.log("register");
       const data = {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -85,7 +96,7 @@ function LoginPage({ navigation }) {
     <SafeAreaView>
       <ScrollView>
         <View style={styles.container}>
-          <Heading size="xl" marginTop={10}>
+          <Heading size="xl" marginTop={7}>
             <Text style={{ fontFamily: theme.fonts.primary }}>
               {loginMode ? "เข้าสู่ระบบ" : "สมัครสมาชิก"}
             </Text>
@@ -95,15 +106,27 @@ function LoginPage({ navigation }) {
             <>
               <View>
                 <FormControl.Label>เลือกวันเกิด</FormControl.Label>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-around",
+                  }}
+                >
+                  <Text style={{ fontSize: 23 }}>วัน</Text>
+                  <Text style={{ fontSize: 23 }}>เดือน</Text>
+                  <Text style={{ fontSize: 23 }}>ปี</Text>
+                </View>
+
                 <DatePicker
                   value={date}
                   onChange={(value) =>
-                    setDate(moment(value).add(543, "year").toDate())
+                    setDate(moment(value).add(543, "year").format())
                   }
                   format="dd-mm-yyyy"
                   locale="th-TH" // ตั้งค่า locale เป็น 'th-TH' เพื่อให้ DatePicker เป็นภาษาไทย
                 />
-                <FormControl.Label fontSize={40}>
+
+                <FormControl.Label>
                   {date ? moment(date).format("LL") : "เลือกวันที่..."}
                 </FormControl.Label>
               </View>

@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import API from "./api/agent";
+import { HttpStatusCode } from "axios";
 
 export default class CommonStore {
   loading = false;
@@ -59,20 +60,29 @@ export default class CommonStore {
     }
   };
 
-  loginByPhone = async (data) => {
+  loginByPhone = async (data, navigation, toast) => {
     this.loading = true;
     try {
       var response = await API.user.loginByPhone(data);
-      runInAction(async () => {
-        var user = {
-          id: response.id,
-          firstName: response.firstName,
-          lastName: response.lastName,
-          phone: response.phone,
-        };
-        await AsyncStorage.setItem("user", JSON.stringify(user));
-        this.user = user;
-      });
+      console.log("response login", response.statusCode);
+      console.log("HttpStatusCode.NotFound", HttpStatusCode.NotFound);
+      if (response?.statusCode === HttpStatusCode.NotFound) {
+        toast();
+      } else {
+        runInAction(async () => {
+          var user = {
+            id: response.id,
+            firstName: response.firstName,
+            lastName: response.lastName,
+            phone: response.phone,
+          };
+          console.log("user login", user);
+          await AsyncStorage.setItem("user", JSON.stringify(user));
+          this.user = user;
+        }).then(() => {
+          navigation.replace("home");
+        });
+      }
     } catch (error) {
       throw error;
     } finally {
@@ -101,18 +111,21 @@ export default class CommonStore {
     }
   };
 
-  register = async (data) => { 
+  register = async (data) => {
     this.loading = true;
     try {
-      var response = await API.user.register(data); 
+      var response = await API.user.register(data);
+      console.log("response register", response);
       runInAction(async () => {
+        console.log("response register runInAction", response);
         var user = {
           id: response.id,
           firstName: response.firstName,
           lastName: response.lastName,
           phone: response.phone,
-          birthday: response.birthday
+          birthday: response.birthday,
         };
+        console.log("user register", user);
         await AsyncStorage.setItem("user", JSON.stringify(user));
         this.user = user;
       });
