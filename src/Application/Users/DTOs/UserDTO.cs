@@ -25,3 +25,8 @@ public class UserCreateDTO
     public string LastName { get; set; }
     public string Phone { get; set; }
 }
+
+public class RegisterDto : UserCreateDTO
+{
+    public DateTime Birthday { get; set; }
+}
