@@ -1,6 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "https://e373-202-28-123-199.ngrok-free.app/api";
+axios.defaults.baseURL = "https://37b9-202-28-123-199.ngrok-free.app/api";
 
 const multipartForm = {
   headers: { "Content-Type": "multipart/form-data" },
@@ -27,12 +27,14 @@ export default {
     return req.postForm("/image", formData);
   },
   user: {
-    newByName: (data) => req.post("/user/new-user-by-name", data),
+    newByName: (data) => req.post("/user/newUserByName", data),
+    loginByPhone: (data) => req.post("/user/loginByPhone", data),
+    register: (data) => req.post("/user/register", data),
   },
   hearing: {
-    createHearing: (data) => req.post("/hearing", data),
+    createHearing: (data) => req.post("/hearing/addHearingByUserId", data),
   },
   diabete: {
-    hearingWithDiabeteList: (userId) => req.get("/hearing?userId=" + userId),
+    hearingWithDiabeteList: (userId) => req.get("/hearing/getAllByUserId?userId=" + userId),
   },
 };

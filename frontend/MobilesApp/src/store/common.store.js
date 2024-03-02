@@ -59,6 +59,27 @@ export default class CommonStore {
     }
   };
 
+  loginByPhone = async (data) => {
+    this.loading = true;
+    try {
+      var response = await API.user.loginByPhone(data);
+      runInAction(async () => {
+        var user = {
+          id: response.id,
+          firstName: response.firstName,
+          lastName: response.lastName,
+          phone: response.phone,
+        };
+        await AsyncStorage.setItem("user", JSON.stringify(user));
+        this.user = user;
+      });
+    } catch (error) {
+      throw error;
+    } finally {
+      runInAction(() => (this.loading = false));
+    }
+  };
+
   newByName = async (data) => {
     this.loading = true;
     try {
@@ -69,6 +90,28 @@ export default class CommonStore {
           firstName: response.firstName,
           lastName: response.lastName,
           phone: response.phone,
+        };
+        await AsyncStorage.setItem("user", JSON.stringify(user));
+        this.user = user;
+      });
+    } catch (error) {
+      throw error;
+    } finally {
+      runInAction(() => (this.loading = false));
+    }
+  };
+
+  register = async (data) => { 
+    this.loading = true;
+    try {
+      var response = await API.user.register(data); 
+      runInAction(async () => {
+        var user = {
+          id: response.id,
+          firstName: response.firstName,
+          lastName: response.lastName,
+          phone: response.phone,
+          birthday: response.birthday
         };
         await AsyncStorage.setItem("user", JSON.stringify(user));
         this.user = user;

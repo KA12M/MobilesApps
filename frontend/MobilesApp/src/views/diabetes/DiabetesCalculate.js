@@ -132,6 +132,7 @@ const DiabetesCalculate = function ({ navigation }) {
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
+            textAlign: "center",
           }}
         >
           <View style={{ alignItems: "center" }}>
@@ -182,16 +183,25 @@ const DiabetesCalculate = function ({ navigation }) {
           </View>
 
           <View>
-            <Button onPress={setMode}>{showMode ? "กลับ" : "ดูผล"}</Button>
+            <Button bgColor={theme.colors.bg.primary} onPress={setMode}>{showMode ? "กลับ" : "ดูผล"}</Button>
           </View>
         </View>
+
+        {/* //------------------------------------------------------------------------------// */}
 
         {showMode && (
           <View
             style={{
-              padding: 15, 
+              paddingHorizontal: 15,
             }}
           >
+            <View
+              style={{
+                marginTop: 15,
+                borderTopWidth: 1,
+                borderTopColor: "gray",
+              }}
+            />
             <View>
               <RenderData
                 data={item?.resultLeft}
@@ -200,6 +210,13 @@ const DiabetesCalculate = function ({ navigation }) {
               />
             </View>
 
+            <View
+              style={{
+                marginTop: 15,
+                borderTopWidth: 1,
+                borderTopColor: "gray",
+              }}
+            />
             <View>
               <RenderData
                 data={item?.resultRight}

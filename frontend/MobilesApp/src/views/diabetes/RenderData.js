@@ -7,17 +7,47 @@ import {
   StyleSheet,
   FlatList,
 } from "react-native";
-import { Center, VStack, HStack, Progress } from "native-base";
+import { Center, VStack, HStack, Progress, Button } from "native-base";
+import { theme } from "../../infrastructure/theme";
 
 const RenderData = function ({ data, noImage, title }) {
   if (!data) return null;
 
-  console.log("data", data);
+  const revert = (title === "ตาซ้าย" && "row") || "row-reverse";
 
   return (
-    <Center paddingY={4}>
-      <Text style={{ fontSize: 20 }}>{title}</Text>
-      <Center w="100%" maxW="400" marginTop={8}>
+    <Center paddingTop={4}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-around",
+          width: "100%",
+        }}
+      >
+        <View>
+          {title === "ตาซ้าย" && (
+            <Button
+              bgColor={theme.colors.bg.primary}
+              style={{ fontSize: 25 }}
+              disabled
+            >
+              {title}
+            </Button>
+          )}
+        </View>
+        <View>
+          {title === "ตาขวา" && (
+            <Button
+              bgColor={theme.colors.bg.primary}
+              style={{ fontSize: 25 }}
+              disabled
+            >
+              {title}
+            </Button>
+          )}
+        </View>
+      </View>
+      <Center w="100%" maxW="400" marginTop={4}>
         <VStack space="md">
           {noImage ? (
             <>
@@ -31,10 +61,15 @@ const RenderData = function ({ data, noImage, title }) {
                     // <HStack space={3} key={i}>
                     //   <Text>{i + 1}.</Text>
                     //   <Progress width={160} colorScheme="primary" value={val * 100} />
-                    //   <Text>{(val * 100).toFixed(2)}%</Text>
+                    //   < GText>{(val * 100).toFixed(2)}%</>
                     // </HStack>
                     <View key={i}>
-                      <View>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: title === "ตาซ้าย" ? "" : "flex-end",
+                        }}
+                      >
                         <Text style={{ fontSize: 16 }}>{item.Key}</Text>
                       </View>
                       <HStack space={3}>
@@ -45,15 +80,27 @@ const RenderData = function ({ data, noImage, title }) {
                         >
                           {/* <Text>{i + 1}.</Text> */}
 
-                          <View style={{ flexDirection: "row" }}>
+                          <View
+                            style={{
+                              flexDirection: revert,
+                            }}
+                          >
                             <Progress
-                              width="60%"
-                              colorScheme="primary"
+                              width="75%"
+                              colorScheme="red"
                               value={item.Value * 100}
-                              height={4}
+                              height={5}
+                              style={{
+                                flexDirection: revert,
+                              }}
                             />
                             <Text
-                              style={{ top: -7, marginLeft: 10, fontSize: 16 }}
+                              style={{
+                                top: -7,
+                                marginLeft: 10,
+                                fontSize: 16,
+                                marginRight: 10,
+                              }}
                             >
                               {(item.Value * 100).toFixed(3)} %
                             </Text>
