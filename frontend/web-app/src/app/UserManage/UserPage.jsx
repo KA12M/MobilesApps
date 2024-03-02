@@ -47,10 +47,16 @@ const UserPage = () => {
   }
 
   const [sortOrder, setSortOrder] = useState("asc");
+  const [idSortOrder, setIdSortOrder] = useState("asc");
 
   const handleSort = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
+
+  const handleIdSort = () => {
+    setIdSortOrder(idSortOrder === "asc" ? "desc" : "asc");
+  };
+  
 
   const [searchTerm, setSearchTerm] = useState("");
   const handleSearchChange = (event) => {
@@ -80,6 +86,8 @@ const UserPage = () => {
   });
 
 
+  
+
   const handleDelete = async (item) => {
     const swalOptions = {
       title: 'คุณแน่ใจหรือไม่?',
@@ -93,7 +101,7 @@ const UserPage = () => {
     const result = await Swal.fire(swalOptions);
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:5255/api/User?userId=${item}`);
+        await axios.delete(`http://localhost:5255/api/User/RemoveUser?userId=${item}`);
       } catch (error) {
         console.error('เกิดข้อผิดพลาดในการลบ:', error);
         Swal.fire('ข้อผิดพลาด!', 'มีบางอย่างผิดพลาดในการลบรายการ', 'error');
@@ -102,7 +110,14 @@ const UserPage = () => {
     }
   };
   
-
+  const sortedDataId = filteredData.sort((a, b) => {
+    if (idSortOrder === "asc") {
+      return a.id - b.id;
+    } else {
+      return b.id - a.id;
+    }
+  });
+  
 
   return (
     <Container className="main pt-4">
@@ -129,7 +144,15 @@ const UserPage = () => {
       <Table style={{ backgroundColor: "#f5f5f5" }}>
   <thead>
     <tr>
-      <th style={{ backgroundColor: "#007bff", color: "#ffffff" }}>รหัส</th>
+    <th onClick={handleIdSort} style={{ backgroundColor: "#007bff", color: "#ffffff", cursor: "pointer" }}>
+  รหัส{" "}
+  {sortedDataId === "asc" ? (
+    <span style={{ float: "right" }}>▲</span>
+  ) : (
+    <span style={{ float: "right" }}>▼</span>
+  )}
+</th>
+
       <th onClick={handleSort} style={{ backgroundColor: "#007bff", color: "#ffffff", cursor: "pointer" }}>
         ชื่อ-นามสกุล{" "}
         {sortOrder === "asc" ? (

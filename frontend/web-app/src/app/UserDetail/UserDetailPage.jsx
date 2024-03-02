@@ -15,51 +15,68 @@ const UserDetailPage = () => {
   const [formMode, setFormMode] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [editedUserData, setEditedUserData] = useState({});
 
   const setMode = (item) => {
     setFormMode(!formMode);
-    setSelectedUser(item); // Store the selected item
+    setSelectedUser(item);
   };
 
   const { setUserId, user, loading, hearings } =
     useStore().useUserDetailActions;
 
-  useEffect(() => {
-    setUserId(userId);
+  const [firstnameuser, setFirstnameuser] = useState('');
+  const [lastnameuser, setLastnameuser] = useState('');
+  const [phoneuser, setPhoneuser] = useState(null);
 
+
+  const handlefirstName = (e) => {
+    setFirstnameuser(e.target.value);
+  };
+
+  const handlelastName = (e) => {
+    setLastnameuser(e.target.value);
+  };
+
+
+  const handlephone = (e) => {
+    setPhoneuser(e.target.value);
+  };
+
+  useEffect(() => {
+    setUserId(userId)
+    
     return () => setUserId(null);
   }, []);
 
-  if (loading || !user) return;
+  useEffect(() => {
+    setFirstnameuser(user?.firstName)
+    setLastnameuser(user?.lastName)
+    setPhoneuser(user?.phone)
+  }, [user])
+  
 
-
+  if (loading || !user) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const bodyData = {
-      id: userId,
-      firstName: 
+      firstName: firstnameuser,
+      lastName: lastnameuser,
+      phone: phoneuser
     };
     try {
-      const response = await fetch(
-        "http://localhost:5255/api/User/EditUser",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(bodyData),
-        }
-      );
+      const response = await fetch("http://localhost:5255/api/User/NewUserByName", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
+      });
 
       if (response.ok) {
         const data = await response.json();
         console.log("Upload success:", data);
-
-        window.location.reload();
-
-        setIsEditMode(false)
+        setIsEditMode(false);
       } else {
         console.error("Upload failed:", response.statusText);
       }
@@ -70,7 +87,6 @@ const UserDetailPage = () => {
 
 
 
-  console.log("user", user);
   return (
     <Container className="main pt-4">
       <Card className="mb-4" body>
@@ -113,7 +129,7 @@ const UserDetailPage = () => {
           <div className="row">
             <div className="">
               <div className="p-3 py-5">
-              <div className="row mt-2">
+                <div className="row mt-2">
                   <div className="col-md-6">
                     <p style={{ fontSize: 18, fontWeight: 600 }}>ชื่อ</p>
                     <input
@@ -123,6 +139,8 @@ const UserDetailPage = () => {
                       className="form-control"
                       placeholder="ชื่อ ..."
                       disabled={!isEditMode}
+                      value={firstnameuser}
+                      onChange={handlefirstName}
                     />
                   </div>
                   <div className="col-md-6">
@@ -133,7 +151,8 @@ const UserDetailPage = () => {
                       className="form-control"
                       placeholder="นามสกุล ..."
                       disabled={!isEditMode}
-                      defaultValue={user.lastName}
+                      value={lastnameuser}
+                      onChange={handlelastName}
                     />
                   </div>
                 </div>
@@ -171,7 +190,7 @@ const UserDetailPage = () => {
                       defaultValue={user.phone}
                       className="form-control"
                       placeholder="เบอร์โทรศัพท์ ..."
-                      disabled={!isEditMode}
+                      disabled
                     />
                   </div>
                   <div className="col-md-6">
@@ -191,11 +210,11 @@ const UserDetailPage = () => {
           </div>
           <div style={{ marginBottom: 20 }}>
             {isEditMode ? (
-              <div style={{marginLeft:20}}>
+              <div style={{ marginLeft: 20 }}>
                 <Button
-                  onClick={() => {handleSubmit}}
+                  onClick={handleSubmit}
 
-                  style={{marginRight:30,backgroundColor:'#00be26'}}
+                  style={{ marginRight: 30, backgroundColor: "#00be26" }}
                 >
                   บันทึก
                 </Button>
@@ -203,13 +222,18 @@ const UserDetailPage = () => {
                   onClick={() => {
                     setIsEditMode(false);
                   }}
-                  style={{backgroundColor:'#fe0000'}}
+                  style={{ backgroundColor: "#fe0000" }}
                 >
                   ยกเลิก
                 </Button>
               </div>
             ) : (
-              <Button onClick={() => setIsEditMode(true)} style={{marginLeft:18,backgroundColor:'#e45b00'}}>แก้ไข</Button>
+              <Button
+                onClick={() => setIsEditMode(true)}
+                style={{ marginLeft: 18, backgroundColor: "#e45b00" }}
+              >
+                แก้ไข
+              </Button>
             )}
           </div>
         </div>
