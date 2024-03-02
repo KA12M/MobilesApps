@@ -67,6 +67,7 @@ public class UserController : BaseApiController
         if (currentUser is not null) return null;
 
         var user = _mapper.Map<User>(request);
+        user.Birthday = request.Birthday;
 
         await _context.Users.AddAsync(user);
         
