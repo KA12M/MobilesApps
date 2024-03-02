@@ -63,7 +63,7 @@ public class UserController : BaseApiController
             .Include(x => x.UserSicknessList)
             .FirstOrDefaultAsync(x => x.Phone.Equals(request.Phone));
         
-        if (currentUser is not null) return null;
+        if (currentUser is not null) return Ok(StatusCode(StatusCodes.Status404NotFound));
 
         var user = _mapper.Map<User>(request);
         user.Birthday = request.Birthday;

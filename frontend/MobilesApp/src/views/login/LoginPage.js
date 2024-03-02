@@ -16,6 +16,7 @@ import "moment/locale/th";
 import { theme } from "./../../infrastructure/theme/index";
 import { SafeArea } from "../../utils/SafeArea";
 import { useStore } from "./../../store/store";
+import MyToast from "./../../components/MyToast";
 
 function LoginPage({ navigation }) {
   const { loading, register, loginByPhone } = useStore().commonStore;
@@ -43,21 +44,13 @@ function LoginPage({ navigation }) {
     });
   };
 
-  const showToastWithGravity = () => {
-    ToastAndroid.showWithGravity(
-      "เบอร์โทรศัพท์ไม่ถูกต้อง",
-      ToastAndroid.SHORT,
-      ToastAndroid.CENTER
-    );
-  };
-
   const handleSubmit = () => {
     validateForm();
     if (!isValid) return;
 
     if (loginMode) {
       console.log("login");
-      loginByPhone(formData.phone, navigation, showToastWithGravity);
+      loginByPhone(formData.phone, navigation, MyToast);
     } else {
       // ทำบางอย่างเมื่อกด Submit
       console.log("register");
@@ -68,9 +61,7 @@ function LoginPage({ navigation }) {
         birthday: date,
       };
 
-      register(data).then(() => {
-        navigation.replace("home");
-      });
+      register(data, navigation, MyToast);
     }
   };
 

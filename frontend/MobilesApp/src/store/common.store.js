@@ -64,10 +64,8 @@ export default class CommonStore {
     this.loading = true;
     try {
       var response = await API.user.loginByPhone(data);
-      console.log("response login", response.statusCode);
-      console.log("HttpStatusCode.NotFound", HttpStatusCode.NotFound);
       if (response?.statusCode === HttpStatusCode.NotFound) {
-        toast();
+        toast("เบอร์โทรศัพท์ไม่ถูกต้อง");
       } else {
         runInAction(async () => {
           var user = {
@@ -76,7 +74,6 @@ export default class CommonStore {
             lastName: response.lastName,
             phone: response.phone,
           };
-          console.log("user login", user);
           await AsyncStorage.setItem("user", JSON.stringify(user));
           this.user = user;
         }).then(() => {
@@ -111,24 +108,31 @@ export default class CommonStore {
     }
   };
 
-  register = async (data) => {
-    this.loading = true;
+  register = async (data, navigation, toast) => {
+      console.log("data register", data);
+      this.loading = true;
     try {
       var response = await API.user.register(data);
       console.log("response register", response);
-      runInAction(async () => {
-        console.log("response register runInAction", response);
-        var user = {
-          id: response.id,
-          firstName: response.firstName,
-          lastName: response.lastName,
-          phone: response.phone,
-          birthday: response.birthday,
-        };
-        console.log("user register", user);
-        await AsyncStorage.setItem("user", JSON.stringify(user));
-        this.user = user;
-      });
+      if (response?.statusCode === HttpStatusCode.NotFound) {
+        toast("มีเบอร์นี้ในระบบแล้ว");
+      } else {
+        runInAction(async () => {
+          console.log("response register runInAction", response);
+          var user = {
+            id: response.id,
+            firstName: response.firstName,
+            lastName: response.lastName,
+            phone: response.phone,
+            birthday: response.birthday,
+          };
+          console.log("user register", user);
+          await AsyncStorage.setItem("user", JSON.stringify(user));
+          this.user = user;
+        }).then(() => {
+          navigation.replace("home");
+        });
+      }
     } catch (error) {
       throw error;
     } finally {
