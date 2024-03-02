@@ -24,11 +24,11 @@ const request = {
 
 export default {
   user: {
-    list: (params) => request.get("/user", { params }),
-    one: (userId) => request.get("/user/" + userId),
-    newUser: (data) => request.post("/user/new-user-by-name", data),
+    list: (params) => request.get("/User/GetUsers", { params }),
+    one: (userId) => request.get("/User/" + userId),
+    newUser: (data) => request.post("/User/NewUserByName", data),
   },
   hearing: {
-    list: (userId) => request.get("/hearing?userId=" + userId),
+    list: (userId) => request.get("/Hearing/GetAllByUserId?userId=" + userId),
   },
 };

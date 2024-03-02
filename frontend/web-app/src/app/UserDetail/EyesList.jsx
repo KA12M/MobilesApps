@@ -30,7 +30,7 @@ const EyesList = ({setMode,hearings}) => {
     const result = await Swal.fire(swalOptions);
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:5255/api/Diabetes?eyeId=${item.id}`);
+        await axios.delete(`http://localhost:5255/api/Diabetes/RemoveDiabete?eyeId=${item.id}`);
       } catch (error) {
         console.error('เกิดข้อผิดพลาดในการลบ:', error);
         Swal.fire('ข้อผิดพลาด!', 'มีบางอย่างผิดพลาดในการลบรายการ', 'error');
@@ -42,7 +42,9 @@ const EyesList = ({setMode,hearings}) => {
   const tableHeaderStyle = {
     padding: "10px",
     borderBottom: "1px solid #ddd",
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#007bff",
+    color: "#ffffff"
+
   };
   
   const tableCellStyle = {

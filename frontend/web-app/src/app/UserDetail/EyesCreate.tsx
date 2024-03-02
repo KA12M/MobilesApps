@@ -155,6 +155,9 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
     if (rightEyeInputRef.current) rightEyeInputRef.current.value = null;
   };
 
+
+  console.log("selectedUserDetailselectedUserDetail",selectedUserDetail)
+
   return (
     <div style={{ width: "100%", padding: 35, backgroundColor: "#fff" }}>
       {selectedUserDetail.id ? (
@@ -190,6 +193,7 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
             style={{
               display: "flex",
               justifyContent: "space-around",
+              marginLeft:-40
             }}
           >
             <div style={{}}>
@@ -201,11 +205,11 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
             </div>
 
             <div style={{}}>
-              <img
+              {selectedUserDetail.imageEyeRight != null ? <img
                 src={selectedUserDetail.imageEyeRight}
                 alt="Right Eye"
                 style={{ width: 125, height: 125, marginTop: 10 }}
-              />
+              />: <div></div>}
             </div>
           </div>
 
