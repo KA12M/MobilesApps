@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Container,
   Table,
-  Card,
   Button,
   Modal,
   Form,
@@ -12,13 +11,13 @@ import {
 import { observer } from "mobx-react-lite";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-
 import { useStore } from "../../utils/store";
 import PaginationWidget from "../../components/PaginationWidget";
 import { formatISODateToThaiDate } from "./../../utils/dateFormat";
 import { RoutePath } from "./../../utils/RoutePath";
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import DatePicker from "react-datepicker";
 
 const UserPage = () => {
   const { loadUsers, data, pagination, createUser } = useStore().useUserActions;
@@ -40,6 +39,8 @@ const UserPage = () => {
   const handleShow = () => setShow(true);
 
   function onSubmit(data) {
+    console.log("data",data)
+    
     createUser(data).then(() => {
       reset();
       handleClose();
@@ -57,7 +58,6 @@ const UserPage = () => {
     setIdSortOrder(idSortOrder === "asc" ? "desc" : "asc");
   };
   
-
   const [searchTerm, setSearchTerm] = useState("");
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -84,8 +84,6 @@ const UserPage = () => {
     }
     return 0;
   });
-
-
   
 
   const handleDelete = async (item) => {
@@ -118,6 +116,10 @@ const UserPage = () => {
     }
   });
   
+  
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  console.log('selectedDate',selectedDate)
 
   return (
     <Container className="main pt-4">
@@ -177,6 +179,7 @@ const UserPage = () => {
         </td>
         <td>{el.phone}</td>
         <td>{formatISODateToThaiDate(el.birthday)}</td>
+        {/* <td>{el.birthday}</td> */}
         <td>{el.age}</td>
         <td>{el.note}</td>
         <td>
@@ -210,7 +213,7 @@ const UserPage = () => {
             <Form.Group className="mb-3">
               <Form.Label>ชื่อ</Form.Label>
               <Form.Control
-                {...register("surname", { required: true })}
+                {...register("firstname", { required: true })}
                 required
                 autoFocus
               />
@@ -230,6 +233,26 @@ const UserPage = () => {
                 required
               />
             </Form.Group>
+            
+            <Form.Group className="mb-3">
+              <Form.Label>วันที่</Form.Label>
+              <br />
+              <DatePicker
+                selected={selectedDate} 
+                onChange={(date) => setSelectedDate(date)}
+              />
+            </Form.Group>
+
+
+            <Form.Group className="mb-3">
+              <Form.Label>วันที่</Form.Label>
+              <Form.Control
+                {...register("birthday", { required: true })}
+                type="text"
+                value={selectedDate ? selectedDate.toISOString() : ""}
+              />
+            </Form.Group>
+
 
             <Form.Group className="mb-3">
               <Button disabled={!isValid} variant="success" type="submit">

@@ -26,7 +26,7 @@ export default {
   user: {
     list: (params) => request.get("/User/GetUsers", { params }),
     one: (userId) => request.get("/User/" + userId),
-    newUser: (data) => request.post("/User/NewUserByName", data),
+    newUser: (data) => request.post("/User/Register", data),
   },
   hearing: {
     list: (userId) => request.get("/Hearing/GetAllByUserId?userId=" + userId),

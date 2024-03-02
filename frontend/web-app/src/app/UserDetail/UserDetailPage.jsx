@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useParams } from "react-router-dom";
 import { useStore } from "../../utils/store";
-import { Badge, Button, Card, Container, ListGroup } from "react-bootstrap";
+import { Badge, Button, Card, Container } from "react-bootstrap";
 import { Tab, Tabs } from "react-bootstrap";
 
 import { formatISODateToThaiDate } from "../../utils/dateFormat";
@@ -190,6 +190,8 @@ const UserDetailPage = () => {
                       defaultValue={user.phone}
                       className="form-control"
                       placeholder="เบอร์โทรศัพท์ ..."
+                      value={phoneuser}
+                      onChange={handlephone}
                       disabled
                     />
                   </div>
