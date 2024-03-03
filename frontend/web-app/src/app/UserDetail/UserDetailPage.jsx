@@ -9,6 +9,8 @@ import { formatISODateToThaiDate } from "../../utils/dateFormat";
 import HearingList from "./HearingList";
 import EyesList from "./EyesList";
 import EyesCreate from "./EyesCreate";
+import { DatePicker } from 'antd';
+import dayjs from 'dayjs';
 
 const UserDetailPage = () => {
   const { userId } = useParams();
@@ -159,14 +161,12 @@ const UserDetailPage = () => {
                 <div className="row mt-2">
                   <div className="col-md-6">
                     <p style={{ fontSize: 18, fontWeight: 600 }}>วันเกิด</p>
-                    <input
-                      type="text"
-                      style={{ height: 50 }}
-                      defaultValue={formatISODateToThaiDate(user.birthday)}
-                      className="form-control"
-                      placeholder="วันเกิด ..."
-                      disabled={!isEditMode}
-                    />
+                    <DatePicker
+    style={{ height: 50, width: '100%' }}
+    format="DD/MM/YYYY"
+    defaultValue={dayjs(user.birthday).locale('th')}
+    disabled={!isEditMode}
+  />
                   </div>
                   <div className="col-md-6">
                     <p style={{ fontSize: 18, fontWeight: 600 }}>อายุ</p>
