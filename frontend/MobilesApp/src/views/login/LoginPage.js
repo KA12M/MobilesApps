@@ -159,6 +159,7 @@ function LoginPage({ navigation }) {
               value={formData.phone}
               onChangeText={(text) => handleInputChange("phone", text)}
               onEndEditing={validateForm}
+              maxLength={10}
             />
           </FormControl>
 
