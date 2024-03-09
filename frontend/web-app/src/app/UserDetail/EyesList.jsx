@@ -3,6 +3,7 @@ import { formatISODateToThaiDate } from "../../utils/dateFormat";
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { useStore } from "../../utils/store";
+import { notification } from 'antd';
 
 const EyesList = ({setMode,hearings}) => {
 
@@ -37,6 +38,10 @@ const EyesList = ({setMode,hearings}) => {
       }
       loadHearing(user.id)
     }
+    notification.success({
+      message: 'สำเร็จ',
+      description: 'ลบข้อมูลการตรวจตาเสร็จสิ้น',
+    });
   };
 
   const tableHeaderStyle = {

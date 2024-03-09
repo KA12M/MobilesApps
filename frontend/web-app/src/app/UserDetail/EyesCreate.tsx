@@ -79,6 +79,7 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
 
         setDisableButton(true);
         window.location.reload();
+
       } else {
         console.error("Upload failed:", response.statusText);
       }

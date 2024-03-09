@@ -1,35 +1,40 @@
-import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Table,
-  Button,
-  Modal,
-  Form,
-  DropdownButton,
-  Dropdown,
-} from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Container, Button, Modal, Form, Dropdown, DropdownButton } from "react-bootstrap";
 import { observer } from "mobx-react-lite";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useStore } from "../../utils/store";
-import PaginationWidget from "../../components/PaginationWidget";
 import { formatISODateToThaiDate } from "./../../utils/dateFormat";
 import { RoutePath } from "./../../utils/RoutePath";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { DatePicker } from "antd"; // เปลี่ยนนี่เป็น antd DatePicker
+import { DatePicker, Table, notification } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import th from "antd/lib/date-picker/locale/th_TH";
-import { notification } from 'antd';
+import { useLocation} from "react-router-dom";
 
 dayjs.extend(utc);
-
 
 const UserPage = () => {
   const { loadUsers, data, pagination, createUser } = useStore().useUserActions;
 
   const [show, setShow] = useState(false);
+
+  const location = useLocation();
+  const locationData = location.state?.userData;
+
+  // useEffect(() => {
+  //   const hasRefreshed = localStorage.getItem('hasRefreshed');
+  //   if (!hasRefreshed) {
+  //     localStorage.setItem('hasRefreshed', true);
+  //     window.location.reload();
+  //   } else {
+  //     localStorage.removeItem('hasRefreshed');
+  //   }
+  // }, []);
+
+  console.log("locationData",locationData)
 
   const {
     register,
@@ -46,8 +51,6 @@ const UserPage = () => {
   const handleShow = () => setShow(true);
 
   function onSubmit(data) {
-      
-  
     console.log("data", data);
     createUser(data).then(() => {
       reset();
@@ -58,45 +61,30 @@ const UserPage = () => {
       });
     });
   }
-  
 
   const [sortOrder, setSortOrder] = useState("asc");
   const [idSortOrder, setIdSortOrder] = useState("asc");
 
-  const handleSort = () => {
-    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-  };
-
-  const handleIdSort = () => {
-    setIdSortOrder(idSortOrder === "asc" ? "desc" : "asc");
-  };
 
   const [searchTerm, setSearchTerm] = useState("");
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
 
-  const filteredData = data.filter(
-    (user) =>
-      (user.firstName &&
-        user.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (user.lastName &&
-        user.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (user.phone &&
-        user.phone.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+const handleSearchChange = (event) => {
+  setSearchTerm(event.target.value);
+};
 
-  const sortedData = filteredData.sort((a, b) => {
-    const nameA = (a.firstName || "").toUpperCase();
-    const nameB = (b.firstName || "").toUpperCase();
-    if (nameA < nameB) {
-      return sortOrder === "asc" ? -1 : 1;
-    }
-    if (nameA > nameB) {
-      return sortOrder === "asc" ? 1 : -1;
-    }
-    return 0;
-  });
+const filteredData = data.filter(
+  (user) =>
+    (user.firstName &&
+      (user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.lastName.toLowerCase().includes(searchTerm.toLowerCase()))) ||
+    (user.lastName &&
+      (user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.lastName.toLowerCase().includes(searchTerm.toLowerCase()))) ||
+    (user.phone && user.phone.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (user.id.toString().includes(searchTerm.toLowerCase())) 
+);
+
+
 
   const handleDelete = async (item) => {
     const swalOptions = {
@@ -118,6 +106,8 @@ const UserPage = () => {
           message: 'สำเร็จ',
           description: 'ลบสมาชิกเสร็จสิ้น',
         });
+
+
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการลบ:", error);
         Swal.fire("ข้อผิดพลาด!", "มีบางอย่างผิดพลาดในการลบรายการ", "error");
@@ -126,14 +116,6 @@ const UserPage = () => {
     }
   };
 
-  // const sortedDataId = filteredData.sort((a, b) => {
-  //   if (idSortOrder === "asc") {
-  //     return a.id - b.id;
-  //   } else {
-  //     return b.id - a.id;
-  //   }
-  // });
-  const idSortIcon = idSortOrder === "asc" ? "▲" : "▼";
 
   const [selectedDate, setSelectedDate] = useState(null);
 
@@ -143,6 +125,68 @@ const UserPage = () => {
     const localDate = dayjs(date).local().startOf("day").add(1, "day").toDate();
     setSelectedDate(localDate);
   };
+
+  const columns = [
+    {
+      title: 'รหัส',
+      dataIndex: 'id',
+      key: 'id',
+      sorter: (a, b) => idSortOrder === 'asc' ? a.id - b.id : b.id - a.id,
+    },
+    {
+      title: 'ชื่อ-นามสกุล',
+      dataIndex: 'name',
+      key: 'name',
+      sorter: (a, b) => {
+        const nameA = (a.firstName || "").toUpperCase();
+        const nameB = (b.firstName || "").toUpperCase();
+        if (nameA < nameB) {
+          return sortOrder === "asc" ? -1 : 1;
+        }
+        if (nameA > nameB) {
+          return sortOrder === "asc" ? 1 : -1;
+        }
+        return 0;
+      },
+      render: (text, record) => `${record.firstName} ${record.lastName}`,
+    },
+    {
+      title: 'เบอร์โทรศัพท์',
+      dataIndex: 'phone',
+      key: 'phone',
+    },
+    {
+      title: 'วันเกิด',
+      dataIndex: 'birthday',
+      key: 'birthday',
+      render: (text, record) => formatISODateToThaiDate(record.birthday),
+    },
+    {
+      title: 'อายุ',
+      dataIndex: 'age',
+      key: 'age',
+    },
+    {
+      title: 'หมายเหตุ',
+      dataIndex: 'note',
+      key: 'note',
+    },
+    {
+      title: 'อื่นๆ',
+      dataIndex: 'action',
+      key: 'action',
+      render: (text, record) => (
+        <DropdownButton title="เลือก" variant="secondary">
+          <Dropdown.Item onClick={() => handleDelete(record.id)}>
+            ลบ
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to={RoutePath.userDetail(record.id)}>
+            รายละเอียด
+          </Dropdown.Item>
+        </DropdownButton>
+      ),
+    },
+  ];
 
   return (
     <Container className="main pt-4">
@@ -165,88 +209,23 @@ const UserPage = () => {
         </Button>
       </div>
 
-      {/* <Table striped bordered hover style={{ backgroundColor: "#f5f5f5" }}> */}
-      <Table style={{ backgroundColor: "#f5f5f5" }}>
-        <thead>
-          <tr>
-            <th
-              onClick={handleIdSort}
-              style={{
-                backgroundColor: "#007bff",
-                color: "#ffffff",
-                cursor: "pointer",
-              }}
-            >
-              รหัส <span style={{ float: "right" }}>{idSortIcon}</span>
-            </th>
+      <Table
+        columns={columns}
+        dataSource={filteredData}
+        // pagination={{
+        //   current: pagination.currentPage,
+        //   total: pagination.totalCount,
+        //   pageSize: pagination.pageSize,
+        //   onChange: (page, pageSize) => {
+        //     loadUsers(page, pageSize);
+        //   },
+        // }}
+        bordered
+        rowKey="id"
+        
+      />
 
-            <th
-              onClick={handleSort}
-              style={{
-                backgroundColor: "#007bff",
-                color: "#ffffff",
-                cursor: "pointer",
-              }}
-            >
-              ชื่อ-นามสกุล{" "}
-              {sortOrder === "asc" ? (
-                <span style={{ float: "right" }}>▲</span>
-              ) : (
-                <span style={{ float: "right" }}>▼</span>
-              )}
-            </th>
-            <th style={{ backgroundColor: "#007bff", color: "#ffffff" }}>
-              เบอร์
-            </th>
-            <th
-              style={{
-                backgroundColor: "#007bff",
-                color: "#ffffff",
-                width: 220,
-              }}
-            >
-              วันเกิด
-            </th>
-            <th style={{ backgroundColor: "#007bff", color: "#ffffff" }}>
-              อายุ
-            </th>
-            <th style={{ backgroundColor: "#007bff", color: "#ffffff" }}>
-              หมายเหตุ
-            </th>
-            <th style={{ backgroundColor: "#007bff", color: "#ffffff" }}>
-              อื่นๆ
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedData.map((el) => (
-            <tr key={el.id}>
-              <td>{el.id}</td>
-              <td>
-                {el.firstName} {el.lastName}
-              </td>
-              <td>{el.phone}</td>
-              <td>{formatISODateToThaiDate(el.birthday)}</td>
-              {/* <td>{el.birthday}</td> */}
-              <td>{el.age}</td>
-              <td>{el.note}</td>
-              <td>
-                <DropdownButton title="เลือก" variant="secondary">
-                  <Dropdown.Item onClick={() => handleDelete(el.id)}>
-                    ลบ
-                  </Dropdown.Item>
-
-                  <Dropdown.Item as={Link} to={RoutePath.userDetail(el.id)}>
-                    รายละเอียด
-                  </Dropdown.Item>
-                </DropdownButton>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-
-      <PaginationWidget pagination={pagination} />
+      {/* <PaginationWidget pagination={pagination} /> */}
 
       <Modal show={show} onHide={handleClose} style={{ zIndex: 9999 }}>
         <Modal.Header closeButton>
@@ -261,7 +240,7 @@ const UserPage = () => {
             <Form.Group className="mb-3">
               <Form.Label>ชื่อ</Form.Label>
               <Form.Control
-                {...register("firstname", { required: true })}
+                {...register("firstName", { required: true })}
                 required
                 autoFocus
               />
@@ -290,17 +269,20 @@ const UserPage = () => {
                   getPopupContainer={(trigger) => trigger.parentNode} // กันโดน modal ทับ
                   onChange={handleDateChange}
                   format="YYYY-MM-DD"
-                  locale={th} 
-                  style={{width:180,height:40}}
+                  locale={th}
+                  style={{ width: 180, height: 40 }}
                 />
               </div>
             </Form.Group>
 
             <Form.Group className="mb-3">
-            <Button disabled={!isValid || !selectedDate} variant="success" type="submit">
-              บันทึก
-            </Button>
-
+              <Button
+                disabled={!isValid || !selectedDate}
+                variant="success"
+                type="submit"
+              >
+                บันทึก
+              </Button>
             </Form.Group>
           </Form>
         </Modal.Body>

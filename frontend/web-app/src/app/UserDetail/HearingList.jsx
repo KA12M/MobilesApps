@@ -2,9 +2,12 @@ import React from "react";
 import { Button, Card, Table } from "react-bootstrap";
 import { formatISODateToThaiDate } from "../../utils/dateFormat";
 
-const HearingList = ({ hearings }) => {
+const HearingList = ({ hearings,setModeHearing }) => {
 
-  // console.log("hearings",hearings)
+  const handleDetailEyes = (item) => {
+    console.log("Goof", item);
+    setModeHearing(item); 
+  }
   return (
     <Card>
       <Card.Body
@@ -18,7 +21,7 @@ const HearingList = ({ hearings }) => {
           <Card.Text style={{fontSize:18,fontWeight:700}}>ผลการทดสอบการได้ยิน</Card.Text>
         </div>
         <div>
-          <Button>ตรวจสอบหู</Button>
+          <Button  onClick={setModeHearing}>ตรวจสอบหู</Button>
         </div>
       </Card.Body>
       <Card.Body>

@@ -4,17 +4,20 @@ import { useParams } from "react-router-dom";
 import { useStore } from "../../utils/store";
 import { Badge, Button, Card, Container } from "react-bootstrap";
 import { Tab, Tabs } from "react-bootstrap";
+import { notification } from 'antd';
 
-import { formatISODateToThaiDate } from "../../utils/dateFormat";
 import HearingList from "./HearingList";
 import EyesList from "./EyesList";
 import EyesCreate from "./EyesCreate";
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
+import 'dayjs/locale/th'; // นำเข้า locale สำหรับภาษาไทย
+import HearringCreate from "./HearringCreate";
 
 const UserDetailPage = () => {
   const { userId } = useParams();
   const [formMode, setFormMode] = useState(false);
+  const [formModeHearing, setFormModeHearing] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -23,13 +26,37 @@ const UserDetailPage = () => {
     setSelectedUser(item);
   };
 
+  const setModeHearing = (item) => {
+    setFormModeHearing(!formModeHearing);
+  };
+
+        useEffect(() => {
+        const hasRefreshed = localStorage.getItem('hasRefreshed');
+        if (!hasRefreshed) {
+          localStorage.setItem('hasRefreshed', true);
+          window.location.reload();
+          localStorage.removeItem('ear');
+          localStorage.removeItem('score1');
+          localStorage.removeItem('score2');
+          localStorage.removeItem('score3');
+          localStorage.removeItem('score4');
+          localStorage.removeItem('score5');
+          localStorage.removeItem('score6');
+          localStorage.removeItem('score7');
+        } else {
+          localStorage.removeItem('hasRefreshed');
+        }
+  }, []);
+
   const { setUserId, user, loading, hearings } =
     useStore().useUserDetailActions;
 
   const [firstnameuser, setFirstnameuser] = useState('');
   const [lastnameuser, setLastnameuser] = useState('');
+  const [noteuser, setNoteuser] = useState('');
   const [phoneuser, setPhoneuser] = useState(null);
-
+  const [selectedDate, setSelectedDate] = useState();
+  const [age, setAge] = useState(0);
 
   const handlefirstName = (e) => {
     setFirstnameuser(e.target.value);
@@ -44,31 +71,49 @@ const UserDetailPage = () => {
     setPhoneuser(e.target.value);
   };
 
+  const handlenote = (e) => {
+    setNoteuser(e.target.value);
+  };
+
   useEffect(() => {
     setUserId(userId)
     
     return () => setUserId(null);
   }, []);
 
+  
+
   useEffect(() => {
     setFirstnameuser(user?.firstName)
     setLastnameuser(user?.lastName)
     setPhoneuser(user?.phone)
+    setNoteuser(user?.note)
+    setSelectedDate(dayjs(user?.birthday).locale('th'))
+    const ageNow = dayjs().diff(dayjs(user?.birthday), 'year');
+    setAge(ageNow);
   }, [user])
   
 
   if (loading || !user) return null;
 
+  console.log("user",user)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newSelectedDate = dayjs(selectedDate).add(1, 'day');
     const bodyData = {
+      id: userId,
       firstName: firstnameuser,
       lastName: lastnameuser,
-      phone: phoneuser
+      phone: phoneuser,
+      birthday: newSelectedDate,
+      Gender: 0,
+      Address: '',
+      note: noteuser
     };
     try {
-      const response = await fetch("http://localhost:5255/api/User/NewUserByName", {
-        method: "POST",
+      const response = await fetch("http://localhost:5255/api/User/EditUser", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -79,6 +124,10 @@ const UserDetailPage = () => {
         const data = await response.json();
         console.log("Upload success:", data);
         setIsEditMode(false);
+        notification.success({
+          message: 'สำเร็จ',
+          description: 'แก้ไขข้อมูลส่วนตัวเสร็จสิ้น',
+        });
       } else {
         console.error("Upload failed:", response.statusText);
       }
@@ -87,6 +136,14 @@ const UserDetailPage = () => {
     }
   };
 
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    const ageNow = dayjs().diff(dayjs(date), 'year');
+    setAge(ageNow);
+  };
+
+console.log("noteuser",noteuser)
 
 
   return (
@@ -112,20 +169,6 @@ const UserDetailPage = () => {
             </Card.Title>
           </div>
         </Card.Body>
-        {/* <ListGroup variant="flush">
-        <ListGroup.Item>
-          <strong>วันเกิด:</strong> {formatISODateToThaiDate(user.birthday)}
-        </ListGroup.Item>
-        <ListGroup.Item>
-          <strong>อายุ:</strong>
-        </ListGroup.Item>
-        <ListGroup.Item>
-          <strong>เบอร์โทรศัพท์:</strong> {user.phoneNumber}
-        </ListGroup.Item>
-        <ListGroup.Item>
-          <strong>หมายเหตุ:</strong> {user.note}
-        </ListGroup.Item>
-      </ListGroup> */}
 
         <div className="container " style={{ marginTop: -35 }}>
           <div className="row">
@@ -159,15 +202,18 @@ const UserDetailPage = () => {
                   </div>
                 </div>
                 <div className="row mt-2">
-                  <div className="col-md-6">
-                    <p style={{ fontSize: 18, fontWeight: 600 }}>วันเกิด</p>
-                    <DatePicker
-    style={{ height: 50, width: '100%' }}
-    format="DD/MM/YYYY"
-    defaultValue={dayjs(user.birthday).locale('th')}
-    disabled={!isEditMode}
-  />
-                  </div>
+                <div className="col-md-6">
+  <p style={{ fontSize: 18, fontWeight: 600 }}>วันเกิด</p>
+  <DatePicker
+  style={{ height: 50, width: '100%' }}
+  format="DD/MM/YYYY"
+  value={selectedDate}
+  onChange={handleDateChange}
+  disabled={!isEditMode}
+/>
+
+</div>
+
                   <div className="col-md-6">
                     <p style={{ fontSize: 18, fontWeight: 600 }}>อายุ</p>
                     <input
@@ -176,6 +222,7 @@ const UserDetailPage = () => {
                       className="form-control"
                       placeholder="อายุ ..."
                       disabled
+                      value={age}
                     />
                   </div>
                 </div>
@@ -203,6 +250,8 @@ const UserDetailPage = () => {
                       defaultValue={user.note}
                       className="form-control"
                       placeholder="หมายเหตุ ..."
+                      value={noteuser}
+                      onChange={handlenote}
                       disabled={!isEditMode}
                     />
                   </div>
@@ -258,7 +307,11 @@ const UserDetailPage = () => {
           )}
         </Tab>
         <Tab eventKey="hearings" title="ตรวจหู">
-          <HearingList hearings={hearings} />
+          {formModeHearing ? (
+            <HearringCreate  setModeHearing={setModeHearing}/> 
+          ):(
+            <HearingList setModeHearing={setModeHearing} hearings={hearings} />
+          )}
         </Tab>
       </Tabs>
     </Container>

@@ -10,13 +10,33 @@ import { RoutePath } from "../utils/RoutePath";
 import UserPage from "./../app/UserManage/UserPage";
 import UserDetailPage from "../app/UserDetail/UserDetailPage";
 import EyesCreate from "../app/UserDetail/EyesCreate";
+import HearringCreate from "../app/UserDetail/HearringCreate";
+import Check1000Hz from "../app/HearingCheck/Check1000Hz";
+import Check2000Hz from "../app/HearingCheck/Check2000Hz";
+import Check4000Hz from "../app/HearingCheck/Check4000Hz";
+import Check6000Hz from "../app/HearingCheck/Check6000Hz";
+import EarSelect from "../app/UserDetail/EarSelect";
+import Check250Hz from "../app/HearingCheck/Check250Hz";
+import Check500Hz from "../app/HearingCheck/Check500Hz";
+import Check8000Hz from "../app/HearingCheck/Check8000Hz";
 
 export const Routes = (
   <Route path={RoutePath.home} element={<App />}>
     <Route path="*" element={<div>Page Not Found </div>} />
 
-    <Route path="" element={<UserPage />} />
+    <Route path="/" element={<UserPage />} />
+    <Route path="/HearringCreate" element={<HearringCreate />} />
     <Route path="/EyesCreate" element={<EyesCreate />} />
+    <Route path="/EarSelect" element={<EarSelect />} />
+    <Route path="/Check250Hz" element={<Check250Hz />} />
+    <Route path="/Check500Hz" element={<Check500Hz />} />
+    <Route path="/Check1000Hz" element={<Check1000Hz />} />
+    <Route path="/Check2000Hz" element={<Check2000Hz />} />
+    <Route path="/Check4000Hz" element={<Check4000Hz />} />
+    <Route path="/Check6000Hz" element={<Check6000Hz />} />
+    <Route path="/Check8000Hz" element={<Check8000Hz />} />
+
+
     <Route path="/user/:userId" element={<UserDetailPage />} />
   </Route>
 );
