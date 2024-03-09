@@ -11,10 +11,14 @@ import LoginPage from "../views/login/LoginPage";
 import HearingPage from "../views/HearingLevel/HearingPage";
 import HearingMenu from "../views/HearingLevel/HearingMenu";
 import { View } from "react-native";
+import TestPage from "../test/Test.page";
+import { useStore } from "../store/store";
+import { observer } from "mobx-react-lite";
 
 const Stack = createNativeStackNavigator();
 
 const Route = () => {
+  const { goBack } = useStore().hearingStore;
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="home" screenOptions={{}}>
@@ -22,6 +26,30 @@ const Route = () => {
           name="home"
           component={Home}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="test"
+          component={TestPage}
+          options={({ navigation }) => ({
+            title: "ทดสอบในทดสอบ",
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: theme.colors.bg.primary,
+            },
+            headerTitleStyle: {
+              fontFamily: theme.fonts.primary,
+            },
+            headerLeft: (props) => (
+              <IconButtons onPress={() => navigation.goBack()}>
+                <MaterialIcons
+                  name="keyboard-arrow-left"
+                  size={theme.sizes[4]}
+                  color={theme.colors.text.black}
+                />
+              </IconButtons>
+            ),
+            headerTintColor: theme.colors.text.black,
+          })}
         />
         <Stack.Screen
           name="diabetes"
@@ -79,11 +107,11 @@ const Route = () => {
                 <MaterialIcons
                   name="keyboard-arrow-left"
                   size={theme.sizes[4]}
-                  color={theme.colors.text.black}
+                  color={theme.colors.text.light}
                 />
               </IconButtons>
             ),
-            headerTintColor: theme.colors.text.black,
+            headerTintColor: theme.colors.text.light,
           })}
         />
         <Stack.Screen
@@ -98,8 +126,19 @@ const Route = () => {
             headerTitleStyle: {
               fontFamily: theme.fonts.primary,
             },
-            headerTintColor: theme.colors.text.black,
-            headerLeft: () => <View></View>,
+            headerTintColor: theme.colors.text.light,
+            headerLeft: (props) =>
+              goBack ? (
+                <IconButtons onPress={() => navigation.goBack()}>
+                  <MaterialIcons
+                    name="keyboard-arrow-left"
+                    size={theme.sizes[4]}
+                    color={theme.colors.text.light}
+                  />
+                </IconButtons>
+              ) : (
+                ""
+              ),
           })}
         />
         <Stack.Screen
@@ -131,4 +170,4 @@ const Route = () => {
   );
 };
 
-export default Route;
+export default observer(Route);

@@ -2,7 +2,14 @@ import React from "react";
 import { Text } from "react-native";
 import { Button, Dialog, Portal } from "react-native-paper";
 
-const MyDialog = ({ open, setDialog, onPress }) => {
+const MyDialog = ({
+  title,
+  content,
+  open,
+  setDialog,
+  onPress,
+  tips = null,
+}) => {
   return (
     <Portal>
       <Dialog
@@ -12,10 +19,15 @@ const MyDialog = ({ open, setDialog, onPress }) => {
         visible={open}
         onDismiss={setDialog}
       >
-        <Dialog.Title>ออกจากระบบ</Dialog.Title>
+        <Dialog.Title>{title}</Dialog.Title>
         <Dialog.Content>
-          <Text variant="bodyLarge">ยืนยันที่จะออกจากระบบไหม</Text>
+          <Text variant="bodyLarge">ยืนยันที่จะ{content}ไหม</Text>
         </Dialog.Content>
+        {tips && (
+          <Dialog.Content>
+            <Text variant="bodyLarge">{tips}</Text>
+          </Dialog.Content>
+        )}
         <Dialog.Actions>
           <Button onPress={setDialog}>ยกเลิก</Button>
           <Button onPress={onPress}>ยืนยัน</Button>

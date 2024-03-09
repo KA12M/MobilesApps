@@ -7,6 +7,12 @@ import Route from "./src/routes/route.js";
 import { observer } from "mobx-react-lite";
 import { theme } from "./src/infrastructure/theme/index.js";
 
+import { PaperProvider } from "react-native-paper";
+
+import { LogBox } from "react-native";
+LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
+
 function App() {
   const [fontsLoaded] = useFonts({
     "Kanit-Medium": require("./assets/fonts/Kanit-Medium.ttf"),
@@ -39,7 +45,9 @@ function App() {
 
   return (
     <NativeBaseProvider colorModeManager={colorModeManager}>
-      <Route />
+      <PaperProvider>
+        <Route />
+      </PaperProvider>
     </NativeBaseProvider>
   );
 }

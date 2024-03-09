@@ -7,6 +7,8 @@ import { useStore } from "../../store/store";
 import { SafeArea } from "../../utils/SafeArea";
 import { theme } from "../../infrastructure/theme";
 import SoundDisplayPage from "./SoundDisplayPage";
+import TestPage from "../../test/Test.page";
+import MyDialog from "../../components/MyDialog";
 
 function HearingPage({ navigation }) {
   const {
@@ -20,10 +22,15 @@ function HearingPage({ navigation }) {
       processResult,
       handleIsTesting,
       clearResults,
+      goBack,
+      setGoBack,
     },
     commonStore: { user },
   } = useStore();
   const [isOpen, setIsOpen] = useState(false);
+
+  const [visible, setVisible] = useState(false);
+  const setDialog = () => setVisible(!visible);
 
   useEffect(() => clearResults(), []);
 
@@ -34,50 +41,62 @@ function HearingPage({ navigation }) {
     data[ear].some((item) => item.isHeard != null);
 
   const handleTest = (ear) => {
+    setGoBack(false);
     setEar(ear);
     if (checkIsHeardNull(ear)) return setIsOpen(true);
     else handleIsTesting();
+  };
+
+  // console.log("data", data);
+  // console.log("data", data.left);
+  // console.log("data", data.left.length);
+  // console.log("data", data.right.length);
+
+  const handleProcess = () => {
+    processResult(user.id, navigation);
+    newHearing(user.id);
   };
 
   return (
     <SafeArea>
       <ScrollView style={styles.container}>
         {!isTesting && (
-          <View style={styles.btnLeftRight}>
-            <Button
-              padding="10"
-              colorScheme="blue"
-              onPress={() => handleTest("left")}
-            >
-              <Text style={styles.textBtn}>หูซ้าย</Text>
-            </Button>
-            <Button
-              padding="10"
-              colorScheme="blue"
-              onPress={() => handleTest("right")}
-            >
-              <Text style={styles.textBtn}>หูขวา</Text>
-            </Button>
-          </View>
+          <>
+            <Text style={styles.title}>เลือกข้างที่จะทดสอบ</Text>
+            <View style={styles.btnLeftRight}>
+              <Button
+                padding="10"
+                colorScheme={data.left[6].isHeard !== null ? "green" : "blue"}
+                onPress={() => handleTest("left")}
+              >
+                <Text style={[styles.textBtn, { color: "white" }]}>หูซ้าย</Text>
+              </Button>
+              <Button
+                padding="10"
+                colorScheme={data.right[6].isHeard !== null ? "green" : "blue"}
+                onPress={() => handleTest("right")}
+              >
+                <Text style={[styles.textBtn, { color: "white" }]}>หูขวา</Text>
+              </Button>
+            </View>
+          </>
         )}
 
         {isTesting && (
           <View>
-            <Text>{volumeCurrent()}</Text>
+            {/* <Text>{volumeCurrent()}</Text> */}
 
             <SoundDisplayPage data={data[ear][volumeCurrent() - 1]} />
+            {/* <TestPage data={data[ear][volumeCurrent() - 1]} /> */}
           </View>
         )}
 
-        <Button
-          colorScheme="blue"
-          onPress={() => {
-            processResult();
-            newHearing(user.id);
-          }}
-        >
-          <Text>บันทึก test</Text>
-        </Button>
+        {!isTesting &&
+          (data.left[6].isHeard !== null || data.right[6].isHeard !== null) && (
+            <Button colorScheme="lightBlue" onPress={setDialog}>
+              <Text style={{ color: "white", fontSize: 20 }}>บันทึก</Text>
+            </Button>
+          )}
 
         <AlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
           <AlertDialog.Content>
@@ -112,6 +131,20 @@ function HearingPage({ navigation }) {
           </AlertDialog.Content>
         </AlertDialog>
       </ScrollView>
+      <MyDialog
+        title="บันทึก"
+        content="บันทึก"
+        open={visible}
+        setDialog={setDialog}
+        onPress={handleProcess}
+        tips={
+          data.left[6].isHeard === null
+            ? "ข้างซ้ายยังไม่ได้ทดสอบ จะบันทึกเลยไหม"
+            : data.right[6].isHeard === null
+            ? "ข้างขวายังไม่ได้ทดสอบ จะบันทึกเลยไหม"
+            : null
+        }
+      />
     </SafeArea>
   );
 }
@@ -122,11 +155,18 @@ const styles = StyleSheet.create({
     marginHorizontal: theme.sizes[1],
     backgroundColor: theme.colors.bg.light,
   },
+  title: {
+    textAlign: "center",
+    fontSize: theme.fontSizes.h4,
+    fontFamily: theme.fonts.primary,
+    color: theme.colors.text.black,
+    marginTop: 20,
+  },
   btnLeftRight: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginHorizontal: theme.sizes[1],
-    marginVertical: theme.sizes[5], 
+    marginVertical: theme.sizes[2],
   },
   textBtn: {
     color: theme.colors.primary,

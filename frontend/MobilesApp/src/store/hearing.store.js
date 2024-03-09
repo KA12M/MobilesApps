@@ -2,6 +2,8 @@ import { makeAutoObservable, runInAction } from "mobx";
 
 import SoundList, { volume } from "../mocks/hearingSoundList";
 
+import API from "./api/agent";
+
 export default class HearingStore {
   data = { left: [], right: [] };
   result = null;
@@ -9,12 +11,25 @@ export default class HearingStore {
   btnResultReady = false;
   ear = "";
   isTesting = false;
+  goBack = true;
 
   constructor() {
     makeAutoObservable(this);
 
     this.data = SoundList;
   }
+
+  setGoBack = (state) => (this.goBack = state);
+
+  addHearingByUserId = async (data) => {
+    try {
+      var res = await API.hearing.createHearing(data);
+      console.log("res :", res);
+    } catch (error) {
+      console.log("error", error);
+      throw error;
+    }
+  };
 
   setCurrent = (num) => (this.current = num);
   setBtnResultReady = (bool) => (this.btnResultReady = bool);
@@ -37,7 +52,23 @@ export default class HearingStore {
   setEar = (ear) => (this.ear = ear);
 
   // ประมวลผลข้อมูลลง result
-  processResult = () => (this.result = transformData(this.data));
+  processResult = (userId, navigation) => {
+    const result = transformData(this.data);
+
+    this.result = result;
+
+    const data = {
+      userId: userId,
+      note: "",
+      ...result,
+    };
+
+    console.log("data send", data);
+
+    this.addHearingByUserId(data).then(() => {
+      navigation.goBack();
+    });
+  };
 
   // เช็คความพร้อมของข้อมูล
   checkResultReady = () => {
@@ -94,7 +125,7 @@ function transformData(dataList) {
 
     // ลูปข้อมูลเพิ่มฟีลตาม volume
     dataList[ear == 0 ? "left" : "right"].forEach((el) => {
-      item[el.title] = el.isHeard ?? 9999;
+      item[el.title] = el.isHeard ?? 0;
     });
 
     item["result"] = processHearing(item);
@@ -102,7 +133,9 @@ function transformData(dataList) {
     // เพิ่มข้อมูลเข้า
     transformedData.items.push(item);
   }
+
   console.log("new", JSON.stringify(transformedData, null, 2));
+
   return transformedData;
 }
 

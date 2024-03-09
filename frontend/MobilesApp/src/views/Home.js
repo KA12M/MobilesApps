@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Heading } from "native-base";
-import { View, StyleSheet, Image, Alert } from "react-native";
+import { View, StyleSheet, Image, Alert, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { SafeArea } from "../utils/SafeArea";
@@ -32,42 +32,57 @@ export default function Home({ navigation }) {
 
   return (
     <SafeArea>
-      <PaperProvider>
-        <View style={styles.container}>
-          <Image
-            source={require("../../assets/kru.png")}
-            style={{ width: 120, height: 155 }}
-          />
+      <View style={styles.container}>
+        <Image
+          source={require("../../assets/kru.png")}
+          style={{ width: 120, height: 155 }}
+        />
 
-          <Heading m="6">
-            <MyText
-              label="มหาวิทยาลัยราชภัฏกาญจนบุรี"
-              fontSize={theme.sizes[2]}
-              color={theme.colors.text.black}
-            />
-          </Heading>
-
-          <MyButton
-            label="ประเมินระดับโรคเบาหวานด้วยม่านตา"
-            iconName="eye"
-            onPress={() => navigation.navigate("diabetes")}
+        <Heading m="6">
+          <MyText
+            label="มหาวิทยาลัยราชภัฏกาญจนบุรี"
+            fontSize={theme.sizes[2]}
+            color={theme.colors.text.black}
           />
-          <MyButton
-            label="ประเมินการได้ยินเเสียงของหู"
-            iconName="hearing"
-            iconTemp="MaterialIcons"
-            onPress={() => navigation.navigate("hearing-level")}
-          />
+        </Heading>
 
-          <Button onPress={setDialog}>ออกจากระบบ</Button>
+        <MyButton
+          label="ประเมินระดับโรคเบาหวานด้วยม่านตา"
+          iconName="eye"
+          onPress={() => navigation.navigate("diabetes")}
+        />
+        <MyButton
+          label="ประเมินการได้ยินเเสียงของหู"
+          iconName="hearing"
+          iconTemp="MaterialIcons"
+          onPress={() => navigation.navigate("hearing-level")}
+        />
 
-          <MyDialog
-            open={visible}
-            setDialog={setDialog}
-            onPress={hanleLogout}
-          />
-        </View>
-      </PaperProvider>
+        <Button
+          style={{
+            borderRadius: 50,
+            backgroundColor: "red",
+          }}
+          onPress={setDialog}
+        >
+          <Text
+            style={{
+              fontSize: 20,
+              color: "white",
+            }}
+          >
+            ออกจากระบบ
+          </Text>
+        </Button>
+
+        <MyDialog
+          title="ออกจากระบบ"
+          content="ออกจากระบบ"
+          open={visible}
+          setDialog={setDialog}
+          onPress={hanleLogout}
+        />
+      </View>
     </SafeArea>
   );
 }
