@@ -2,6 +2,7 @@
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Domain;
 
@@ -10,6 +11,10 @@ public class DataContext : DbContext
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
     }
+
+    #region migration
+        //dotnet ef migrations add <title> -p src/Domain -s src/API
+    #endregion
 
     public DbSet<User> Users { get; set; }
     public DbSet<Sickness> Sicknesses { get; set; }
@@ -43,3 +48,5 @@ public class DataContext : DbContext
         builder.Entity<Diabetes>();
     }
 }
+
+

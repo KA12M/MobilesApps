@@ -1,5 +1,5 @@
-
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Domain.Entity.DTOS;
 
 namespace Domain.Entity;
@@ -19,11 +19,18 @@ public class HearingItem
     [Key]
     public int Id { get; set; }
     public EarLeftRight Ear { get; set; }
-    public int V250 { get; set; }
-    public int V500 { get; set; }
+
     public int V1000 { get; set; }
     public int V2000 { get; set; }
     public int V4000 { get; set; }
+    public int V6000 { get; set; }
     public int V8000 { get; set; }
+    public int V250 { get; set; }
+    public int V500 { get; set; }
     public string Result { get; set; }
+
+    public int HearingId { get; set; }
+
+    [JsonIgnore]
+    public Hearing Hearing { get; set; }
 }

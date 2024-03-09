@@ -19,5 +19,8 @@ public class MappingProfiles : AutoMapper.Profile
 
         CreateMap<HearingCreateDTO, Hearing>();
         CreateMap<AddDiabete, Diabetes>();
+
+        CreateMap<HearingItemDto, HearingItem>();
+
     }
 }

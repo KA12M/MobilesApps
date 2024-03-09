@@ -3,6 +3,7 @@ using System;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240307183001_createInitHearingHz")]
+    partial class createInitHearingHz
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.7");
@@ -82,7 +85,7 @@ namespace Domain.Migrations
                     b.Property<int>("Ear")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("HearingId")
+                    b.Property<int?>("HearingId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Result")
@@ -207,13 +210,10 @@ namespace Domain.Migrations
 
             modelBuilder.Entity("Domain.Entity.HearingItem", b =>
                 {
-                    b.HasOne("Domain.Entity.Hearing", "Hearing")
+                    b.HasOne("Domain.Entity.Hearing", null)
                         .WithMany("Items")
                         .HasForeignKey("HearingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Hearing");
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Domain.Entity.UserSickness", b =>
