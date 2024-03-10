@@ -45,6 +45,7 @@ const UserPage = () => {
 
   useEffect(() => {
     loadUsers();
+    localStorage.removeItem('UserId');
   }, []);
 
   const handleClose = () => setShow(false);

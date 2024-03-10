@@ -89,10 +89,22 @@ function Check250Hz() {
     setScore(changesoundDB);
 
     const ear0 = localStorage.getItem("ear0");
+    const ear1 = localStorage.getItem("ear1");
+
+    const score7Right = localStorage.getItem("scoreRight7");
+    const score7Left = localStorage.getItem("scoreLeft7");
+
+    if (score7Right) {
+      localStorage.setItem("scoreLeft6", changesoundDB);
+    } else if (score7Left) {
+      localStorage.setItem("scoreRight6", changesoundDB);
+    }
+
     if(ear0){
     localStorage.setItem("scoreLeft6", changesoundDB);
     }else{
       localStorage.setItem("scoreRight6", changesoundDB);
+
     }
 
     navigate("/Check500Hz");

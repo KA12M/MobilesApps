@@ -19,6 +19,7 @@ import EarSelect from "../app/UserDetail/EarSelect";
 import Check250Hz from "../app/HearingCheck/Check250Hz";
 import Check500Hz from "../app/HearingCheck/Check500Hz";
 import Check8000Hz from "../app/HearingCheck/Check8000Hz";
+import PauseCheck from "../app/HearingCheck/PauseCheck";
 
 export const Routes = (
   <Route path={RoutePath.home} element={<App />}>
@@ -35,6 +36,10 @@ export const Routes = (
     <Route path="/Check4000Hz" element={<Check4000Hz />} />
     <Route path="/Check6000Hz" element={<Check6000Hz />} />
     <Route path="/Check8000Hz" element={<Check8000Hz />} />
+
+
+    <Route path="/PauseCheck" element={<PauseCheck />} />
+
 
 
     <Route path="/user/:userId" element={<UserDetailPage />} />

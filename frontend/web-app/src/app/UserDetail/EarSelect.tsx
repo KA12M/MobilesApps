@@ -25,22 +25,22 @@ function EarSelect() {
     if (!hasRefreshed) {
       localStorage.setItem('hasRefreshed', true);
       window.location.reload();
-      localStorage.removeItem('ear0');
-      localStorage.removeItem('ear1');
-      localStorage.removeItem('scoreLeft1');
-      localStorage.removeItem('scoreLeft2');
-      localStorage.removeItem('scoreLeft3');
-      localStorage.removeItem('scoreLeft4');
-      localStorage.removeItem('scoreLeft5');
-      localStorage.removeItem('scoreLeft6');
-      localStorage.removeItem('scoreLeft7');
-      localStorage.removeItem('scoreRight1');
-      localStorage.removeItem('scoreRight2');
-      localStorage.removeItem('scoreRight3');
-      localStorage.removeItem('scoreRight4');
-      localStorage.removeItem('scoreRight5');
-      localStorage.removeItem('scoreRight6');
-      localStorage.removeItem('scoreRight7');
+      // localStorage.removeItem('ear0');
+      // localStorage.removeItem('ear1');
+      // localStorage.removeItem('scoreLeft1');
+      // localStorage.removeItem('scoreLeft2');
+      // localStorage.removeItem('scoreLeft3');
+      // localStorage.removeItem('scoreLeft4');
+      // localStorage.removeItem('scoreLeft5');
+      // localStorage.removeItem('scoreLeft6');
+      // localStorage.removeItem('scoreLeft7');
+      // localStorage.removeItem('scoreRight1');
+      // localStorage.removeItem('scoreRight2');
+      // localStorage.removeItem('scoreRight3');
+      // localStorage.removeItem('scoreRight4');
+      // localStorage.removeItem('scoreRight5');
+      // localStorage.removeItem('scoreRight6');
+      // localStorage.removeItem('scoreRight7');
     } else {
       localStorage.removeItem('hasRefreshed');
     }

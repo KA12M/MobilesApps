@@ -48,22 +48,23 @@ function Check1000Hz() {
 
   const handleSoundSequence = async () => {
     for (const { volume, db } of soundSequence) {
+      const delay = 300
       for (let i = 0; i < 2; i++) {
         setChangesound(volume);
         await play();
         setChangesoundDB(db);
         console.log(db);
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         // if (!isSoundOn || score !== undefined) {
-          if (!isSoundOn ) {
+        if (!isSoundOn) {
           stop();
           return;
         }
         stop();
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
       // if (db === 95 || score !== undefined) {
-        if (db === 95) {
+      if (db === 95) {
         return;
       }
     }
@@ -72,17 +73,28 @@ function Check1000Hz() {
   console.log("score", score);
   console.log("isSoundOn", isSoundOn);
 
-
   const saveDb = () => {
     stop();
     setIsSoundOn(false);
     setScore(changesoundDB);
     const ear0 = localStorage.getItem("ear0");
-    if(ear0){
-    localStorage.setItem("scoreLeft1", changesoundDB);
-    }else{
+    const score7Right = localStorage.getItem("scoreRight7");
+    const score7Left = localStorage.getItem("scoreLeft7");
+
+    if (score7Right) {
+      localStorage.setItem("scoreLeft1", changesoundDB);
+    } else if (score7Left) {
       localStorage.setItem("scoreRight1", changesoundDB);
     }
+
+    if (ear0) {
+      localStorage.setItem("scoreLeft1", changesoundDB);
+    } else {
+      localStorage.setItem("scoreRight1", changesoundDB);
+    }
+
+   
+
     navigate("/Check2000Hz");
     console.log("Score:", score);
   };

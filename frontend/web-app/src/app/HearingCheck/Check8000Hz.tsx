@@ -88,6 +88,17 @@ function Check8000Hz() {
     setScore(changesoundDB);
     
     const ear0 = localStorage.getItem("ear0");
+
+    const score7Right = localStorage.getItem("scoreRight7");
+    const score7Left = localStorage.getItem("scoreLeft7");
+
+    if (score7Right) {
+      localStorage.setItem("scoreLeft5", changesoundDB);
+    } else if (score7Left) {
+      localStorage.setItem("scoreRight5", changesoundDB);
+    }
+
+
     if(ear0){
     localStorage.setItem("scoreLeft5", changesoundDB);
     }else{

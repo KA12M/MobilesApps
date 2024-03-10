@@ -30,23 +30,48 @@ const UserDetailPage = () => {
     setFormModeHearing(!formModeHearing);
   };
 
-        useEffect(() => {
-        const hasRefreshed = localStorage.getItem('hasRefreshed');
-        if (!hasRefreshed) {
-          localStorage.setItem('hasRefreshed', true);
-          window.location.reload();
-          localStorage.removeItem('ear');
-          localStorage.removeItem('score1');
-          localStorage.removeItem('score2');
-          localStorage.removeItem('score3');
-          localStorage.removeItem('score4');
-          localStorage.removeItem('score5');
-          localStorage.removeItem('score6');
-          localStorage.removeItem('score7');
-        } else {
-          localStorage.removeItem('hasRefreshed');
-        }
+  //       useEffect(() => {
+  //       const hasRefreshed = localStorage.getItem('hasRefreshed');
+  //       if (!hasRefreshed) {
+  //         localStorage.setItem('hasRefreshed', true);
+  //         window.location.reload();
+  //         localStorage.removeItem('ear');
+  //         localStorage.removeItem('score1');
+  //         localStorage.removeItem('score2');
+  //         localStorage.removeItem('score3');
+  //         localStorage.removeItem('score4');
+  //         localStorage.removeItem('score5');
+  //         localStorage.removeItem('score6');
+  //         localStorage.removeItem('score7');
+  //       } else {
+  //         localStorage.removeItem('hasRefreshed');
+  //       }
+  // }, []);
+
+  useEffect(() => {
+    const hasRefreshed = localStorage.getItem('hasRefreshed');
+    if (!hasRefreshed) {
+      localStorage.setItem('hasRefreshed', true);
+      window.location.reload();
+      
+      for (let i = 1; i <= 7; i++) {
+        localStorage.removeItem('scoreRight' + i);
+      }
+
+      for (let i = 1; i <= 7; i++) {
+        localStorage.removeItem('scoreLeft' + i);
+      }
+
+      for (let i = 0; i <= 2; i++) {
+        localStorage.removeItem('ear' + i);
+      }
+
+    } else {
+      localStorage.removeItem('hasRefreshed');
+    }
   }, []);
+
+  
 
   const { setUserId, user, loading, hearings } =
     useStore().useUserDetailActions;
@@ -77,10 +102,13 @@ const UserDetailPage = () => {
 
   useEffect(() => {
     setUserId(userId)
+
+    localStorage.setItem("UserId", userId);
     
     return () => setUserId(null);
   }, []);
 
+  console.log("userId",userId)
   
 
   useEffect(() => {
