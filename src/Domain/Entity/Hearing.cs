@@ -24,6 +24,7 @@ public class HearingItem
     public int V1000 { get; set; }
     public int V2000 { get; set; }
     public int V4000 { get; set; }
+    public int V6000 { get; set; }
     public int V8000 { get; set; }
     public string Result { get; set; }
 }

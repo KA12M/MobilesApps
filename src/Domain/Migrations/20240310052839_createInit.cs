@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Domain.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDb : Migration
+    public partial class createInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -55,6 +55,10 @@ namespace Domain.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Note = table.Column<string>(type: "TEXT", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ImageEyeLeft = table.Column<string>(type: "TEXT", nullable: true),
+                    ResultLeft = table.Column<string>(type: "TEXT", nullable: true),
+                    ImageEyeRight = table.Column<string>(type: "TEXT", nullable: true),
+                    ResultRight = table.Column<string>(type: "TEXT", nullable: true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
@@ -62,6 +66,27 @@ namespace Domain.Migrations
                     table.PrimaryKey("PK_Diabetes", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Diabetes_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FMHTs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Result = table.Column<string>(type: "TEXT", nullable: true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FMHTs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FMHTs_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -114,27 +139,6 @@ namespace Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DiabetesItems",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Image = table.Column<string>(type: "TEXT", nullable: true),
-                    Result = table.Column<string>(type: "TEXT", nullable: true),
-                    DiabetesId = table.Column<int>(type: "INTEGER", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DiabetesItems", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DiabetesItems_Diabetes_DiabetesId",
-                        column: x => x.DiabetesId,
-                        principalTable: "Diabetes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "HearingItems",
                 columns: table => new
                 {
@@ -146,6 +150,7 @@ namespace Domain.Migrations
                     V1000 = table.Column<int>(type: "INTEGER", nullable: false),
                     V2000 = table.Column<int>(type: "INTEGER", nullable: false),
                     V4000 = table.Column<int>(type: "INTEGER", nullable: false),
+                    V6000 = table.Column<int>(type: "INTEGER", nullable: false),
                     V8000 = table.Column<int>(type: "INTEGER", nullable: false),
                     Result = table.Column<string>(type: "TEXT", nullable: true),
                     HearingId = table.Column<int>(type: "INTEGER", nullable: true)
@@ -167,9 +172,9 @@ namespace Domain.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DiabetesItems_DiabetesId",
-                table: "DiabetesItems",
-                column: "DiabetesId");
+                name: "IX_FMHTs_UserId",
+                table: "FMHTs",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HearingItems_HearingId",
@@ -191,16 +196,16 @@ namespace Domain.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DiabetesItems");
+                name: "Diabetes");
+
+            migrationBuilder.DropTable(
+                name: "FMHTs");
 
             migrationBuilder.DropTable(
                 name: "HearingItems");
 
             migrationBuilder.DropTable(
                 name: "UserSicknesses");
-
-            migrationBuilder.DropTable(
-                name: "Diabetes");
 
             migrationBuilder.DropTable(
                 name: "Hearings");

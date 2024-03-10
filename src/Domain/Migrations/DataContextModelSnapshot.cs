@@ -51,6 +51,28 @@ namespace Domain.Migrations
                     b.ToTable("Diabetes");
                 });
 
+            modelBuilder.Entity("Domain.Entity.FMHT", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Result")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FMHTs");
+                });
+
             modelBuilder.Entity("Domain.Entity.Hearing", b =>
                 {
                     b.Property<int>("Id")
@@ -101,6 +123,9 @@ namespace Domain.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("V500")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("V6000")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("V8000")
@@ -194,6 +219,17 @@ namespace Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("Domain.Entity.FMHT", b =>
+                {
+                    b.HasOne("Domain.Entity.User", "User")
+                        .WithMany("FMHTs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Entity.Hearing", b =>
                 {
                     b.HasOne("Domain.Entity.User", null)
@@ -237,6 +273,8 @@ namespace Domain.Migrations
             modelBuilder.Entity("Domain.Entity.User", b =>
                 {
                     b.Navigation("Diabetes");
+
+                    b.Navigation("FMHTs");
 
                     b.Navigation("Hearings");
 

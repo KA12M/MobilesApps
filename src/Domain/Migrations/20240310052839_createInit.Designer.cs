@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231102062146_InitialDb")]
-    partial class InitialDb
+    [Migration("20240310052839_createInit")]
+    partial class createInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.13");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.7");
 
             modelBuilder.Entity("Domain.Entity.Diabetes", b =>
                 {
@@ -29,7 +29,19 @@ namespace Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ImageEyeLeft")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageEyeRight")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ResultLeft")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ResultRight")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("UserId")
@@ -42,26 +54,26 @@ namespace Domain.Migrations
                     b.ToTable("Diabetes");
                 });
 
-            modelBuilder.Entity("Domain.Entity.DiabetesItem", b =>
+            modelBuilder.Entity("Domain.Entity.FMHT", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("DiabetesId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Image")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Result")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("DiabetesId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("DiabetesItems");
+                    b.ToTable("FMHTs");
                 });
 
             modelBuilder.Entity("Domain.Entity.Hearing", b =>
@@ -114,6 +126,9 @@ namespace Domain.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("V500")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("V6000")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("V8000")
@@ -207,12 +222,15 @@ namespace Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Domain.Entity.DiabetesItem", b =>
+            modelBuilder.Entity("Domain.Entity.FMHT", b =>
                 {
-                    b.HasOne("Domain.Entity.Diabetes", null)
-                        .WithMany("Items")
-                        .HasForeignKey("DiabetesId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("Domain.Entity.User", "User")
+                        .WithMany("FMHTs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Entity.Hearing", b =>
@@ -250,11 +268,6 @@ namespace Domain.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Diabetes", b =>
-                {
-                    b.Navigation("Items");
-                });
-
             modelBuilder.Entity("Domain.Entity.Hearing", b =>
                 {
                     b.Navigation("Items");
@@ -263,6 +276,8 @@ namespace Domain.Migrations
             modelBuilder.Entity("Domain.Entity.User", b =>
                 {
                     b.Navigation("Diabetes");
+
+                    b.Navigation("FMHTs");
 
                     b.Navigation("Hearings");
 
