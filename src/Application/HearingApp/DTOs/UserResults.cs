@@ -7,5 +7,6 @@ namespace Application.HearingApp.DTOs
     {
         public Result<List<Hearing>> Hearing { get; set; }
         public Result<List<Diabetes>> Diabetes { get; set; }
+        public Result<List<FMHT>> FMHTs { get; set; }
     }
 }

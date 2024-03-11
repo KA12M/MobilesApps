@@ -12,6 +12,9 @@ export default class HearingStore {
   ear = "";
   isTesting = false;
   goBack = true;
+  hearingByUser = [];
+  hearingResult = "";
+  resultDoctor = "";
 
   constructor() {
     makeAutoObservable(this);
@@ -20,6 +23,36 @@ export default class HearingStore {
   }
 
   setGoBack = (state) => (this.goBack = state);
+
+  createFMHTByUserId = async (data) => {
+    try {
+      var res = await API.fmht.createFMHT(data);
+      return res;
+    } catch (error) {
+      console.log("error", error);
+      throw error;
+    }
+  };
+
+  getFMHTByUserId = async (userId) => { 
+    try {
+      const res = await API.fmht.GetFMHTByUserId(userId); 
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  getHearingByUserId = async (userId) => {
+    try {
+      var res = await API.diabete.hearingWithDiabeteList(userId);
+      runInAction(() => {
+        this.hearingByUser = res?.hearing?.value;
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
 
   addHearingByUserId = async (data) => {
     try {
@@ -110,6 +143,37 @@ export default class HearingStore {
     this.isTesting = false;
     this.btnResultReady = false;
   };
+
+  processHearingLevels = (data) => {
+    let arrayHearing = [];
+    data.map((item) => {
+      const { v500, v1000, v2000 } = item;
+
+      const total = (v500 + v1000 + v2000) / 3;
+
+      arrayHearing = [...arrayHearing, check(total)];
+    });
+
+    runInAction(() => {
+      this.hearingResult = arrayHearing;
+    });
+  };
+
+  processResultDoctor = (data) => {
+    let arrayResult = [];
+    data.map((item) => {
+      const { v500, v1000, v2000, v4000 } = item;
+
+      const total = (v500 + v1000 + v2000 + v4000) / 4;
+
+      console.log("total", v500, v1000, v2000, v4000);
+      arrayResult = [...arrayResult, total];
+    });
+
+    runInAction(() => {
+      this.resultDoctor = arrayResult;
+    });
+  };
 }
 
 // function แปลงข้อมูลซ้ายขวาที่ใช้ในแอพเป็นข้อมูลที่จะบันทึกลง db
@@ -151,6 +215,10 @@ function processHearing(item) {
   });
 
   let result = value / count;
+  return check(result);
+}
+
+function check(result) {
   switch (true) {
     case result > 90:
       return "ระดับหูหนวก";

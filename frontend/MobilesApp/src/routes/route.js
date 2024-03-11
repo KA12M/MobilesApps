@@ -14,6 +14,8 @@ import { View } from "react-native";
 import TestPage from "../test/Test.page";
 import { useStore } from "../store/store";
 import { observer } from "mobx-react-lite";
+import HistoryTest from "../views/HearingLevel/histories/HistoryTest";
+import AssessmentDocs from "../views/HearingLevel/assessmentDocs/AssessmentDocs";
 
 const Stack = createNativeStackNavigator();
 
@@ -163,6 +165,57 @@ const Route = () => {
               </IconButtons>
             ),
             headerTintColor: theme.colors.text.black,
+          })}
+        />
+        <Stack.Screen
+          name="histories-testing"
+          component={HistoryTest}
+          options={({ navigation }) => ({
+            title: "ประวัติการทดสอบ",
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: theme.colors.bg.primary,
+            },
+            headerTitleStyle: {
+              fontFamily: theme.fonts.primary,
+            },
+            headerTintColor: theme.colors.text.light,
+            headerLeft: (props) =>
+              goBack ? (
+                <IconButtons onPress={() => navigation.goBack()}>
+                  <MaterialIcons
+                    name="keyboard-arrow-left"
+                    size={theme.sizes[4]}
+                    color={theme.colors.text.light}
+                  />
+                </IconButtons>
+              ) : (
+                ""
+              ),
+          })}
+        />
+        <Stack.Screen
+          name="assessment-docs"
+          component={AssessmentDocs}
+          options={({ navigation }) => ({
+            title: "เอกสารการประเมิน",
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: theme.colors.bg.primary,
+            },
+            headerTitleStyle: {
+              fontFamily: theme.fonts.primary,
+            },
+            headerTintColor: theme.colors.text.light,
+            headerLeft: (props) => (
+              <IconButtons onPress={() => navigation.goBack()}>
+                <MaterialIcons
+                  name="keyboard-arrow-left"
+                  size={theme.sizes[4]}
+                  color={theme.colors.text.light}
+                />
+              </IconButtons>
+            ),
           })}
         />
       </Stack.Navigator>

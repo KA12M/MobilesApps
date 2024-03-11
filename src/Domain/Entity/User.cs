@@ -21,4 +21,5 @@ public class User
     public ICollection<UserSickness> UserSicknessList { get; set; } = new List<UserSickness>();
     public ICollection<Hearing> Hearings { get; set; } = new List<Hearing>();
     public ICollection<Diabetes> Diabetes { get; set; } = new List<Diabetes>();
+    public ICollection<FMHT> FMHTs { get; set; } = new List<FMHT>();
 }

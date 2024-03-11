@@ -38,6 +38,8 @@ const SoundDisplayPage = ({ data }) => {
 
   const [count, setCount] = useState(0);
 
+  const [colorChange, setColorChange] = useState(1);
+
   useEffect(() => {
     return () => (soundObj ? clear() : undefined);
   }, []);
@@ -52,28 +54,38 @@ const SoundDisplayPage = ({ data }) => {
     setVolume(30);
   }
 
-  const playSoundRepeatedly = async (sound, repetitions) => {
-    let volume = 30;
+  const playSoundRepeatedly = async (sound) => {
+    let delay = 500;
 
-    for (let i = 0; i < repetitions; i++) {
-      console.log("volume", volume);
-
+    for (let i = 0; i < dB.length; i++) {
+      console.log("i", i);
+      console.log("dB", dB[i]);
+      await sound.setVolumeAsync(dB[i] / 100, 0.0);
+      setVolume(dB[i]);
       await sound.playAsync();
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, delay));
       await sound.stopAsync();
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, delay));
       await sound.playAsync();
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, delay));
       await sound.stopAsync();
-      await sound.setVolumeAsync(volume / 100, 0.0);
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, delay));
 
-      volume += dB[i];
-
-      setVolume(volume);
+      setColorChange(i);
     }
 
-    console.log("volume", volume);
+    // dB.map(async (_, i) => {
+    //   await sound.setVolumeAsync(dB[i] / 100, 0.0);
+    //   await sound.playAsync();
+    //   await new Promise((resolve) => setTimeout(resolve, delay));
+    //   await sound.stopAsync();
+    //   await new Promise((resolve) => setTimeout(resolve, delay));
+    //   await sound.playAsync();
+    //   await new Promise((resolve) => setTimeout(resolve, delay));
+    //   await sound.stopAsync();
+    //   await new Promise((resolve) => setTimeout(resolve, delay));
+    //   setVolume(dB[i]);
+    // });
 
     handleProcess(data.id, 0);
     setCount((count) => count + 1);
@@ -82,6 +94,7 @@ const SoundDisplayPage = ({ data }) => {
   };
 
   async function playSound() {
+    setColorChange(1);
     setVolume(30);
 
     if (soundObj) clear();
@@ -98,7 +111,7 @@ const SoundDisplayPage = ({ data }) => {
 
     console.log(data.title, ": Playing Sound");
 
-    await playSoundRepeatedly(sound, 16);
+    await playSoundRepeatedly(sound);
 
     sound.setOnPlaybackStatusUpdate((status) => {
       if (status.isLoaded && !status.isPlaying) {
@@ -110,8 +123,6 @@ const SoundDisplayPage = ({ data }) => {
         setProgress((status.positionMillis / status.durationMillis) * 100);
     });
   }
-
-  console.log("count", count);
 
   return (
     <View style={styles.container}>
@@ -134,7 +145,17 @@ const SoundDisplayPage = ({ data }) => {
               />
               <Progress value={progress} mx="4" />
               {/* <Text> progress: {mapPercentageToValue(progress)}</Text> */}
-              <Text> dB: {volume}</Text>
+              <Text
+                style={{
+                  fontSize: 25,
+                  color: colorChange % 2 === 1 ? "red" : "white",
+                  backgroundColor: "black",
+                  padding: 10,
+                  borderRadius: 20,
+                }}
+              >
+                dB: {volume}
+              </Text>
             </View>
           ) : (
             <Button

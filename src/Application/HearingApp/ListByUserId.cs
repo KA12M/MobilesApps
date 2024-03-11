@@ -30,13 +30,15 @@ public class ListByUserId
                 .Include(a => a.Hearings)
                     .ThenInclude(a => a.Items)
                 .Include(x => x.Diabetes)
+                .Include(x => x.FMHTs)
                 .FirstOrDefaultAsync(a => a.Id == request.UserId);
             if (user == null) return null;
 
             var results = new UserResults
             {
                 Hearing = Result<List<Hearing>>.Success(user.Hearings.OrderByDescending(a => a.CreatedAt).ToList()),
-                Diabetes = Result<List<Diabetes>>.Success(user.Diabetes.OrderByDescending(a => a.CreatedAt).ToList())
+                Diabetes = Result<List<Diabetes>>.Success(user.Diabetes.OrderByDescending(a => a.CreatedAt).ToList()),
+                FMHTs = Result<List<FMHT>>.Success(user.FMHTs.OrderByDescending(a => a.CreatedAt).ToList()),
             };
 
             return Result<UserResults>.Success(results);

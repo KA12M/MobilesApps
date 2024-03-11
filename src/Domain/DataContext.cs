@@ -17,8 +17,8 @@ public class DataContext : DbContext
     public DbSet<Hearing> Hearings { get; set; }
     public DbSet<HearingItem> HearingItems { get; set; }
     public DbSet<Diabetes> Diabetes { get; set; }
-    //public DbSet<DiabetesItem> DiabetesItems { get; set; }
-
+    public DbSet<FMHT> FMHTs { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -38,8 +38,8 @@ public class DataContext : DbContext
 
         builder.Entity<User>().HasMany(a => a.Hearings).GetInfrastructure().OnDelete(DeleteBehavior.Cascade);
         builder.Entity<User>().HasMany(a => a.Diabetes).GetInfrastructure().OnDelete(DeleteBehavior.Cascade);
+        builder.Entity<User>().HasMany(a => a.FMHTs).GetInfrastructure().OnDelete(DeleteBehavior.Cascade);
         builder.Entity<Hearing>().HasMany(a => a.Items).GetInfrastructure().OnDelete(DeleteBehavior.Cascade);
 
-        builder.Entity<Diabetes>();
     }
 }
