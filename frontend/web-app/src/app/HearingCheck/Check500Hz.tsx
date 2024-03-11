@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Steps, Button, message, Card } from "antd";
+import { Steps, Button, message, Card, notification } from "antd";
 import { GiSoundOff, GiSoundOn } from "react-icons/gi";
 import soundFile from "../../sound/500Hz.mp4";
 import useSound from "use-sound";
 import { useNavigate } from "react-router-dom";
+import { RoutePath } from "../../utils/RoutePath";
 
 function Check500Hz() {
   const navigate = useNavigate();
@@ -59,22 +60,45 @@ function Check500Hz() {
   ];
 
   const handleSoundSequence = async () => {
+    const delay = 300
+
     for (const { volume, db } of soundSequence) {
       for (let i = 0; i < 2; i++) {
         setChangesound(volume);
         await play();
         setChangesoundDB(db);
         console.log(db);
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         if (!isSoundOn || score !== undefined) {
           stop();
           return;
         }
         stop();
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
-      if (db === 95 || score !== undefined) {
-        return;
+      if (db === 95) {
+        const keyLeft = localStorage.getItem("keyEarleft");
+        if(keyLeft)
+        {
+          localStorage.setItem("scoreLeft7", '999');
+          notification.success({
+            message: 'สำเร็จ',
+            description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
+          });
+          setTimeout(() => {
+            navigate("/PauseCheck");
+          }, 5000);
+          return
+        }else{
+          localStorage.setItem("scoreRight7", '999');
+          notification.success({
+            message: 'สำเร็จ',
+            description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
+          });
+          setTimeout(() => {
+            navigate("/PauseCheck");
+          }, 5000);
+        }
       }
     }
   };
@@ -90,30 +114,34 @@ function Check500Hz() {
     const ear0 = localStorage.getItem("ear0");
     const ear1 = localStorage.getItem("ear1");
 
-    const score7Right = localStorage.getItem("scoreRight7");
-    const score7Left = localStorage.getItem("scoreLeft7");
-
-    if (score7Right) {
-      localStorage.setItem("scoreLeft7", changesoundDB);
-    } else if (score7Left) {
-      localStorage.setItem("scoreRight7", changesoundDB);
-    }
-
-    if(ear0){
-      localStorage.setItem("scoreLeft7", changesoundDB);
-      }else{
-      localStorage.setItem("scoreRight7", changesoundDB);
+      const keyLeft = localStorage.getItem("keyEarleft");
+      if (keyLeft) {
+        localStorage.setItem("scoreLeft7", changesoundDB);
+      navigate("/PauseCheck");
+      } else {
+        localStorage.setItem("scoreRight7", changesoundDB);
+      navigate("/PauseCheck");
       }
 
 
       if(ear0 && ear1){
         handleSubmit();
-        return
-      }
+        notification.success({
+          message: 'สำเร็จ',
+          description: 'บันทึกการตรวจสำเร็จ',
+        });
+        stop()
       navigate("/PauseCheck");
+        // setTimeout(() => {
+        //   navigate(RoutePath.userDetail(UserId));
+        // }, 3000);
+        return;
+      }
 
     console.log("Score:", score);
   };
+
+  
 
 
   function processHearing(item) {

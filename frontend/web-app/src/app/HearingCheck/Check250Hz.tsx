@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Steps, Button, message, Card } from "antd";
+import { Steps, Button, message, Card, notification } from "antd";
 import { GiSoundOff, GiSoundOn } from "react-icons/gi";
 import soundFile from "../../sound/250Hz.mp4";
 import useSound from "use-sound";
@@ -59,22 +59,45 @@ function Check250Hz() {
   ];
 
   const handleSoundSequence = async () => {
+    const delay = 300
+
     for (const { volume, db } of soundSequence) {
       for (let i = 0; i < 2; i++) {
         setChangesound(volume);
         await play();
         setChangesoundDB(db);
         console.log(db);
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         if (!isSoundOn || score !== undefined) {
           stop();
           return;
         }
         stop();
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
-      if (db === 95 || score !== undefined) {
-        return;
+      if (db === 95) {
+        const keyLeft = localStorage.getItem("keyEarleft");
+        if(keyLeft)
+        {
+          localStorage.setItem("scoreLeft6", '999');
+          notification.success({
+            message: 'สำเร็จ',
+            description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
+          });
+          setTimeout(() => {
+            navigate("/Check500Hz");
+          }, 5000);
+          return
+        }else{
+          localStorage.setItem("scoreRight6", '999');
+          notification.success({
+            message: 'สำเร็จ',
+            description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
+          });
+          setTimeout(() => {
+            navigate("/Check500Hz");
+          }, 5000);
+        }
       }
     }
   };
@@ -88,24 +111,13 @@ function Check250Hz() {
     setIsSoundOn(false);
     setScore(changesoundDB);
 
-    const ear0 = localStorage.getItem("ear0");
-    const ear1 = localStorage.getItem("ear1");
-
-    const score7Right = localStorage.getItem("scoreRight7");
-    const score7Left = localStorage.getItem("scoreLeft7");
-
-    if (score7Right) {
+    const keyLeft = localStorage.getItem("keyEarleft");
+    if (keyLeft) {
       localStorage.setItem("scoreLeft6", changesoundDB);
-    } else if (score7Left) {
+    } else {
       localStorage.setItem("scoreRight6", changesoundDB);
     }
 
-    if(ear0){
-    localStorage.setItem("scoreLeft6", changesoundDB);
-    }else{
-      localStorage.setItem("scoreRight6", changesoundDB);
-
-    }
 
     navigate("/Check500Hz");
 

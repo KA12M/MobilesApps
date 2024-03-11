@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Steps, Button, message, Card } from "antd";
+import { Steps, Button, message, Card, notification } from "antd";
 import { GiSoundOff, GiSoundOn } from "react-icons/gi";
 import soundFile from "../../sound/4000Hz.mp4";
 import useSound from "use-sound";
@@ -59,22 +59,45 @@ function Check4000Hz() {
   ];
 
   const handleSoundSequence = async () => {
+    const delay = 300
+
     for (const { volume, db } of soundSequence) {
       for (let i = 0; i < 2; i++) {
         setChangesound(volume);
         await play();
         setChangesoundDB(db);
         console.log(db);
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         if (!isSoundOn || score !== undefined) {
           stop();
           return;
         }
         stop();
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
-      if (db === 95 || score !== undefined) {
-        return;
+      if (db === 95) {
+        const keyLeft = localStorage.getItem("keyEarleft");
+        if(keyLeft)
+        {
+          localStorage.setItem("scoreLeft3", '999');
+          notification.success({
+            message: 'สำเร็จ',
+            description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
+          });
+          setTimeout(() => {
+            navigate("/Check6000Hz");
+          }, 5000);
+          return
+        }else{
+          localStorage.setItem("scoreRight3", '999');
+          notification.success({
+            message: 'สำเร็จ',
+            description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
+          });
+          setTimeout(() => {
+            navigate("/Check6000Hz");
+          }, 5000);
+        }
       }
     }
   };
@@ -98,12 +121,14 @@ function Check4000Hz() {
       localStorage.setItem("scoreRight3", changesoundDB);
     }
 
-    if(ear0){
-    localStorage.setItem("scoreLeft3", changesoundDB);
-    }else{
+
+    const keyLeft = localStorage.getItem("keyEarleft");
+    if (keyLeft) {
+      localStorage.setItem("scoreLeft3", changesoundDB);
+    } else {
       localStorage.setItem("scoreRight3", changesoundDB);
     }
-    
+
     navigate("/Check6000Hz");
 
     console.log("Score:", score);

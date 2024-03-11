@@ -36,12 +36,12 @@ const HearingList = ({ hearings, setModeHearing }) => {
       x: {
         title: {
           display: true,
-          text: 'Frequency (Hz)'
+          text: 'EiEi'
         }
       },
       y: {
-        suggestedMin: 0, // ค่าน้อยสุดที่แนะนำให้แกน y แสดง
-        suggestedMax: 100, // ค่ามากสุดที่แนะนำให้แกน y แสดง
+        suggestedMin: 0, 
+        suggestedMax: 100, 
         title: {
           display: true,
           text: 'Value'

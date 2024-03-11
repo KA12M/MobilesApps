@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Steps, Button, message, Card } from "antd";
+import { Steps, Button, message, Card, notification } from "antd";
 import { GiSoundOff, GiSoundOn } from "react-icons/gi";
 import soundFile from "../../sound/1000Hz.mp4";
 import useSound from "use-sound";
@@ -65,6 +65,28 @@ function Check1000Hz() {
       }
       // if (db === 95 || score !== undefined) {
       if (db === 95) {
+    const keyLeft = localStorage.getItem("keyEarleft");
+        if(keyLeft)
+        {
+          localStorage.setItem("scoreLeft1", '999');
+          notification.success({
+            message: 'สำเร็จ',
+            description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
+          });
+          setTimeout(() => {
+            navigate("/Check2000Hz");
+          }, 5000);
+          return
+        }else{
+          localStorage.setItem("scoreRight1", '999');
+          notification.success({
+            message: 'สำเร็จ',
+            description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
+          });
+          setTimeout(() => {
+            navigate("/Check2000Hz");
+          }, 5000);
+        }
         return;
       }
     }
@@ -77,23 +99,21 @@ function Check1000Hz() {
     stop();
     setIsSoundOn(false);
     setScore(changesoundDB);
-    const ear0 = localStorage.getItem("ear0");
-    const score7Right = localStorage.getItem("scoreRight7");
-    const score7Left = localStorage.getItem("scoreLeft7");
 
-    if (score7Right) {
+
+    const keyLeft = localStorage.getItem("keyEarleft");
+
+    const keyEarRight = localStorage.getItem("keyEarRight");
+
+    console.log("keyLeft",keyLeft)
+    if (keyLeft != null) {
       localStorage.setItem("scoreLeft1", changesoundDB);
-    } else if (score7Left) {
+    }
+    if(keyEarRight != null) {
       localStorage.setItem("scoreRight1", changesoundDB);
     }
 
-    if (ear0) {
-      localStorage.setItem("scoreLeft1", changesoundDB);
-    } else {
-      localStorage.setItem("scoreRight1", changesoundDB);
-    }
 
-   
 
     navigate("/Check2000Hz");
     console.log("Score:", score);

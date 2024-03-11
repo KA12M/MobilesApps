@@ -30,24 +30,6 @@ const UserDetailPage = () => {
     setFormModeHearing(!formModeHearing);
   };
 
-  //       useEffect(() => {
-  //       const hasRefreshed = localStorage.getItem('hasRefreshed');
-  //       if (!hasRefreshed) {
-  //         localStorage.setItem('hasRefreshed', true);
-  //         window.location.reload();
-  //         localStorage.removeItem('ear');
-  //         localStorage.removeItem('score1');
-  //         localStorage.removeItem('score2');
-  //         localStorage.removeItem('score3');
-  //         localStorage.removeItem('score4');
-  //         localStorage.removeItem('score5');
-  //         localStorage.removeItem('score6');
-  //         localStorage.removeItem('score7');
-  //       } else {
-  //         localStorage.removeItem('hasRefreshed');
-  //       }
-  // }, []);
-
   useEffect(() => {
     const hasRefreshed = localStorage.getItem('hasRefreshed');
     if (!hasRefreshed) {
@@ -65,6 +47,10 @@ const UserDetailPage = () => {
       for (let i = 0; i <= 2; i++) {
         localStorage.removeItem('ear' + i);
       }
+
+      localStorage.removeItem('keyEarleft');
+      localStorage.removeItem('keyEarRight');
+      
 
     } else {
       localStorage.removeItem('hasRefreshed');

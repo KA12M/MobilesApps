@@ -12,11 +12,13 @@ function EarSelect() {
 
   const selectEarLeft = () => {
     localStorage.setItem("ear0", '0');
+    localStorage.setItem("keyEarleft", '0');
     navigate("/Check1000Hz");
   }
 
   const selectEarRight = () => {
     localStorage.setItem("ear1", '1');
+    localStorage.setItem("keyEarRight", '1');
     navigate("/Check1000Hz");
   }
 
@@ -25,27 +27,28 @@ function EarSelect() {
     if (!hasRefreshed) {
       localStorage.setItem('hasRefreshed', true);
       window.location.reload();
-      // localStorage.removeItem('ear0');
-      // localStorage.removeItem('ear1');
-      // localStorage.removeItem('scoreLeft1');
-      // localStorage.removeItem('scoreLeft2');
-      // localStorage.removeItem('scoreLeft3');
-      // localStorage.removeItem('scoreLeft4');
-      // localStorage.removeItem('scoreLeft5');
-      // localStorage.removeItem('scoreLeft6');
-      // localStorage.removeItem('scoreLeft7');
-      // localStorage.removeItem('scoreRight1');
-      // localStorage.removeItem('scoreRight2');
-      // localStorage.removeItem('scoreRight3');
-      // localStorage.removeItem('scoreRight4');
-      // localStorage.removeItem('scoreRight5');
-      // localStorage.removeItem('scoreRight6');
-      // localStorage.removeItem('scoreRight7');
+      
+      for (let i = 1; i <= 7; i++) {
+        localStorage.removeItem('scoreRight' + i);
+      }
+
+      for (let i = 1; i <= 7; i++) {
+        localStorage.removeItem('scoreLeft' + i);
+      }
+
+      for (let i = 0; i <= 2; i++) {
+        localStorage.removeItem('ear' + i);
+      }
+
+      localStorage.removeItem('keyEarleft');
+      localStorage.removeItem('keyEarRight');
+
     } else {
       localStorage.removeItem('hasRefreshed');
     }
-}, []);
-  
+  }, []);
+
+
   return (
     <div
       style={{
