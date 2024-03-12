@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TextInput } from "react-native";
 import { AlertDialog, ScrollView, Button } from "native-base";
 import { observer } from "mobx-react-lite";
 
@@ -9,6 +9,7 @@ import { theme } from "../../infrastructure/theme";
 import SoundDisplayPage from "./SoundDisplayPage";
 import TestPage from "../../test/Test.page";
 import MyDialog from "../../components/MyDialog";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function HearingPage({ navigation }) {
   const {
@@ -27,9 +28,13 @@ function HearingPage({ navigation }) {
     },
     commonStore: { user },
   } = useStore();
+
   const [isOpen, setIsOpen] = useState(false);
 
   const [visible, setVisible] = useState(false);
+
+  const [note, setNote] = useState("");
+
   const setDialog = () => setVisible(!visible);
 
   useEffect(() => clearResults(), []);
@@ -47,18 +52,13 @@ function HearingPage({ navigation }) {
     else handleIsTesting();
   };
 
-  // console.log("data", data);
-  // console.log("data", data.left);
-  // console.log("data", data.left.length);
-  // console.log("data", data.right.length);
-
   const handleProcess = () => {
-    processResult(user.id, navigation);
+    processResult(user.id, navigation, note);
     newHearing(user.id);
   };
 
   return (
-    <SafeArea>
+    <SafeAreaView>
       <ScrollView style={styles.container}>
         {!isTesting && (
           <>
@@ -93,9 +93,23 @@ function HearingPage({ navigation }) {
 
         {!isTesting &&
           (data.left[6].isHeard !== null || data.right[6].isHeard !== null) && (
-            <Button colorScheme="lightBlue" onPress={setDialog}>
-              <Text style={{ color: "white", fontSize: 20 }}>บันทึก</Text>
-            </Button>
+            <>
+              <View style={{ margin: 15 }}>
+                <View>
+                  <TextInput
+                    style={styles.input}
+                    onChangeText={setNote}
+                    value={note}
+                  />
+                </View>
+
+                <View style={{ marginTop: 30 }}>
+                  <Button colorScheme="lightBlue" onPress={setDialog}>
+                    <Text style={{ color: "white", fontSize: 20 }}>บันทึก</Text>
+                  </Button>
+                </View>
+              </View>
+            </>
           )}
 
         <AlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
@@ -145,7 +159,7 @@ function HearingPage({ navigation }) {
             : null
         }
       />
-    </SafeArea>
+    </SafeAreaView>
   );
 }
 
@@ -172,6 +186,12 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     fontFamily: theme.fonts.primary,
     fontSize: theme.fontSizes.h4,
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 0.5,
+    padding: 10,
   },
 });
 

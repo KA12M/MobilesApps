@@ -15,12 +15,15 @@ export default class HearingStore {
   hearingByUser = [];
   hearingResult = "";
   resultDoctor = "";
+  loading = false;
 
   constructor() {
     makeAutoObservable(this);
 
     this.data = SoundList;
   }
+
+  setLoading = (state) => (this.loading = state);
 
   setGoBack = (state) => (this.goBack = state);
 
@@ -34,9 +37,9 @@ export default class HearingStore {
     }
   };
 
-  getFMHTByUserId = async (userId) => { 
+  getFMHTByUserId = async (userId) => {
     try {
-      const res = await API.fmht.GetFMHTByUserId(userId); 
+      const res = await API.fmht.GetFMHTByUserId(userId);
       return res;
     } catch (error) {
       throw error;
@@ -44,12 +47,15 @@ export default class HearingStore {
   };
 
   getHearingByUserId = async (userId) => {
+    this.setLoading(true);
     try {
       var res = await API.diabete.hearingWithDiabeteList(userId);
       runInAction(() => {
         this.hearingByUser = res?.hearing?.value;
       });
+      this.setLoading(false);
     } catch (error) {
+      this.setLoading(false);
       throw error;
     }
   };
@@ -85,14 +91,14 @@ export default class HearingStore {
   setEar = (ear) => (this.ear = ear);
 
   // ประมวลผลข้อมูลลง result
-  processResult = (userId, navigation) => {
+  processResult = (userId, navigation, note) => {
     const result = transformData(this.data);
 
     this.result = result;
 
     const data = {
       userId: userId,
-      note: "",
+      note: note,
       ...result,
     };
 

@@ -55,7 +55,8 @@ const SoundDisplayPage = ({ data }) => {
   }
 
   const playSoundRepeatedly = async (sound) => {
-    let delay = 500;
+    let delay = 3000;
+    // let delay = 300;
 
     for (let i = 0; i < dB.length; i++) {
       console.log("i", i);
@@ -87,7 +88,7 @@ const SoundDisplayPage = ({ data }) => {
     //   setVolume(dB[i]);
     // });
 
-    handleProcess(data.id, 0);
+    handleProcess(data.id, dB[dB.length - 1]);
     setCount((count) => count + 1);
     clear();
     setVolume(30);

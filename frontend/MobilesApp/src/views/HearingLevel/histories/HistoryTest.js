@@ -7,11 +7,12 @@ import moment from "moment";
 import { Button, Center, ScrollView } from "native-base";
 import { SafeArea } from "../../../utils/SafeArea";
 import { LineChart } from "react-native-chart-kit";
+import MyLoading from "../../../components/MyLoading";
 
 const HistoryTest = () => {
   const {
     commonStore: { user },
-    hearingStore: { hearingByUser, getHearingByUserId },
+    hearingStore: { loading, hearingByUser, getHearingByUserId },
   } = useStore();
 
   useEffect(() => {
@@ -20,17 +21,21 @@ const HistoryTest = () => {
 
   return (
     <SafeArea>
-      <ScrollView style={styles.container}>
-        {/* <View> */}
-        <Text style={styles.titleVolume}>ระดับความผิดปกติของการได้ยิน</Text>
+      {hearingByUser.length ? (
+        <ScrollView style={styles.container}>
+          {/* <View> */}
+          <Text style={styles.titleVolume}>ระดับความผิดปกติของการได้ยิน</Text>
 
-        <View>
-          {hearingByUser.map((item, i) => (
-            <RenderItem key={i} item={item} />
-          ))}
-        </View>
-        {/* </View> */}
-      </ScrollView>
+          <View>
+            {hearingByUser.map((item, i) => (
+              <RenderItem key={i} item={item} />
+            ))}
+          </View>
+          {/* </View> */}
+        </ScrollView>
+      ) : (
+        <MyLoading loading={loading} />
+      )}
     </SafeArea>
   );
 };
@@ -235,85 +240,63 @@ const RenderData = ({ data, title, result, resultDoctor }) => {
           }
           return null;
         })}
+      </View>
 
-        {/* {prefix.map((item, i) => (
-          <Center
-            w="100%"
-            maxW="400"
-            key={i}
+      <View
+        style={{
+          marginTop: 20,
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            position: "absolute",
+            left: -85,
+            zIndex: 1,
+            top: 100,
+          }}
+        >
+          <Text
             style={{
-              flexDirection: "row",
-              justifyContent: title === "หูซ้าย" ? "" : "flex-end",
+              transform: [{ rotate: "-90deg" }],
             }}
-            marginTop={2}
           >
-            <Text>
-              {item} : {data[itemKey[i]]}
-            </Text>
-          </Center>
-        ))} */}
-      </View>
-
-      <View style={{ marginTop: 20 }}>
-        <Text style={{ marginLeft: 40 }}>แกน Y</Text>
-        <LineChart
-          data={{
-            labels: ["250", "500", "1000", "2000", "4000", "6000", "8000"],
-            datasets: [
-              {
-                data: dataChart,
+            Hearing Level in Decibel (dB)
+          </Text>
+        </View>
+        <View>
+          <Text>Frequency in Hertz (Hz)</Text>
+        </View>
+        <View style={{ marginLeft: 40 }}>
+          <LineChart
+            data={{
+              labels: ["250", "500", "1000", "2000", "4000", "6000", "8000"],
+              datasets: [
+                {
+                  data: dataChart,
+                },
+              ],
+            }}
+            width={Dimensions.get("window").width} // from react-native
+            height={220}
+            // yAxisLabel="10"
+            // yAxisSuffix="k"
+            yAxisInterval={5} // optional, defaults to 1
+            chartConfig={{
+              backgroundColor: "#FFFFFF", // White background color
+              backgroundGradientFrom: "#FFFFFF", // White background gradient from
+              backgroundGradientTo: "#FFFFFF", // White background gradient to
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Black color for lines
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Black color for labels
+              propsForDots: {
+                r: "6",
+                strokeWidth: "2",
+                stroke: "#000000", // Black color for dots
               },
-            ],
-          }}
-          width={Dimensions.get("window").width - 25} // from react-native
-          height={220}
-          // yAxisLabel="$"
-          // yAxisSuffix="k"
-          yAxisInterval={5} // optional, defaults to 1
-          chartConfig={{
-            backgroundColor: "#FFFFFF", // White background color
-            backgroundGradientFrom: "#FFFFFF", // White background gradient from
-            backgroundGradientTo: "#FFFFFF", // White background gradient to
-            decimalPlaces: 2,
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Black color for lines
-            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Black color for labels
-            style: {
-              borderRadius: 16,
-            },
-            propsForDots: {
-              r: "6",
-              strokeWidth: "2",
-              stroke: "#000000", // Black color for dots
-            },
-            count: 5,
-          }}
-          bezier={false}
-          style={{
-            marginVertical: 8,
-            borderRadius: 16,
-          }}
-        />
-        
-        <Text style={{ position: "absolute", right: 20, bottom: 0 }}>
-          แกน X
-        </Text>
-      </View>
-
-      <View style={{ marginTop: 20 }}>
-        <Text
-          style={{
-            fontSize: 17,
-          }}
-        >
-          แกน X คือค่าความถี่ มีหน่วยเป็น Hertz (Hz)
-        </Text>
-        <Text
-          style={{
-            fontSize: 17,
-          }}
-        >
-          แกน Y คือค่าความดัง มีหน่วยเป็น Decibel (dB)
-        </Text>
+            }}
+            bezier={false}
+          />
+        </View>
       </View>
 
       <View
@@ -371,3 +354,22 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
+
+{
+  /* {prefix.map((item, i) => (
+  <Center
+    w="100%"
+    maxW="400"
+    key={i}
+    style={{
+      flexDirection: "row",
+      justifyContent: title === "หูซ้าย" ? "" : "flex-end",
+    }}
+    marginTop={2}
+  >
+    <Text>
+      {item} : {data[itemKey[i]]}
+    </Text>
+  </Center>
+))} */
+}

@@ -29,6 +29,7 @@ import RenderData from "./RenderData";
 import { theme } from "./../../infrastructure/theme/index";
 import ActionSheetItem from "./ActionSheetItem";
 import MyText from "./../../components/MyText";
+import MyLoading from "../../components/MyLoading";
 
 const DiabetesCalculate = function ({ navigation }) {
   const {
@@ -183,7 +184,9 @@ const DiabetesCalculate = function ({ navigation }) {
           </View>
 
           <View>
-            <Button bgColor={theme.colors.bg.primary} onPress={setMode}>{showMode ? "กลับ" : "ดูผล"}</Button>
+            <Button bgColor={theme.colors.bg.primary} onPress={setMode}>
+              {showMode ? "กลับ" : "ดูผล"}
+            </Button>
           </View>
         </View>
 
@@ -287,36 +290,7 @@ const DiabetesCalculate = function ({ navigation }) {
           </ScrollView>
         </>
       ) : (
-        <>
-          {loading ? (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "white",
-              }}
-            >
-              <ActivityIndicator size="large" color="#00ff00" />
-            </View>
-          ) : (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 20,
-                }}
-              >
-                ไม่มีข้อมูล
-              </Text>
-            </View>
-          )}
-        </>
+        <MyLoading loading={loading} />
       )}
     </SafeArea>
   );

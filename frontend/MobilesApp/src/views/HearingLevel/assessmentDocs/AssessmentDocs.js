@@ -69,7 +69,13 @@ const AssessmentDocs = observer(({ route, navigation }) => {
 
     return (
       <View>
-        <Text style={styles.title}>
+        <Text style={styles.title}>ผลการประเมิน</Text>
+        <Text
+          style={[
+            styles.title,
+            { backgroundColor: "yellow", padding: 10, borderRadius: 20 },
+          ]}
+        >
           การประเมินผลการคัดกรองท่านได้คะแนน {value} คะแนน
           {value < 10
             ? "ท่านมีการได้ยินปกติ"
