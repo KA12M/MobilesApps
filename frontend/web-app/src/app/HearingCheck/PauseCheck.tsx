@@ -73,28 +73,31 @@ function PauseCheck() {
 
   const transformData = () => {
     const transformedData = { items: [] };
-
+  
     for (let ear = 0; ear < 2; ear++) {
       const item = {
         ear: ear,
       };
-
-      for (let i = 1; i <= 7; i++) {
+  
+      const frequencies = [250, 500, 1000, 2000, 4000, 6000, 8000];
+  
+      for (let i = 0; i < frequencies.length; i++) {
         const score = localStorage.getItem(
-          `score${ear === 0 ? "Left" : "Right"}${i}`
+          `score${ear === 0 ? "Left" : "Right"}${i + 1}` // ปรับ i + 1 เพื่อให้ได้เลขเท่ากับ index + 1
         );
-        item[`v${250 * Math.pow(2, i - 1)}`] = parseInt(score) || 0;
+        item[`v${frequencies[i]}`] = parseInt(score) || 0;
       }
-
+  
       item["result"] = processHearing(item);
-
+  
       transformedData.items.push(item);
     }
-
+  
     console.log("new", JSON.stringify(transformedData, null, 2));
-
+  
     return transformedData;
   };
+  
 
   const handleSubmit = async () => {
     try {

@@ -63,7 +63,6 @@ function Check1000Hz() {
         stop();
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
-      // if (db === 95 || score !== undefined) {
       if (db === 95) {
     const keyLeft = localStorage.getItem("keyEarleft");
         if(keyLeft)

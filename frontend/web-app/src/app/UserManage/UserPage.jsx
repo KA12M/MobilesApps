@@ -24,16 +24,6 @@ const UserPage = () => {
   const location = useLocation();
   const locationData = location.state?.userData;
 
-  // useEffect(() => {
-  //   const hasRefreshed = localStorage.getItem('hasRefreshed');
-  //   if (!hasRefreshed) {
-  //     localStorage.setItem('hasRefreshed', true);
-  //     window.location.reload();
-  //   } else {
-  //     localStorage.removeItem('hasRefreshed');
-  //   }
-  // }, []);
-
   console.log("locationData",locationData)
 
   const {

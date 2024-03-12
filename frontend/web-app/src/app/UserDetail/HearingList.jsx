@@ -18,7 +18,7 @@ const HearingList = ({ hearings, setModeHearing }) => {
   // Generate chart data for line chart
   const generateChartData = (subItem) => {
     return {
-      labels: ['V250', 'V500', 'V1000', 'V2000', 'V4000','V6000', 'V8000'],
+      labels: ['250', '500', '1000', '2000', '4000','6000', '8000'],
       datasets: [
         {
           label: 'ค่า V',
@@ -36,15 +36,15 @@ const HearingList = ({ hearings, setModeHearing }) => {
       x: {
         title: {
           display: true,
-          text: 'EiEi'
+          text: 'ระดับความถี่'
         }
       },
       y: {
         suggestedMin: 0, 
-        suggestedMax: 100, 
+        suggestedMax: 1000, 
         title: {
           display: true,
-          text: 'Value'
+          text: 'ระดับความดัง'
         }
       }
     }
@@ -115,7 +115,7 @@ const HearingList = ({ hearings, setModeHearing }) => {
                   </Table>
                   {item.items.map((subItem) => (
                     <div key={subItem.id}>
-                      <h3>กราฟแสดงค่า {subItem.ear == 0 ? "หูซ้าย" : "หูขวา"}</h3>
+                      <p style={{fontSize:20,fontWeight:600}}>กราฟแสดงค่า {subItem.ear == 0 ? "หูซ้าย" : "หูขวา"}</p>
                       <Line
                         data={generateChartData(subItem)}
                         options={options}
