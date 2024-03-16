@@ -1,6 +1,194 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Button, Radio } from "antd";
+import axios from "axios";
+import { notification } from 'antd';
+import { useNavigate } from "react-router-dom";
+import { RoutePath } from "../../utils/RoutePath";
 
 function Assessmentform() {
+  const navigate = useNavigate();
+  const [answers, setAnswers] = useState<any>([]);
+  const [useScore, setUseScore] = useState<any>();
+  const [getFMHT, setGetFMHT] = useState([]);
+  const [isAllAnswered, setIsAllAnswered] = useState(false);
+
+  const handleAnswer = (questionIndex, answer) => {
+    const newAnswers: any = [...answers];
+    newAnswers[questionIndex] = { id: questionIndex + 1, value: answer };
+    setAnswers(newAnswers);
+  };
+
+  useEffect(() => {
+    const hasAllAnswered = answers.length === 15 && !answers.some(answer => answer === undefined);
+    setIsAllAnswered(hasAllAnswered);
+  }, [answers]);
+
+  useEffect(() => {
+    const total = calculateTotalScore();
+    setUseScore(total);
+  }, [answers]);
+
+  console.log("answers");
+
+  const calculateTotalScore = () => {
+    let score = 0;
+    if (answers && answers.length > 0) {
+      answers.forEach((answer) => {
+        if (answer.value === "3") {
+          score += 3;
+        } else if (answer.value === "2") {
+          score += 2;
+        } else if (answer.value === "1") {
+          score += 1;
+        }
+      });
+    }
+    return score;
+  };
+  const userId = localStorage.getItem("UserId");
+
+  useEffect(() => {
+    const userId = localStorage.getItem("UserId");
+    (async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5255/api/FMHT/GetFMHTByUserId?userId=${userId}`
+        );
+
+        const data = response.data.result;
+        const Convert = JSON.parse(data);
+        setGetFMHT(Convert);
+        // Set answers with the loaded data if it exists
+        if (Convert && Convert.length > 0) {
+          const loadedAnswers = Convert.map((item) => ({
+            id: item.id,
+            value: String(item.value),
+          }));
+          setAnswers(loadedAnswers);
+        }
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการลบ:", error);
+      }
+    })();
+  }, []);
+
+  console.log("useScore", useScore);
+
+  const handleSubmit = async () => {
+    if (isAllAnswered) {
+      const total = calculateTotalScore();
+      setUseScore(total);
+  
+      const answersJSON = JSON.stringify(answers);
+  
+      try {
+        const userId = localStorage.getItem("UserId");
+  
+        const bodyData = {
+          userId: userId,
+          result: answersJSON,
+        };
+  
+        const response = await fetch(
+          "http://localhost:5255/api/FMHT/CreateFMHT",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(bodyData),
+          }
+        );
+  
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Upload success:", data);
+          notification.success({
+            message: 'สำเร็จ',
+            description: 'บันทึกการประเมินการได้ยินเสร็จสิ้น',
+          });
+          setTimeout(() => {
+            navigate(RoutePath.userDetail(userId));
+          }, 3000);
+
+        } else {
+          console.error("Upload failed:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error uploading:", error);
+      }
+    }
+  };
+
+  const renderQuestions = () => {
+    const questions = [
+      "ฉันมีปัญหาในการฟังเสียงโทรศัพท์",
+      "ฉันมีความลำบากที่จะปะติดปะต่อเรื่องที่สนทนาเวลามีคนตั้งแต่ 2 คนขึ้นไปพูดพร้อมกัน",
+      "คนทั่วไปบ่นว่าฉันเปิดทีวีเสียงดัง",
+      "ฉันต้องพยายามอย่างหนักที่จะเข้าใจการสนทนา",
+      "ฉันไม่ได้ยินเสียงทั่วๆ ไป เช่น โทรศัพท์หรือกริ่งประตู",
+      "ฉันมีความลำบากในการฟังการสนทนาในที่ที่มีเสียงรบกวน เช่น งานเลี้ยง",
+      "ฉันรู้สึกสับสนว่าเสียงมาจากทางไหน",
+      "ฉันไม่เข้าใจคําบางคําในประโยคและจําเป็นต้องขอให้คนพูดซ้ำ",
+      "ฉันมีปัญหาโดยเฉพาะอย่างยิ่งในการทําความเข้าใจคําพูดของผู้หญิงและเด็ก",
+      "ฉันทํางานในที่ๆมีเสียงดัง เช่น โรงงานขุดเจาะถนน เครื่องจักรไอพ่น เป็นต้น",
+      "คนหลายคนที่ฉันคุยด้วยดูเหมือนจะพูดพึมพัมหรือพูดไม่ชัด",
+      "คนทั่วไปรู้สึกรําคาญ เพราะฉันไม่เข้าใจว่าเขาพูดอะไร",
+      "ฉันไม่เข้าใจในสิ่งที่คนอื่นกําลังพูดทําให้ตอบสนองไม่เหมาะสม",
+      "ฉันเลี่ยงงานสังคม เพราะว่าฉันได้ยินไม่ดีและกลัวว่าจะตอบไม่ตรงคําถาม",
+      "ข้อนี้ให้คนในครอบครัวหรือเพื่อนตอบคำถามแทน  คุณคิดว่าบุคคลนี้มีปัญหาการได้ยินหรือไม่",
+    ];
+
+    return questions.map((question, index) => (
+      <React.Fragment key={index}>
+        <div
+          style={{
+            width: 500,
+            border: "1px solid #000",
+            paddingLeft: 5,
+            paddingTop: 4,
+            paddingBottom: 5,
+          }}
+        >
+          <span>
+            {index + 1}.{question}
+          </span>
+        </div>
+        {[3, 2, 1, 0].map((value) => (
+          <div
+            key={value}
+            style={{
+              border: "1px solid #000",
+              width: 161,
+              paddingLeft: 5,
+              paddingTop: 4,
+              paddingBottom: 5,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <Radio.Group
+              onChange={(e) => handleAnswer(index, e.target.value)}
+              value={
+                (answers[index] && answers[index].value) ??
+                (getFMHT[index] && getFMHT[index].value)
+              }
+            >
+              <Radio
+                value={String(value)}
+                checked={
+                  getFMHT &&
+                  getFMHT[index]?.id === index &&
+                  parseInt(getFMHT[index]?.value) === value
+                }
+              />
+            </Radio.Group>
+          </div>
+        ))}
+      </React.Fragment>
+    ));
+  };
+
   return (
     <div style={{ backgroundColor: "#fff" }}>
       <div>
@@ -20,7 +208,7 @@ function Assessmentform() {
             (Thai-Version Five Minute Hearing Test: FMHT)
           </p>
           <p style={{ fontSize: 17, marginLeft: -300, fontWeight: 200 }}>
-            แบบสอบถามการได้ยินห้านาทีฉบับภาษาไทยมีตัวเลือก 4 ตัวเลือก ดังนี้
+           อธิบายตัวเลือกและความหมาย 4 ตัวเลือก ดังนี้
           </p>
         </div>
 
@@ -104,14 +292,14 @@ function Assessmentform() {
               marginBottom: 5,
             }}
           >
-            <span style={{ width: "16%", marginRight: 92, fontSize: 15 }}>
+            <span style={{ width: "16%", marginRight: 98, fontSize: 15 }}>
               ครั้งหนึ่ง
             </span>
             <span style={{ width: "45%", fontSize: 15 }}>
-              ประสบประหาเหล่านี้หรือมีประสบการณ์ดังกล่าวบ่อยพอ ๆ
+            ประสบปัญหาเหล่านี้หรือมีประสบการณ์ดังกล่าวบ่อยพอ ๆ
               กันกับช่วงเวลาที่ไม่เป็น
             </span>
-            <span style={{ width: "7%", marginLeft: 260, fontSize: 15 }}>
+            <span style={{ width: "7%", marginLeft: 256, fontSize: 15 }}>
               2
             </span>
           </div>
@@ -127,7 +315,7 @@ function Assessmentform() {
           >
             <span style={{ width: "24%", fontSize: 15 }}>เกือบตลอด</span>
             <span style={{ width: "40%", fontSize: 15 }}>
-              ประสบประหาเหล่านี้หรือมีประสบการณ์ดังกล่าวเป็นประจำ
+            ประสบปัญหาเหล่านี้หรือมีประสบการณ์ดังกล่าวเป็นประจำ
             </span>
             <span style={{ width: "7%", marginLeft: 317, fontSize: 15 }}>
               3
@@ -152,331 +340,154 @@ function Assessmentform() {
           </p>
         </div>
 
-
-{/* แบบทดสอบ */}
+        {/* แบบทดสอบ */}
         <div
-  style={{
-    display: "grid",
-    gridTemplateColumns: "1fr repeat(4, minmax(0, 1fr))",
-    // gap: "10px",
-    paddingLeft: 60,
-    paddingRight:60,
-  }}
->
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr repeat(4, minmax(0, 1fr))",
+            // gap: "10px",
+            paddingLeft: 60,
+            paddingRight: 60,
+          }}
+        >
+          {/* หัวเรื่อง */}
+          <div
+            style={{
+              width: 500,
+              border: "1px solid #000",
+              paddingLeft: 5,
+              paddingTop: 4,
+              paddingBottom: 5,
+            }}
+          >
+            <span>คำถาม</span>
+          </div>
+          <div
+            style={{
+              border: "1px solid #000",
+              width: 161,
+              paddingLeft: 5,
+              paddingTop: 4,
+              paddingBottom: 5,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <span>เกือบตลอด</span>
+          </div>
+          <div
+            style={{
+              border: "1px solid #000",
+              width: 161,
+              paddingLeft: 5,
+              paddingTop: 4,
+              paddingBottom: 5,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <span>ครึ่งหนึ่ง</span>
+          </div>
+          <div
+            style={{
+              border: "1px solid #000",
+              width: 161,
+              paddingLeft: 5,
+              paddingTop: 4,
+              paddingBottom: 5,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <span>เป็นครั้งคราว</span>
+          </div>
+          <div
+            style={{
+              border: "1px solid #000",
+              width: 161,
+              paddingLeft: 5,
+              paddingTop: 4,
+              paddingBottom: 5,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <span>ไม่เคย</span>
+          </div>
 
-    {/* หัวเรื่อง */}
-  <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>คำถาม</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>เกือบตลอด</span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span >ครึ่งหนึ่ง</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>เป็นครั้งคราว</span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>ไม่เคย</span>
-  </div>
+          {renderQuestions()}
 
-{/* คำถาม 1*/}
-  <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>1.ฉันมีปัญหาในการฟังเสียงโทรศัพท์</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
+          {/* รวม */}
+          <div
+            style={{
+              width: 500,
+              border: "1px solid #000",
+              paddingLeft: 5,
+              paddingTop: 4,
+              paddingBottom: 5,
+            }}
+          >
+            <span>
+              คะแนนรวม : <span style={{ fontWeight: 700 }}>{useScore}</span>
+            </span>
+          </div>
+          <div
+            style={{
+              border: "1px solid #000",
+              width: 161,
+              paddingLeft: 5,
+              paddingTop: 4,
+              paddingBottom: 5,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <span></span>
+          </div>
+          <div
+            style={{
+              border: "1px solid #000",
+              width: 161,
+              paddingLeft: 5,
+              paddingTop: 4,
+              paddingBottom: 5,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <span></span>
+          </div>
+          <div
+            style={{
+              border: "1px solid #000",
+              width: 161,
+              paddingLeft: 5,
+              paddingTop: 4,
+              paddingBottom: 5,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <span></span>
+          </div>
+          <div
+            style={{
+              border: "1px solid #000",
+              width: 161,
+              paddingLeft: 5,
+              paddingTop: 4,
+              paddingBottom: 5,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <span></span>
+          </div>
 
+          <Button onClick={handleSubmit} disabled={!isAllAnswered}>ประเมินการได้ยิน</Button>
+        </div>
 
-  {/* คำถาม 2*/}
-  <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>2.ฉันมีความลําบากที่จะปะติดปะต่อเรื่องที่สนทนาเวลามีคนตั้งแต่ 2 คนขึ้นไปพูดพร้อมกัน</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-   {/* คำถาม 3*/}
-   <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>3.คนทั่วไปบ่นว่าฉันเปิดทีวีเสียงดัง</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-
- {/* คำถาม 4*/}
- <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>4.ฉันต้องพยายามอย่างหนักที่จะเข้าใจการสนทนา</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-   {/* คำถาม 5*/}
- <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>5.ฉันไม่ได้ยินเสียงทั่วๆไป เช่น โทรศัพท์หรือกริ่งประตู</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-     {/* คำถาม 6*/}
- <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>6.ฉันมีความลําบากในการฟังการสนทนาในที่ที่มีเสียงรบกวน เช่น งานเลี้ยง</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-
-       {/* คำถาม 7*/}
- <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>7.ฉันรู้สึกสับสนว่าเสียงมาจากทางไหน</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-
-       {/* คำถาม 8*/}
- <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>8.ฉันไม่เข้าใจคําบางคําในประโยคและจําเป็นต้องขอให้คนพูดซ้ำ</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-
-       {/* คำถาม 9*/}
- <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>9.ฉันมีปัญหาโดยเฉพาะอย่างยิ่งในการทําความเข้าใจคําพูดของผู้หญิงและเด็ก</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-
-    {/* คำถาม 10*/}
- <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>10.ฉันทํางานในที่ๆมีเสียงดัง เช่น โรงงาน 
-ขุดเจาะถนน เครื่องจักรไอพ่น เป็นต้น
-</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-
-     {/* คำถาม 11*/}
- <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>11.คนหลายคนที่ฉันคุยด้วยดูเหมือนจะพูดพึมพัมหรือพูดไม่ชัด
-</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-
-   {/* คำถาม 12*/}
- <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>12.คนทั่วไปรู้สึกรําคาญ เพราะฉันไม่เข้าใจว่าเขาพูดอะไร
-</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-
-    {/* คำถาม 13*/}
- <div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>13.ฉันไม่เข้าใจในสิ่งที่คนอื่นกําลังพูดทําให้ตอบสนองไม่เหมาะสม
-</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-
-{/* คำถาม 14*/}
-<div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>14.ฉันเลี่ยงงานสังคม เพราะว่าฉันได้ยินไม่ดีและกลัวว่าจะตอบไม่ตรงคําถาม
-</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-
-  {/* คำถาม 15*/}
-<div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>15.ข้อนี้ให้คนในครอบครัวหรือเพื่อนตอบคำถามแทน  คุณคิดว่าบุคคลนี้มีปัญหาการได้ยินหรือไม่
-</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-
-    {/* รวม */}
-<div style={{width:500,border: "1px solid #000",paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span>รวม
-</span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:162,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span ></span>
-  </div>
-  <div style={{border: "1px solid #000",width:161,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-  <div style={{border: "1px solid #000",width:165,paddingLeft:5,paddingTop:4,paddingBottom:5}}>
-    <span></span>
-  </div>
-
-
-</div>
-
-    <div style={{height:50}}></div>
+        <div style={{ height: 50 }}></div>
       </div>
     </div>
   );

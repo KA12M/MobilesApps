@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate} from "react-router-dom";
 import { useStore } from "../../utils/store";
 import { Badge, Button, Card, Container } from "react-bootstrap";
 import { Tab, Tabs } from "react-bootstrap";
@@ -21,6 +21,8 @@ const UserDetailPage = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
 
+  const navigate = useNavigate();
+
   const setMode = (item) => {
     setFormMode(!formMode);
     setSelectedUser(item);
@@ -29,7 +31,7 @@ const UserDetailPage = () => {
   const setModeHearing = (item) => {
     setFormModeHearing(!formModeHearing);
   };
-
+  
   useEffect(() => {
     const hasRefreshed = localStorage.getItem('hasRefreshed');
     if (!hasRefreshed) {
@@ -159,12 +161,27 @@ const UserDetailPage = () => {
 
 console.log("noteuser",noteuser)
 
+  const logout = () => {
+    localStorage.clear();
+    navigate("/");
+  }
+
+  const admin = localStorage.getItem("UserAdmin")
+
+  const userlist = () => {
+    localStorage.clear();
+    navigate("/UserPage");
+  }
 
   return (
     <Container className="main pt-4">
-      <Card className="mb-4" body>
-        ข้อมูลผู้ใช้งาน <Badge bg="primary">รหัส {userId}</Badge>
-      </Card>
+<Card className="mb-4" body>
+  <div className="d-flex justify-content-between align-items-center">
+    <div>ข้อมูลผู้ใช้งาน <Badge bg="primary">รหัส {userId}</Badge></div>
+    {admin ? <Button variant="warning" onClick={userlist}>กลับไปหน้าหลัก</Button> : <Button variant="warning" onClick={logout}>ออกจากระบบ</Button>}
+  </div>
+</Card>
+
 
       <Card className="mb-4">
         <Card.Body>
@@ -326,6 +343,8 @@ console.log("noteuser",noteuser)
           ):(
             <HearingList setModeHearing={setModeHearing} hearings={hearings} />
           )}
+
+          
         </Tab>
       </Tabs>
     </Container>

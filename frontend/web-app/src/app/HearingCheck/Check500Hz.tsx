@@ -56,7 +56,7 @@ function Check500Hz() {
     { volume: 0.8, db: 80 },
     { volume: 0.85, db: 85 },
     { volume: 0.9, db: 90 },
-    { volume: 0.95, db: 95 },
+    { volume: 0.91, db: 91 },
   ];
 
   const handleSoundSequence = async () => {
@@ -76,11 +76,11 @@ function Check500Hz() {
         stop();
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
-      if (db === 95) {
+      if (db === 91) {
         const keyLeft = localStorage.getItem("keyEarleft");
         if(keyLeft)
         {
-          localStorage.setItem("scoreLeft7", '999');
+          localStorage.setItem("scoreLeft7", '91');
           notification.success({
             message: 'สำเร็จ',
             description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
@@ -90,7 +90,7 @@ function Check500Hz() {
           }, 5000);
           return
         }else{
-          localStorage.setItem("scoreRight7", '999');
+          localStorage.setItem("scoreRight7", '91');
           notification.success({
             message: 'สำเร็จ',
             description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
@@ -102,6 +102,12 @@ function Check500Hz() {
       }
     }
   };
+
+
+  const [dbcolor, setDbColor] = useState<any>()
+  useEffect(() => {
+    setDbColor(!dbcolor);
+  }, [changesoundDB]);
 
   console.log("score", score);
   console.log("isSoundOn", isSoundOn);
@@ -125,7 +131,6 @@ function Check500Hz() {
 
 
       if(ear0 && ear1){
-        handleSubmit();
         notification.success({
           message: 'สำเร็จ',
           description: 'บันทึกการตรวจสำเร็จ',
@@ -142,109 +147,6 @@ function Check500Hz() {
   };
 
   
-
-
-  function processHearing(item) {
-    let total = 0;
-    let count = 0;
-  
-    for (const key in item) {
-      if (key.startsWith('v')) {
-        total += item[key]; 
-        count++;
-      }
-    };
-    
-  
-    // Calculate the average score
-    const result = total / count;
-
-    switch (true) {
-      case result > 90:
-        return "ระดับหูหนวก";
-      case result >= 71:
-        return "ระดับรุนแรง";
-      case result >= 56:
-        return "ระดับปานกลางค่อนข้างรุนแรง";
-        case result >= 41:
-          return "ระดับปานกลาง";
-        case result >= 26:
-          return "ระดับน้อย";
-          case result >= -10:
-            return "การได้ยินปกติ";
-      default:
-        break;
-    }
-  }
-  
-  
-
-  const transformData = () => {
-    const transformedData = { items: [] };
-  
-    for (let ear = 0; ear < 2; ear++) {
-      const item = {
-        ear: ear,
-      };
-  
-      for (let i = 1; i <= 7; i++) {
-        const score = localStorage.getItem(`score${ear === 0 ? 'Left' : 'Right'}${i}`);
-        item[`v${250 * Math.pow(2, i - 1)}`] = parseInt(score) || 0;
-      }
-  
-      item["result"] = processHearing(item);
-  
-      transformedData.items.push(item);
-    }
-  
-    console.log("new", JSON.stringify(transformedData, null, 2));
-  
-    return transformedData;
-  };
-  
-  
-  const handleSubmit = async () => {
-  
-    try {
-      const userId = localStorage.getItem("UserId");
-  
-      if (!userId) {
-        console.error("UserId not found in LocalStorage");
-        return;
-      }
-  
-      const transformedData = transformData();
-  
-      const bodyData = {
-        userId: userId,
-        items: transformedData.items,
-      };
-  
-      const response = await fetch(
-        "http://localhost:5255/api/Hearing/AddHearingByUserId",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(bodyData),
-        }
-      );
-  
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Upload success:", data);
-      } else {
-        console.error("Upload failed:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error uploading:", error);
-    }
-  };
-  
-  
-  
-
 
   return (
     <div style={{ padding: 40, display: "flex", justifyContent: "center", alignItems: "center" }}>
@@ -263,7 +165,7 @@ function Check500Hz() {
             <p style={{ fontSize: 60, fontWeight: 700, marginBottom: 50 }}>500 Hz</p>
             <GiSoundOn size={120} />
             {changesoundDB && (
-                <p style={{ fontSize: 20, marginTop: 10 }}>
+                <p style={{ fontSize: 24, marginTop: 10,fontWeight:700,backgroundColor: dbcolor ?'#000':'#fff45b',color: dbcolor ? '#ffffff':'#ff0000',padding:10,borderRadius:5}}>
                   ระดับเสียง: {changesoundDB}
                 </p>
               )}
@@ -273,7 +175,6 @@ function Check500Hz() {
        <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
        <Button onClick={saveDb} style={{ width: 200, height: 80, marginTop: 50, fontSize: 20 }}>บันทึก</Button>
 
-       <Button onClick={handleSubmit}>Test</Button>
        </div>
       </div>
     </Card>

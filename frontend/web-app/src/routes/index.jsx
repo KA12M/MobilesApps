@@ -22,12 +22,13 @@ import Check8000Hz from "../app/HearingCheck/Check8000Hz";
 import PauseCheck from "../app/HearingCheck/PauseCheck";
 import Assessmentform from "../app/AssessmentForm/Assessmentform";
 import Login from "../app/Authen/Login";
+import AssessmentformList from "../app/UserDetail/AssessmentformList";
 
 export const Routes = (
   <Route path={RoutePath.home} element={<App />}>
     <Route path="*" element={<div>Page Not Found </div>} />
 
-    <Route path="/" element={<UserPage />} />
+    <Route path="/UserPage" element={<UserPage />} />
     <Route path="/EyesCreate" element={<EyesCreate />} />
     <Route path="/EarSelect" element={<EarSelect />} />
 
@@ -42,8 +43,9 @@ export const Routes = (
     <Route path="/HearringCreate" element={<HearringCreate />} />
 
     <Route path="/Assessmentform" element={<Assessmentform />} />
+    <Route path="/AssessmentformList" element={<AssessmentformList />} />
 
-    <Route path="/Login" element={<Login />} />
+    <Route path="/" element={<Login />} />
 
 
     <Route path="/user/:userId" element={<UserDetailPage />} />

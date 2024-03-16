@@ -1,10 +1,21 @@
-import { Button, Row, Col, notification } from "antd";
+import { Row, Col, notification } from "antd";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RoutePath } from "../../utils/RoutePath";
+import { Card, Button } from 'antd';
+import { FaCheck } from 'react-icons/fa';
 
 function PauseCheck() {
   const navigate = useNavigate();
+
+ 
+
+  const ear0 = localStorage.getItem("ear0");
+  const ear1 = localStorage.getItem("ear1");
+  const keyEarleft = localStorage.getItem("keyEarleft");
+  const keyEarRight = localStorage.getItem("keyEarRight");
+  const hasBothEars = ear0 && ear1;
+
 
   useEffect(() => {
     const hasRefreshed = localStorage.getItem("hasRefreshed");
@@ -13,14 +24,12 @@ function PauseCheck() {
       window.location.reload();
     } else {
       localStorage.removeItem("hasRefreshed");
+      if (hasBothEars) {
+        handleSubmit();
+      }
     }
-  }, []);
+  }, [hasBothEars]);
 
-  const ear0 = localStorage.getItem("ear0");
-  const ear1 = localStorage.getItem("ear1");
-  const keyEarleft = localStorage.getItem("keyEarleft");
-  const keyEarRight = localStorage.getItem("keyEarRight");
-  const hasBothEars = ear0 && ear1;
 
   const HandleGoCheck = () => {
     if(keyEarleft)
@@ -98,7 +107,6 @@ function PauseCheck() {
     return transformedData;
   };
   
-
   const handleSubmit = async () => {
     try {
       const userId = localStorage.getItem("UserId");
@@ -146,9 +154,6 @@ function PauseCheck() {
   };
 
 
-
-
-
   return (
     <Row justify="center" align="middle" style={{ height: "60vh" }}>
       <Col
@@ -160,46 +165,86 @@ function PauseCheck() {
           textAlign: "center",
         }}
       >
-        {/* หากมี ear0 และ ear1 อยู่แล้ว */}
-        {hasBothEars ? (
+        {/* {hasBothEars ? (
           <div style={{}}>
             <p>คุณได้ทำการตรวจเช็คทั้งสองข้างแล้ว</p>
             <div>
               <Button onClick={handleSubmit}>บันทึก</Button>
             </div>
           </div>
-        ) : (
-          // หากยังไม่มี ear0 หรือ ear1
+        ) : ( */}
+<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Card style={{ width: 'fit-content' }}>
+        <Button
+          style={{
+            height: '100px',
+            width: '220px',
+            fontSize: '25px',
+            fontWeight: 600,
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '10px',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+            cursor: 'pointer',
+            transition: 'background-color 0.3s',
+            marginBottom: '20px',
+            marginTop:'20px',
+            marginRight:'100px',
+            marginLeft:'100px',
+            
+          }}
+          onClick={HandleGoCheck}
+        >
+          ตรวจเช็คหู{ear0 ? 'ขวา' : 'ซ้าย'}
+        </Button>
+
+        <Button
+  style={{
+    height: '100px',
+    width: '220px',
+    fontWeight: 600,
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+    marginBottom: '20px',
+    marginTop:'20px',
+    marginRight:'100px',
+    marginLeft:'100px',
+            fontSize: '25px',
+
+  }}
+>
+   {ear1 ? '' : <FaCheck size={45}  />}
+</Button>
+
           <div>
-            <Button
-              style={{
-                height: 80,
-                width: 200,
-                fontSize: 20,
-                fontWeight: 600,
-                marginBottom: 40,
-                boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-                border: "2px solid #ccc",
-              }}
-              onClick={HandleGoCheck}
-            >
-              ตรวจเช็คหู{ear0 ? "ขวา" : "ซ้าย"}
-            </Button>
-            <Button
-              style={{
-                height: 80,
-                width: 200,
-                fontSize: 20,
-                fontWeight: 600,
-                boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-                border: "2px solid #ccc",
-              }}
-              onClick={handleSubmit}
-            >
-              บันทึกการตรวจ
-            </Button>
+          <Button
+          style={{
+            height: '60px',
+            width: '220px',
+            fontSize: '25px',
+            fontWeight: 600,
+            backgroundColor: '#ff0000',
+            color: 'white',
+            border: 'none',
+            borderRadius: '10px',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+            cursor: 'pointer',
+            transition: 'background-color 0.3s',
+          }}
+          onClick={handleSubmit}
+        >
+          สิ้นสุดบทดสอบ
+        </Button>
           </div>
-        )}
+      </Card>
+    </div>
+         {/* )} */}
       </Col>
     </Row>
   );

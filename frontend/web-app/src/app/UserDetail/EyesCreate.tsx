@@ -128,6 +128,13 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
           setDiabetesDataConvertLeft(ConvertLeft || null);
         }
 
+      if (data.resultLeft !== "ไม่เป็นเบาหวาน" && data.resultLeft !== "ไม่มีรูปภาพ") {
+        setNote("ดวงตาซ้ายเป็นเบาหวาน ควรพบแพทย์");
+      }
+      if (data.resultRight !== "ไม่เป็นเบาหวาน" && data.resultRight !== "ไม่มีรูปภาพ") {
+        setNote((prevNote) => prevNote + "\nดวงตาขวาเป็นเบาหวาน ควรพบแพทย์");
+      }
+
         setDisableButton(true);
       } else {
         console.error("Upload failed:", response.statusText);

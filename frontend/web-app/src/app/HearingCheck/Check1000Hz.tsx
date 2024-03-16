@@ -11,6 +11,8 @@ function Check1000Hz() {
   const [changesound, setChangesound] = useState(0.3);
   const [changesoundDB, setChangesoundDB] = useState<any>();
 
+  const [dbcolor, setDbColor] = useState<any>()
+
   const [score, setScore] = useState<any>();
 
   const [play, { stop }] = useSound(soundFile, {
@@ -26,6 +28,14 @@ function Check1000Hz() {
       return;
     }
   }, [isSoundOn, play]);
+
+
+  useEffect(() => {
+    setDbColor(!dbcolor);
+  }, [changesoundDB]);
+  
+  console.log("dbcolor",dbcolor)
+  
 
   const soundSequence = [
     { volume: 0.3, db: 30 },
@@ -43,7 +53,7 @@ function Check1000Hz() {
     { volume: 0.8, db: 80 },
     { volume: 0.85, db: 85 },
     { volume: 0.9, db: 90 },
-    { volume: 0.95, db: 95 },
+    { volume: 0.91, db: 91 },
   ];
 
   const handleSoundSequence = async () => {
@@ -63,11 +73,11 @@ function Check1000Hz() {
         stop();
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
-      if (db === 95) {
+      if (db === 91) {
     const keyLeft = localStorage.getItem("keyEarleft");
         if(keyLeft)
         {
-          localStorage.setItem("scoreLeft1", '999');
+          localStorage.setItem("scoreLeft1", '91');
           notification.success({
             message: 'สำเร็จ',
             description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
@@ -77,7 +87,7 @@ function Check1000Hz() {
           }, 5000);
           return
         }else{
-          localStorage.setItem("scoreRight1", '999');
+          localStorage.setItem("scoreRight1", '91');
           notification.success({
             message: 'สำเร็จ',
             description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
@@ -118,6 +128,8 @@ function Check1000Hz() {
     console.log("Score:", score);
   };
 
+
+
   return (
     <div
       style={{
@@ -145,7 +157,7 @@ function Check1000Hz() {
               </p>
               <GiSoundOn size={120} />
               {changesoundDB && (
-                <p style={{ fontSize: 20, marginTop: 10 }}>
+                <p style={{ fontSize: 24, marginTop: 10,fontWeight:700,backgroundColor: dbcolor ?'#000':'#fff45b',color: dbcolor ? '#ffffff':'#ff0000',padding:10,borderRadius:5}}>
                   ระดับเสียง: {changesoundDB}
                 </p>
               )}
@@ -161,7 +173,7 @@ function Check1000Hz() {
           >
             <Button
               onClick={saveDb}
-              style={{ width: 200, height: 80, marginTop: 50, fontSize: 20 }}
+              style={{ width: 200, height: 80, marginTop: 50, fontSize: 24 }}
             >
               ได้ยิน
             </Button>

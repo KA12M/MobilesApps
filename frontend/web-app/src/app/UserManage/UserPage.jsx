@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Container, Button, Modal, Form, Dropdown, DropdownButton } from "react-bootstrap";
 import { observer } from "mobx-react-lite";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useStore } from "../../utils/store";
 import { formatISODateToThaiDate } from "./../../utils/dateFormat";
@@ -17,6 +17,8 @@ import { useLocation} from "react-router-dom";
 dayjs.extend(utc);
 
 const UserPage = () => {
+  const navigate = useNavigate();
+
   const { loadUsers, data, pagination, createUser } = useStore().useUserActions;
 
   const [show, setShow] = useState(false);
@@ -52,6 +54,13 @@ const UserPage = () => {
       });
     });
   }
+
+  useEffect(() => {
+    localStorage.setItem("UserAdmin",'1');
+  }, [])
+
+
+  
 
   const [sortOrder, setSortOrder] = useState("asc");
   const [idSortOrder, setIdSortOrder] = useState("asc");
@@ -116,6 +125,12 @@ const filteredData = data.filter(
     const localDate = dayjs(date).local().startOf("day").add(1, "day").toDate();
     setSelectedDate(localDate);
   };
+
+
+  const logout = () => {
+    localStorage.clear();
+    navigate("/");
+  }
 
   const columns = [
     {
@@ -198,7 +213,13 @@ const filteredData = data.filter(
         <Button className="mb-2" variant="success" onClick={handleShow}>
           + เพิ่มข้อมูลผู้ใช้
         </Button>
+
+        <Button  className="mb-2" variant="warning"  onClick={logout}>
+          ออกจากระบบ
+        </Button>
+       
       </div>
+      
 
       <Table
         columns={columns}

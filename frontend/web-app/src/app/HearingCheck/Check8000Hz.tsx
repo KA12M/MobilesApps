@@ -39,6 +39,13 @@ function Check8000Hz() {
     }
   }, [isSoundOn, play]);
 
+  const [dbcolor, setDbColor] = useState<any>()
+  useEffect(() => {
+    setDbColor(!dbcolor);
+  }, [changesoundDB]);
+  
+  console.log("dbcolor",dbcolor)
+
   const soundSequence = [
     { volume: 0.3, db: 30 },
     { volume: 0.2, db: 20 },
@@ -55,7 +62,7 @@ function Check8000Hz() {
     { volume: 0.8, db: 80 },
     { volume: 0.85, db: 85 },
     { volume: 0.9, db: 90 },
-    { volume: 0.95, db: 95 },
+    { volume: 0.91, db: 91 },
   ];
 
   const handleSoundSequence = async () => {
@@ -75,11 +82,11 @@ function Check8000Hz() {
         stop();
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
-      if (db === 95) {
+      if (db === 91) {
         const keyLeft = localStorage.getItem("keyEarleft");
         if(keyLeft)
         {
-          localStorage.setItem("scoreLeft5", '999');
+          localStorage.setItem("scoreLeft5", '91');
           notification.success({
             message: 'สำเร็จ',
             description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
@@ -89,7 +96,7 @@ function Check8000Hz() {
           }, 5000);
           return
         }else{
-          localStorage.setItem("scoreRight5", '999');
+          localStorage.setItem("scoreRight5", '91');
           notification.success({
             message: 'สำเร็จ',
             description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
@@ -150,7 +157,7 @@ function Check8000Hz() {
             <p style={{ fontSize: 60, fontWeight: 700, marginBottom: 50 }}>8000 Hz</p>
             <GiSoundOn size={120} />
             {changesoundDB && (
-                <p style={{ fontSize: 20, marginTop: 10 }}>
+                <p style={{ fontSize: 24, marginTop: 10,fontWeight:700,backgroundColor: dbcolor ?'#000':'#fff45b',color: dbcolor ? '#ffffff':'#ff0000',padding:10,borderRadius:5}}>
                   ระดับเสียง: {changesoundDB}
                 </p>
               )}

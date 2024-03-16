@@ -55,7 +55,7 @@ function Check250Hz() {
     { volume: 0.8, db: 80 },
     { volume: 0.85, db: 85 },
     { volume: 0.9, db: 90 },
-    { volume: 0.95, db: 95 },
+    { volume: 0.91, db: 91 },
   ];
 
   const handleSoundSequence = async () => {
@@ -75,11 +75,11 @@ function Check250Hz() {
         stop();
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
-      if (db === 95) {
+      if (db === 91) {
         const keyLeft = localStorage.getItem("keyEarleft");
         if(keyLeft)
         {
-          localStorage.setItem("scoreLeft6", '999');
+          localStorage.setItem("scoreLeft6", '91');
           notification.success({
             message: 'สำเร็จ',
             description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
@@ -89,7 +89,7 @@ function Check250Hz() {
           }, 5000);
           return
         }else{
-          localStorage.setItem("scoreRight6", '999');
+          localStorage.setItem("scoreRight6", '91');
           notification.success({
             message: 'สำเร็จ',
             description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
@@ -105,7 +105,11 @@ function Check250Hz() {
   console.log("score", score);
   console.log("isSoundOn", isSoundOn);
 
-
+  const [dbcolor, setDbColor] = useState<any>()
+  useEffect(() => {
+    setDbColor(!dbcolor);
+  }, [changesoundDB]);
+  
   const saveDb = () => {
     stop("");
     setIsSoundOn(false);
@@ -142,7 +146,7 @@ function Check250Hz() {
             <p style={{ fontSize: 60, fontWeight: 700, marginBottom: 50 }}>250 Hz</p>
             <GiSoundOn size={120} />
             {changesoundDB && (
-                <p style={{ fontSize: 20, marginTop: 10 }}>
+                <p style={{ fontSize: 24, marginTop: 10,fontWeight:700,backgroundColor: dbcolor ?'#000':'#fff45b',color: dbcolor ? '#ffffff':'#ff0000',padding:10,borderRadius:5}}>
                   ระดับเสียง: {changesoundDB}
                 </p>
               )}
