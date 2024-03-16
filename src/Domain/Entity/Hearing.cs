@@ -1,7 +1,5 @@
-
 using System.ComponentModel.DataAnnotations;
 using Domain.Entity.DTOS;
-
 namespace Domain.Entity;
 
 public class Hearing

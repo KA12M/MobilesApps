@@ -1,6 +1,4 @@
-
 using Domain.Entity;
-
 namespace Application.HearingApp.DTOs;
 
 public class HearingCreateDTO
@@ -10,3 +8,4 @@ public class HearingCreateDTO
 
     public ICollection<HearingItem> Items { get; set; } = new List<HearingItem>();
 }
+ 

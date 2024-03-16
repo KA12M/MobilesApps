@@ -18,8 +18,8 @@ namespace Domain.Entity
 
     public class FMHTDto 
     {
+        public int Id { get; set; }
         public string Result { get; set; }
-
         public int UserId { get; set; }
     }
 }

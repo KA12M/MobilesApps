@@ -1,7 +1,6 @@
 ﻿using Domain;
 using Domain.Entity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
@@ -24,28 +23,23 @@ namespace API.Controllers
         }
 
         [HttpGet("[action]")] 
-        public async Task<ActionResult> GetFMHTByUserId(int userId)
+        public async Task<IActionResult> GetFMHTByUserId(int userId)
         {
-            var result = await _context.FMHTs.FirstOrDefaultAsync(a => a.UserId == userId);
+            var result = await _context.FMHTs.Where(x=>x.UserId.Equals(userId)).ToListAsync();
              
-            return Ok(result is not null ? result : null);
+            return Ok(result is null ? null : result.OrderByDescending(a => a.CreatedAt).ToList());
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult> CreateFMHT(FMHTDto request)
+        public async Task<IActionResult> CreateFMHT(FMHTDto request)
         {
             var user = await _context.Users.Include(x => x.FMHTs).FirstOrDefaultAsync(x => x.Id.Equals(request.UserId));
 
             if (user is null) return Ok(StatusCode(StatusCodes.Status404NotFound));
 
-            var existingFMHT = user.FMHTs.FirstOrDefault(x => x.UserId.Equals(request.UserId));
+            var existingFMHT = user.FMHTs.FirstOrDefault(x => x.Id.Equals(request.Id));
 
-            if (existingFMHT is not null)
-            {
-                existingFMHT.CreatedAt = DateTime.Now;
-                existingFMHT.Result = request.Result;
-            }
-            else
+            if (existingFMHT is null)
             {
                 var newFMHT = new FMHT()
                 {
@@ -56,12 +50,17 @@ namespace API.Controllers
 
                 user.FMHTs.Add(newFMHT);
             }
+            else
+            {
+                existingFMHT.CreatedAt = DateTime.Now;
+                existingFMHT.Result = request.Result;
+            }
 
             return Ok(StatusCode(await _context.SaveChangesAsync() > 0 ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest));
         }
 
         [HttpDelete("[action]")]
-        public async Task<ActionResult> RemoveFMHT(int fmhtId)
+        public async Task<IActionResult> RemoveFMHT(int fmhtId)
         {
             var result = await _context.FMHTs.FirstOrDefaultAsync(x => x.Id.Equals(fmhtId));
 

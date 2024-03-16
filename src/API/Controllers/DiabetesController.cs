@@ -27,36 +27,44 @@ public class DiabetesController : BaseApiController
     [HttpPost("[action]")]
     public async Task<IActionResult> RecheckDiabete([FromForm] TestDiabete request)
     {
-        Dictionary<string, double> ImageEyeLeft = null;
-        Dictionary<string, double> ImageEyeRight = null;
-         
-        if (request.ImageEyeLeft is not null)
+        Dictionary<string, double> ResultEyeLeft = null;
+        string ImageEyeLeft = null;
+        Dictionary<string, double> ResultEyeRight = null;
+        string ImageEyeRight = null;
+
+        if (request.ImageEyeLeft != null)
         {
-            ImageEyeLeft = await PredictTrueFalse(request.ImageEyeLeft);
+            ResultEyeLeft = await PredictTrueFalse(request.ImageEyeLeft);
+            ImageEyeLeft = "data:image/jpeg;base64," + await ConvertImageToBase64(request.ImageEyeLeft);
         }
 
-        if(request.ImageEyeRight is not null)
+        if (request.ImageEyeRight != null)
         {
-            ImageEyeRight = await PredictTrueFalse(request.ImageEyeRight);
+            ResultEyeRight = await PredictTrueFalse(request.ImageEyeRight);
+            ImageEyeRight = "data:image/jpeg;base64," + await ConvertImageToBase64(request.ImageEyeRight);
         }
-        
+
         var diabete = new Diabetes()
         {
             Note = request.Note,
             CreatedAt = DateTime.Now,
-            ImageEyeLeft = request.ImageEyeLeft is null ? null : "data:image/jpeg;base64," +  await ConvertImageToBase64(request.ImageEyeLeft),
-            ResultLeft = request.ImageEyeLeft is null 
-            ? "ไม่มีรูปภาพ" : ImageEyeLeft.ElementAt(0).Key == ("No_DR") 
-            ? "ไม่เป็นเบาหวาน" : await PredictAll(request.ImageEyeLeft),
-            ImageEyeRight = request.ImageEyeRight is null ? null : "data:image/jpeg;base64," + await ConvertImageToBase64(request.ImageEyeRight),
-            ResultRight = request.ImageEyeRight is null 
-            ? "ไม่มีรูปภาพ" : ImageEyeRight.ElementAt(0).Key == ("No_DR") 
-            ? "ไม่เป็นเบาหวาน" : await PredictAll(request.ImageEyeRight)
+            ImageEyeLeft = request.ImageEyeLeft == null ? null : ImageEyeLeft,
+            ResultLeft = request.ImageEyeLeft == null
+                ? "ไม่มีรูปภาพ"
+                : ResultEyeLeft.ToArray()[0].Key == "No_DR"
+                    ? JsonSerializer.Serialize(ResultEyeLeft.ToArray())
+                    : await PredictAll(request.ImageEyeLeft),
+            ImageEyeRight = request.ImageEyeRight == null ? null : ImageEyeRight,
+            ResultRight = request.ImageEyeRight == null
+                ? "ไม่มีรูปภาพ"
+                : ResultEyeRight.ToArray()[0].Key == "No_DR"
+                    ? JsonSerializer.Serialize(ResultEyeRight.ToArray())
+                    : await PredictAll(request.ImageEyeRight)
         };
 
         return Ok(diabete);
     }
-    
+
     [HttpPost("[action]")]
     public async Task<IActionResult> CreateDiabete(AddDiabete request)
     {
@@ -100,8 +108,15 @@ public class DiabetesController : BaseApiController
 
         // Make a single prediction on the sample data and print results.
         var sortedScoresWithLabel = MLModel4Groups.PredictAllLabels(sampleData);
-        
-        return JsonSerializer.Serialize(sortedScoresWithLabel);
+
+        var result = new Dictionary<string, double>();
+
+        foreach (var score in sortedScoresWithLabel)
+        {
+            result.Add(score.Key, score.Value * 100);
+        }
+
+        return JsonSerializer.Serialize(result.ToArray());
     }
 
     private async Task<Dictionary<string, double>> PredictTrueFalse(IFormFile file)
@@ -110,36 +125,23 @@ public class DiabetesController : BaseApiController
 
         using (var memoryStream = new MemoryStream())
         {
-            var format = "image/png";
             await file.CopyToAsync(memoryStream);
             imageBytes = memoryStream.ToArray();
         }
-
-        // Create single instance of sample data from first line of dataset for model input
-
-        //imageBytes = System.IO.File.ReadAllBytes(@"C:\Users\Mr.Teeradet\Downloads\archive (3)\train\DR\000c1434d8d7_png.rf.620970d7d209700b4cf09b8f36f52ff9.jpg");
 
         MLModel1.ModelInput sampleData = new MLModel1.ModelInput()
         {
             ImageSource = imageBytes,
         };
 
-        // Make a single prediction on the sample data and print results.
         var sortedScoresWithLabel = MLModel1.PredictAllLabels(sampleData);
-
-        //Console.WriteLine($"{"Class",-40}{"Score",-20}");
-        //Console.WriteLine($"{"-----",-40}{"-----",-20}");
 
         var result = new Dictionary<string, double>();
 
         foreach (var score in sortedScoresWithLabel)
         {
-            Console.WriteLine($"{score.Key,-40}{score.Value,-20}");
-            var temp = new Dictionary<string, double>() { };
-            result.Add(score.Key, score.Value);
+            result.Add(score.Key, score.Value * 100);
         }
-
-        //string jsonResult = JsonSerializer.Serialize(sortedScoresWithLabel);
 
         return result;
     }
