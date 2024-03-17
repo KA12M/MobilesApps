@@ -487,6 +487,21 @@ function Assessmentform() {
           <Button onClick={handleSubmit} disabled={!isAllAnswered}>ประเมินการได้ยิน</Button>
         </div>
 
+        <div style={{ padding: "25px", border: "1px solid #ccc", borderRadius: "5px", marginTop: "20px",marginLeft:50,marginRight:50}}>
+  <p style={{fontSize:20,fontWeight:600}}>ผลลัพทธ์</p>
+  {useScore > 10 ? (
+    <div>
+      <p>การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} คะแนน ท่านควรไปพบแพทย์เพื่อตรวจการการได้ยิน</p>
+    </div>
+  ) : (
+    <div>
+      <p>การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} คะแนน ท่านมีการได้ยินปกติ</p>
+    </div>
+  )}
+</div>
+
+
+            
         <div style={{ height: 50 }}></div>
       </div>
     </div>

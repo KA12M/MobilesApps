@@ -83,10 +83,8 @@ const EyesList = ({setMode,hearings}) => {
     const worksheet = workbook.addWorksheet('Eyes Data');
     const userName = user.firstName + ' ' + user.lastName;
   
-    // Add header row
     const headerRow = worksheet.addRow(['วันที่', 'รูปภาพตาซ้าย', 'รูปภาพตาขวา', 'หมายเหตุ', 'ผลลัพธ์ตาซ้าย', 'ผลลัพธ์ตาขวา']);
   
-    // Formatting header row
     headerRow.font = { bold: true };
     headerRow.eachCell((cell) => {
       cell.fill = {
@@ -145,21 +143,17 @@ const EyesList = ({setMode,hearings}) => {
     const worksheet = workbook.addWorksheet('Eyes Data');
     const userName = user.firstName + '' + user.lastName;
   
-    // Add header row
     const headerRow = worksheet.addRow(['วันที่', 'รูปภาพตาซ้าย', 'รูปภาพตาขวา', 'หมายเหตุ', 'ผลลัพธ์ตาซ้าย', 'ผลลัพธ์ตาขวา']);
-  
-    // Formatting header row
+
     headerRow.font = { bold: true };
     headerRow.eachCell((cell) => {
       cell.fill = {
         type: 'pattern',
         pattern: 'solid',
         fgColor: { argb: 'E8E8E8' },
-
       };
     });
   
-    // Add data rows
     hearings?.diabetes?.value?.forEach((item) => {
       worksheet.addRow([
         formatISODateToThaiDate(item.createdAt),
@@ -171,18 +165,15 @@ const EyesList = ({setMode,hearings}) => {
       ]);
     });
   
-    // Set column widths (optional)
     worksheet.columns.forEach((column) => {
       column.width = 25;
     });
   
-    // Generate Excel file
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const fileName = `eyes_data_all_${userName}.xlsx`;
   
     if (navigator.msSaveBlob) {
-      // IE 10+
       navigator.msSaveBlob(blob, fileName);
     } else {
       const link = document.createElement('a');
@@ -217,12 +208,26 @@ const EyesList = ({setMode,hearings}) => {
         
         <div style={{ display: "flex", flexDirection: "column" }}>
   <Button onClick={setMode} style={{ marginBottom: "10px",width:120,marginLeft:85}}>ตรวจสอบตา</Button>
-  <button className="download-button" >
-  <div className="docs"><svg className="css-i6dzq1" strokeLinejoin="round" strokeLinecap="round" fill="none" strokeWidth={2} stroke="currentColor" height={20} width={20} viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line y2={13} x2={8} y1={13} x1={16} /><line y2={17} x2={8} y1={17} x1={16} /><polyline points="10 9 9 9 8 9" /></svg> ดาวน์โหลดข้อมูลทั้งหมด</div>
+  <button className="download-button" style={{ display: hearings?.diabetes?.value?.length ? 'block' : 'none' }}>
+  <div className="docs">
+    <svg className="css-i6dzq1" strokeLinejoin="round" strokeLinecap="round" fill="none" strokeWidth={2} stroke="currentColor" height={20} width={20} viewBox="0 0 24 24">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line y2={13} x2={8} y1={13} x1={16} />
+      <line y2={17} x2={8} y1={17} x1={16} />
+      <polyline points="10 9 9 9 8 9" />
+    </svg>
+    ดาวน์โหลดข้อมูลทั้งหมด
+  </div>
   <div onClick={exportToExcelAll} className="download">
-    <svg className="css-i6dzq1" strokeLinejoin="round" strokeLinecap="round" fill="none" strokeWidth={2} stroke="currentColor" height={24} width={24} viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line y2={3} x2={12} y1={15} x1={12} /></svg>
+    <svg className="css-i6dzq1" strokeLinejoin="round" strokeLinecap="round" fill="none" strokeWidth={2} stroke="currentColor" height={24} width={24} viewBox="0 0 24 24">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line y2={3} x2={12} y1={15} x1={12} />
+    </svg>
   </div>
 </button>
+
 
 </div>
 
