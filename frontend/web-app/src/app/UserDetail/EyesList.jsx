@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { useStore } from "../../utils/store";
 import { notification } from 'antd';
-import ExcelJS from 'exceljs';
+import ExcelJS, { Workbook } from 'exceljs';
 
 const EyesList = ({setMode,hearings}) => {
 
@@ -82,116 +82,212 @@ const EyesList = ({setMode,hearings}) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Eyes Data');
     const userName = user.firstName + ' ' + user.lastName;
-  
-    const headerRow = worksheet.addRow(['วันที่', 'รูปภาพตาซ้าย', 'รูปภาพตาขวา', 'หมายเหตุ', 'ผลลัพธ์ตาซ้าย', 'ผลลัพธ์ตาขวา']);
-  
+
+    const headerRow = worksheet.addRow(['ไอดี','วันที่', 'รูปภาพตาซ้าย', 'รูปภาพตาขวา', 'ผลลัพธ์ตาซ้าย', 'ผลลัพธ์ตาขวา', 'หมายเหตุ']);
+
     headerRow.font = { bold: true };
     headerRow.eachCell((cell) => {
-      cell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'E8E8E8' },
-  
-      };
+        cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'E8E8E8' },
+        };
     });
-  
-    // Add data rows
+
     hearings?.diabetes?.value?.forEach((item) => {
-      if (item.id === selectedId) {
-        worksheet.addRow([
-          formatISODateToThaiDate(item.createdAt),
-          item.imageEyeLeft ? item.imageEyeLeft : 'ไม่มีรูปภาพ',
-          item.imageEyeRight ? item.imageEyeRight : 'ไม่มีรูปภาพ',
-          item.resultLeft ? item.resultLeft : '',
-          item.resultRight ? item.resultRight : '',
-          item.note ? item.note : '',
-        ]);
-      }
+        if (item.id === selectedId) {
+            const leftEyeResults = item.imageEyeLeft ? JSON.parse(item.resultLeft) : [];
+            const formattedLeftEyeResult = leftEyeResults.map(result => `${result.Key}: ${result.Value.toFixed(3)}`).join('\n');
+
+            const rightEyeResults = item.imageEyeRight ? JSON.parse(item.resultRight) : [];
+            const formattedRightEyeResult = rightEyeResults.map(result => `${result.Key}: ${result.Value.toFixed(3)}`).join('\n');
+
+            const currentRow = worksheet.addRow([
+              item.id ? item.id : '',
+                formatISODateToThaiDate(item.createdAt),
+                '', 
+                '',
+                formattedLeftEyeResult,
+                formattedRightEyeResult,
+                item.note ? item.note : '',
+            ]);
+
+            if (item.imageEyeLeft) {
+                const leftEyeImage = workbook.addImage({
+                    base64: item.imageEyeLeft,
+                    extension: 'png', 
+                });
+                worksheet.addImage(leftEyeImage, {
+                    tl: { col: 2, row: currentRow.number-1 }, 
+                    ext: { width: 100, height: 100 }, 
+                });
+            }
+
+            if (item.imageEyeRight) {
+                const rightEyeImage = workbook.addImage({
+                    base64: item.imageEyeRight,
+                    extension: 'png',
+                });
+                worksheet.addImage(rightEyeImage, {
+                    tl: { col: 3, row: currentRow.number-1 }, 
+                    ext: { width: 100, height: 100 },
+                });
+            }
+        }
     });
-  
-    // Set column widths (optional)
+
     worksheet.columns.forEach((column) => {
-      column.width = 25;
+      column.width = 20;
+  });
+
+  worksheet.eachRow((row) => {
+      row.height = 115; 
+  });
+
+  worksheet.eachRow({ includeEmpty: true }, function(row, rowNumber) {
+    row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+      cell.alignment = { horizontal: 'center' };
     });
-  
-    // Generate Excel file
+  });
+
+  headerRow.height = 35; 
+
+  worksheet.getColumn(1).width = 10; 
+  worksheet.getColumn(2).width = 15; 
+  worksheet.getColumn(3).width = 13.8; 
+  worksheet.getColumn(4).width = 13.8; 
+  worksheet.getColumn(5).width = 23; 
+  worksheet.getColumn(6).width = 23; 
+  worksheet.getColumn(7).width = 65; 
+
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const fileName = `eyes_data_single_${userName}.xlsx`;
-  
-    if (navigator.msSaveBlob) {
-      // IE 10+
-      navigator.msSaveBlob(blob, fileName);
-    } else {
-      const link = document.createElement('a');
-      if (link.download !== undefined) {
-  
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        console.error('ไม่สามารถสร้างไฟล์ Excel ได้');
-      }
-    }
-  };
 
+    if (navigator.msSaveBlob) {
+        navigator.msSaveBlob(blob, fileName);
+    } else {
+        const link = document.createElement('a');
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            console.error('ไม่สามารถสร้างไฟล์ Excel ได้');
+        }
+    }
+};
+
+
+
+  
   const exportToExcelAll = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Eyes Data');
-    const userName = user.firstName + '' + user.lastName;
-  
-    const headerRow = worksheet.addRow(['วันที่', 'รูปภาพตาซ้าย', 'รูปภาพตาขวา', 'หมายเหตุ', 'ผลลัพธ์ตาซ้าย', 'ผลลัพธ์ตาขวา']);
+    const userName = user.firstName + ' ' + user.lastName;
+
+    const headerRow = worksheet.addRow(['ไอดี', 'วันที่', 'รูปภาพตาซ้าย', 'รูปภาพตาขวา', 'ผลลัพธ์ตาซ้าย', 'ผลลัพธ์ตาขวา', 'หมายเหตุ']);
 
     headerRow.font = { bold: true };
     headerRow.eachCell((cell) => {
-      cell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'E8E8E8' },
-      };
+        cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'E8E8E8' },
+        };
     });
-  
-    hearings?.diabetes?.value?.forEach((item) => {
-      worksheet.addRow([
-        formatISODateToThaiDate(item.createdAt),
-        item.imageEyeLeft ? item.imageEyeLeft : 'ไม่มีรูปภาพ',
-        item.imageEyeRight ? item.imageEyeRight : 'ไม่มีรูปภาพ',
-        item.resultLeft ? item.resultLeft : '',
-        item.resultRight ? item.resultRight : '',
-        item.note ? item.note : '',
-      ]);
-    });
-  
+
+    for (const item of hearings?.diabetes?.value || []) {
+        if (item.imageEyeLeft || item.imageEyeRight) {
+            const leftEyeResults = item.imageEyeLeft ? JSON.parse(item.resultLeft) : [];
+            const formattedLeftEyeResult = leftEyeResults.map(result => `${result.Key}: ${result.Value.toFixed(3)}`).join('\n');
+
+            const rightEyeResults = item.imageEyeRight ? JSON.parse(item.resultRight) : [];
+            const formattedRightEyeResult = rightEyeResults.map(result => `${result.Key}: ${result.Value.toFixed(3)}`).join('\n');
+
+            const currentRow = worksheet.addRow([
+                item.id ? item.id : '',
+                formatISODateToThaiDate(item.createdAt),
+                '', 
+                '',
+                formattedLeftEyeResult,
+                formattedRightEyeResult,
+                item.note ? item.note : '',
+            ]);
+
+            if (item.imageEyeLeft) {
+                const leftEyeImage = workbook.addImage({
+                    base64: item.imageEyeLeft,
+                    extension: 'png', 
+                });
+                worksheet.addImage(leftEyeImage, {
+                    tl: { col: 2, row: currentRow.number-1 }, 
+                    ext: { width: 100, height: 100 }, 
+                });
+            }
+
+            if (item.imageEyeRight) {
+                const rightEyeImage = workbook.addImage({
+                    base64: item.imageEyeRight,
+                    extension: 'png',
+                });
+                worksheet.addImage(rightEyeImage, {
+                    tl: { col: 3, row: currentRow.number-1 }, 
+                    ext: { width: 100, height: 100 },
+                });
+            }
+        }
+    }
+
     worksheet.columns.forEach((column) => {
-      column.width = 25;
+        column.width = 20;
     });
-  
+
+    worksheet.eachRow((row) => {
+        row.height = 115; 
+    });
+
+    worksheet.eachRow({ includeEmpty: true }, function(row, rowNumber) {
+      row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+        cell.alignment = { horizontal: 'center' };
+      });
+    });
+
+    headerRow.height = 35; 
+
+    worksheet.getColumn(1).width = 10; 
+    worksheet.getColumn(2).width = 15; 
+    worksheet.getColumn(3).width = 13.8; 
+    worksheet.getColumn(4).width = 13.8; 
+    worksheet.getColumn(5).width = 23; 
+    worksheet.getColumn(6).width = 23; 
+    worksheet.getColumn(7).width = 65; 
+    
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const fileName = `eyes_data_all_${userName}.xlsx`;
-  
-    if (navigator.msSaveBlob) {
-      navigator.msSaveBlob(blob, fileName);
-    } else {
-      const link = document.createElement('a');
-      if (link.download !== undefined) {
 
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        console.error('ไม่สามารถสร้างไฟล์ Excel ได้');
-      }
+    if (navigator.msSaveBlob) {
+        navigator.msSaveBlob(blob, fileName);
+    } else {
+        const link = document.createElement('a');
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            console.error('ไม่สามารถสร้างไฟล์ Excel ได้');
+        }
     }
-  };
-  
-  
+};
+
+  const admin = localStorage.getItem("UserAdmin")
  
   return (
     <Card>
@@ -245,36 +341,47 @@ const EyesList = ({setMode,hearings}) => {
     </tr>
   </thead>
   <tbody>
-    {hearings?.diabetes?.value?.map((item) => {
-      return (
-        <tr key={item.id} style={{ textAlign: "center" }}>
-          <td style={tableCellStyle}>{formatISODateToThaiDate(item.createdAt)}</td>
-          <td style={tableCellStyle}>
-            {item.imageEyeLeft ? (
-              <img src={item.imageEyeLeft} style={imageStyle} alt="Left Eye" />
-            ) : (
-              <span style={noImageStyle}>ไม่มีรูปภาพ</span>
+  {hearings?.diabetes?.value?.map((item) => {
+    // กำหนดสีตามค่าที่ต้องการ
+    const leftEyeColor = item.imageEyeLeft ? 'green' : 'red'; // สีเขียวหรือสีแดงสำหรับดวงตาซ้าย
+    const rightEyeColor = item.imageEyeRight ? 'green' : 'red'; // สีเขียวหรือสีแดงสำหรับดวงตาขวา
+
+    // กำหนดค่าในหมายเหตุ
+    const leftEyeNote = item.imageEyeLeft ? 'เบาหวาน ควรพบแพทย์' : 'ไม่มีรูปภาพ'; // ค่าของดวงตาซ้าย
+    const rightEyeNote = item.imageEyeRight ? 'เบาหวาน ควรพบแพทย์' : 'ไม่มีรูปภาพ'; // ค่าของดวงตาขวา
+
+    return (
+      <tr key={item.id} style={{ textAlign: "center" }}>
+        <td style={tableCellStyle}>{formatISODateToThaiDate(item.createdAt)}</td>
+        <td style={tableCellStyle}>
+          {item.imageEyeLeft ? (
+            <img src={item.imageEyeLeft} style={imageStyle} alt="Left Eye" />
+          ) : (
+            <span style={{...noImageStyle, color: leftEyeColor}}>{leftEyeNote}</span>
+          )}
+        </td>
+        <td style={tableCellStyle}>
+          {item.imageEyeRight ? (
+            <img src={item.imageEyeRight} style={imageStyle} alt="Right Eye" />
+          ) : (
+            <span style={{...noImageStyle, color: rightEyeColor}}>{rightEyeNote}</span>
+          )}
+        </td>
+        <td style={tableCellStyle}>{item.note}</td>
+        <td style={tableCellStyle}>
+          <DropdownButton title="เลือก" variant="secondary">
+            {admin && (
+            <Dropdown.Item onClick={() => handleDelete(item)} >ลบ</Dropdown.Item>
             )}
-          </td>
-          <td style={tableCellStyle}>
-            {item.imageEyeRight ? (
-              <img src={item.imageEyeRight} style={imageStyle} alt="Right Eye" />
-            ) : (
-              <span style={noImageStyle}>ไม่มีรูปภาพ</span>
-            )}
-          </td>
-          <td style={tableCellStyle}>{item.note}</td>
-          <td style={tableCellStyle}>
-            <DropdownButton title="เลือก" variant="secondary">
-              <Dropdown.Item onClick={() => handleDelete(item)} >ลบ</Dropdown.Item>
-              <Dropdown.Item onClick={() => handleDetailEyes(item)}>รายละเอียด</Dropdown.Item>
-              <Dropdown.Item onClick={() => exportToExcel(item.id)}>ดาวน์โหลดข้อมูล</Dropdown.Item>
-            </DropdownButton>
-          </td>
-        </tr>
-      );
-    })}
-  </tbody>
+            <Dropdown.Item onClick={() => handleDetailEyes(item)}>รายละเอียด</Dropdown.Item>
+            <Dropdown.Item onClick={() => exportToExcel(item.id)}>ดาวน์โหลดข้อมูล</Dropdown.Item>
+          </DropdownButton>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
 </Table>
 
       </Card.Body>

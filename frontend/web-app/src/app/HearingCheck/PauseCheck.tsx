@@ -8,14 +8,11 @@ import { FaCheck } from 'react-icons/fa';
 function PauseCheck() {
   const navigate = useNavigate();
 
- 
-
   const ear0 = localStorage.getItem("ear0");
   const ear1 = localStorage.getItem("ear1");
   const keyEarleft = localStorage.getItem("keyEarleft");
   const keyEarRight = localStorage.getItem("keyEarRight");
   const hasBothEars = ear0 && ear1;
-
 
   useEffect(() => {
     const hasRefreshed = localStorage.getItem("hasRefreshed");
@@ -25,7 +22,9 @@ function PauseCheck() {
     } else {
       localStorage.removeItem("hasRefreshed");
       if (hasBothEars) {
-        handleSubmit();
+        setTimeout(() => {
+          handleSubmit();
+        }, 100);
       }
     }
   }, [hasBothEars]);
@@ -155,7 +154,22 @@ function PauseCheck() {
 
 
   return (
-    <Row justify="center" align="middle" style={{ height: "60vh" }}>
+    <div>
+      {hasBothEars ? (
+          <div className="load" style={{backgroundColor:'#fff',display:'flex',justifyContent:'center'}}>
+            <div className="dot-spinner">
+    <div className="dot-spinner__dot"></div>
+    <div className="dot-spinner__dot"></div>
+    <div className="dot-spinner__dot"></div>
+    <div className="dot-spinner__dot"></div>
+    <div className="dot-spinner__dot"></div>
+    <div className="dot-spinner__dot"></div>
+    <div className="dot-spinner__dot"></div>
+    <div className="dot-spinner__dot"></div>
+</div>
+          </div>
+      ):(<div>
+        <Row justify="center" align="middle" style={{ height: "60vh" }}>
       <Col
         flex={1}
         style={{
@@ -165,14 +179,6 @@ function PauseCheck() {
           textAlign: "center",
         }}
       >
-        {/* {hasBothEars ? (
-          <div style={{}}>
-            <p>คุณได้ทำการตรวจเช็คทั้งสองข้างแล้ว</p>
-            <div>
-              <Button onClick={handleSubmit}>บันทึก</Button>
-            </div>
-          </div>
-        ) : ( */}
 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
       <Card style={{ width: 'fit-content' }}>
         <Button
@@ -219,7 +225,7 @@ function PauseCheck() {
 
   }}
 >
-   {ear1 ? '' : <FaCheck size={45}  />}
+   {ear1 ? <FaCheck size={45}  /> : <FaCheck size={45}  />}
 </Button>
 
           <div>
@@ -244,9 +250,10 @@ function PauseCheck() {
           </div>
       </Card>
     </div>
-         {/* )} */}
       </Col>
     </Row>
+      </div>)}
+    </div>
   );
 }
 

@@ -23,10 +23,10 @@ function Assessmentform() {
     setIsAllAnswered(hasAllAnswered);
   }, [answers]);
 
-  useEffect(() => {
-    const total = calculateTotalScore();
-    setUseScore(total);
-  }, [answers]);
+  // useEffect(() => {
+  //   const total = calculateTotalScore();
+  //   setUseScore(total);
+  // }, [answers]);
 
   console.log("answers");
 
@@ -45,7 +45,6 @@ function Assessmentform() {
     }
     return score;
   };
-  const userId = localStorage.getItem("UserId");
 
   useEffect(() => {
     const userId = localStorage.getItem("UserId");
@@ -58,7 +57,6 @@ function Assessmentform() {
         const data = response.data.result;
         const Convert = JSON.parse(data);
         setGetFMHT(Convert);
-        // Set answers with the loaded data if it exists
         if (Convert && Convert.length > 0) {
           const loadedAnswers = Convert.map((item) => ({
             id: item.id,
@@ -109,7 +107,7 @@ function Assessmentform() {
           });
           setTimeout(() => {
             navigate(RoutePath.userDetail(userId));
-          }, 3000);
+          }, 5000);
 
         } else {
           console.error("Upload failed:", response.statusText);
@@ -487,18 +485,21 @@ function Assessmentform() {
           <Button onClick={handleSubmit} disabled={!isAllAnswered}>ประเมินการได้ยิน</Button>
         </div>
 
-        <div style={{ padding: "25px", border: "1px solid #ccc", borderRadius: "5px", marginTop: "20px",marginLeft:50,marginRight:50}}>
-  <p style={{fontSize:20,fontWeight:600}}>ผลลัพทธ์</p>
-  {useScore > 10 ? (
-    <div>
-      <p>การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} คะแนน ท่านควรไปพบแพทย์เพื่อตรวจการการได้ยิน</p>
-    </div>
-  ) : (
-    <div>
-      <p>การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} คะแนน ท่านมีการได้ยินปกติ</p>
-    </div>
-  )}
+            {useScore && (
+ <div style={{ padding: "25px", border: "1px solid #ccc", borderRadius: "5px", marginTop: "20px",marginLeft:50,marginRight:50}}>
+ <p style={{fontSize:20,fontWeight:600}}>ผลลัพทธ์</p>
+ {useScore > 10 ? (
+   <div>
+     <p>การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} คะแนน ท่านควรไปพบแพทย์เพื่อตรวจการการได้ยิน</p>
+   </div>
+ ) : (
+   <div>
+     <p>การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} คะแนน ท่านมีการได้ยินปกติ</p>
+   </div>
+ )}
 </div>
+            )}
+       
 
 
             

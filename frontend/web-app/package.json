@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@exodus/papaparse": "^5.3.3-exodus.3",
     "antd": "^5.14.2",
     "axios": "^1.5.1",
     "bootstrap": "^5.3.2",

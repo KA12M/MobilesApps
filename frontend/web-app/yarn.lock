@@ -218,6 +218,11 @@
   resolved "https://registry.npmjs.org/@eslint/js/-/js-8.52.0.tgz"
   integrity sha512-mjZVbpaeMZludF2fsWLD0Z9gCref1Tk4i9+wddjRvpUNqqcndPkBD09N/Mapey0b3jaXbLm2kICwFv2E64QinA==
 
+"@exodus/papaparse@^5.3.3-exodus.3":
+  version "5.3.3-exodus.3"
+  resolved "https://registry.yarnpkg.com/@exodus/papaparse/-/papaparse-5.3.3-exodus.3.tgz#0106df0b03f06e94a1e659013c825664477e5d6b"
+  integrity sha512-Z5lJ/HoKaGitfaOcPh3A2jJ0SoXzGXPUSlGbVvGj3EzSwuuIMSe99ynZfJvtTJTzUis549LmHdyWexK6cGSqqw==
+
 "@fast-csv/format@4.3.5":
   version "4.3.5"
   resolved "https://registry.yarnpkg.com/@fast-csv/format/-/format-4.3.5.tgz#90d83d1b47b6aaf67be70d6118f84f3e12ee1ff3"

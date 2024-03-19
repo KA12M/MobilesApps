@@ -266,14 +266,14 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                                 >
                                   <div
                                     style={{
-                                      width: item.Value ? item.Value * 100 : 0,
+                                      width: item.Value ? item.Value : 0,
                                       backgroundColor: "#02b01c",
                                       height: 20,
                                     }}
                                   ></div>
                                 </div>
                                 <span style={{ marginLeft: 10 }}>
-                                  {(item.Value * 100).toFixed(3)}%
+                                  {(item.Value).toFixed(3)}%
                                 </span>
                               </div>
                             </div>
@@ -317,14 +317,14 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                                 >
                                   <div
                                     style={{
-                                      width: item.Value ? item.Value * 100 : 0,
+                                      width: item.Value ? item.Value : 0,
                                       backgroundColor: "#02b01c",
                                       height: 20,
                                     }}
                                   ></div>
                                 </div>
                                 <span style={{ marginLeft: 10 }}>
-                                  {(item.Value * 100).toFixed(3)}%
+                                  {(item.Value).toFixed(3)}%
                                 </span>
                               </div>
                             </div>
@@ -524,14 +524,14 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                                 >
                                   <div
                                     style={{
-                                      width: item.Value ? item.Value * 100 : 0,
+                                      width: item.Value ? item.Value : 0,
                                       backgroundColor: "#02b01c",
                                       height: 20,
                                     }}
                                   ></div>
                                 </div>
                                 <span style={{ marginLeft: 10 }}>
-                                  {(item.Value * 100).toFixed(3)}%
+                                  {(item.Value).toFixed(3)}%
                                 </span>
                               </div>
                             </div>
@@ -565,14 +565,14 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                                 >
                                   <div
                                     style={{
-                                      width: item.Value ? item.Value * 100 : 0,
+                                      width: item.Value ? item.Value : 0,
                                       backgroundColor: "#02b01c",
                                       height: 20,
                                     }}
                                   ></div>
                                 </div>
                                 <span style={{ marginLeft: 10 }}>
-                                  {(item.Value * 100).toFixed(3)}%
+                                  {(item.Value).toFixed(3)}%
                                 </span>
                               </div>
                             </div>

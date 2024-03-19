@@ -1,47 +1,103 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Table } from "antd";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import dayjs from "dayjs";
 
 const AssessmentformList = () => {
   const navigate = useNavigate();
+  const [data, setData] = useState([]);
 
   const columns = [
     {
-      title: "ชื่อ",
-      dataIndex: "name",
-      key: "name",
+      title: "เวลา",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      align: "center",
+      render: (text) => (
+        <div style={{ textAlign: "center" }}>
+          {dayjs(text).locale('th').format("DD MMMM YYYY ")}
+        </div>
+      ),
     },
     {
-      title: "อีเมล",
-      dataIndex: "email",
-      key: "email",
+      title: "คะแนนการประเมิน",
+      dataIndex: "result",
+      key: "result",
+      align: "center",
+      render: (result) => (
+        <div style={{ textAlign: "center" }}>
+          {sumValues(result)}
+        </div>
+      ),
     },
     {
-      title: "อาชีพ",
-      dataIndex: "occupation",
-      key: "occupation",
+      title: "หมายเหตุ",
+      dataIndex: "result",
+      key: "result",
+      align: "center",
+      render: (result) => (
+        <div style={{ textAlign: "center" }}>
+          {sumValues(result) > 10 ? <div><p style={{color:'red',fontWeight:'600'}}>ท่านควรไปพบแพทย์</p></div>: <div><p style={{color:'green',fontWeight:'600'}}>ท่านมีการได้ยินปกติ</p></div>}
+        </div>
+      ),
     },
+    // {
+    //   title: "",
+    //   dataIndex: "result",
+    //   key: "result",
+    //   align: "center",
+    //   render: (result) => (
+    //     <div>
+    //       <Button>แก้ไข</Button>
+    //     </div>
+    //   ),
+    // },
   ];
 
-  const data = [
-    {
-      key: "1",
-      name: "John Doe",
-      email: "john.doe@example.com",
-      occupation: "Developer",
-    },
-    {
-      key: "2",
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      occupation: "Designer",
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      const userId = localStorage.getItem("UserId");
+      try {
+        const response = await axios.get(
+          `http://localhost:5255/api/FMHT/GetFMHTByUserId?userId=${userId}`
+        );
+        setData(response.data);
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการโหลดข้อมูล:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const HandleToAssessment = () => {
     navigate("/Assessmentform");
     window.scrollTo(0, 0); 
-    }
+  }
+
+  const sumValues = (result) => {
+    let totalScore = 0;
+    const resultArray = JSON.parse(result);
+    resultArray.forEach(item => {
+      const value = parseInt(item.value);
+      switch (value) {
+        case 3:
+          totalScore += 3;
+          break;
+        case 2:
+          totalScore += 2;
+          break;
+        case 1:
+          totalScore += 1;
+          break;
+        default:
+          totalScore += 0;
+      }
+    });
+    return totalScore;
+  };
+  
 
   return (
     <div style={{ padding: 30, position: "relative" }}>
