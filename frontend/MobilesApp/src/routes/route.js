@@ -16,6 +16,7 @@ import { useStore } from "../store/store";
 import { observer } from "mobx-react-lite";
 import HistoryTest from "../views/HearingLevel/histories/HistoryTest";
 import AssessmentDocs from "../views/HearingLevel/assessmentDocs/AssessmentDocs";
+import HistoryAssmentDocs from "../views/HearingLevel/assessmentDocs/HistoryAssmentDocs";
 
 const Stack = createNativeStackNavigator();
 
@@ -57,7 +58,7 @@ const Route = () => {
           name="diabetes"
           component={DiabetesCalculate}
           options={({ navigation }) => ({
-            title: "ประเมินระดับโรคเบาหวาน",
+            title: "ผลการทดสอบเบาหวานขึ้นตา",
             headerTitleAlign: "center",
             headerStyle: {
               backgroundColor: theme.colors.bg.primary,
@@ -171,7 +172,7 @@ const Route = () => {
           name="histories-testing"
           component={HistoryTest}
           options={({ navigation }) => ({
-            title: "ประวัติการทดสอบ",
+            title: "แสดงผลทดสอบการได้ยิน",
             headerTitleAlign: "center",
             headerStyle: {
               backgroundColor: theme.colors.bg.primary,
@@ -180,18 +181,15 @@ const Route = () => {
               fontFamily: theme.fonts.primary,
             },
             headerTintColor: theme.colors.text.light,
-            headerLeft: (props) =>
-              goBack ? (
-                <IconButtons onPress={() => navigation.goBack()}>
-                  <MaterialIcons
-                    name="keyboard-arrow-left"
-                    size={theme.sizes[4]}
-                    color={theme.colors.text.light}
-                  />
-                </IconButtons>
-              ) : (
-                ""
-              ),
+            headerLeft: (props) => (
+              <IconButtons onPress={() => navigation.goBack()}>
+                <MaterialIcons
+                  name="keyboard-arrow-left"
+                  size={theme.sizes[4]}
+                  color={theme.colors.text.light}
+                />
+              </IconButtons>
+            ),
           })}
         />
         <Stack.Screen
@@ -199,6 +197,30 @@ const Route = () => {
           component={AssessmentDocs}
           options={({ navigation }) => ({
             title: "เอกสารการประเมิน",
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: theme.colors.bg.primary,
+            },
+            headerTitleStyle: {
+              fontFamily: theme.fonts.primary,
+            },
+            headerTintColor: theme.colors.text.light,
+            headerLeft: (props) => (
+              <IconButtons onPress={() => navigation.goBack()}>
+                <MaterialIcons
+                  name="keyboard-arrow-left"
+                  size={theme.sizes[4]}
+                  color={theme.colors.text.light}
+                />
+              </IconButtons>
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="histories-AssmentDocs"
+          component={HistoryAssmentDocs}
+          options={({ navigation }) => ({
+            title: "แสดงผลการประเมิน",
             headerTitleAlign: "center",
             headerStyle: {
               backgroundColor: theme.colors.bg.primary,

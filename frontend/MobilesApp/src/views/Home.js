@@ -47,7 +47,7 @@ export default function Home({ navigation }) {
         </Heading>
 
         <MyButton
-          label="ประเมินระดับโรคเบาหวานด้วยม่านตา"
+          label="ผลการทดสอบเบาหวานขึ้นตา"
           iconName="eye"
           onPress={() => navigation.navigate("diabetes")}
         />

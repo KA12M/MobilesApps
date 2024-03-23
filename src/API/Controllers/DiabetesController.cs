@@ -7,9 +7,7 @@ using Application.Diabete.DTOs;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using ClassLibrary4Groups;
-using System.IO;
 using AutoMapper;
-using System.Buffers.Text;
 
 namespace API.Controllers;
 
@@ -90,7 +88,7 @@ public class DiabetesController : BaseApiController
             : StatusCode(StatusCodes.Status400BadRequest));
     }
 
-    private async Task<string> PredictAll(IFormFile file)
+    private static async Task<string> PredictAll(IFormFile file)
     {
         byte[] imageBytes;
 
@@ -119,7 +117,7 @@ public class DiabetesController : BaseApiController
         return JsonSerializer.Serialize(result.ToArray());
     }
 
-    private async Task<Dictionary<string, double>> PredictTrueFalse(IFormFile file)
+    private static async Task<Dictionary<string, double>> PredictTrueFalse(IFormFile file)
     {
         byte[] imageBytes;
 
@@ -146,7 +144,7 @@ public class DiabetesController : BaseApiController
         return result;
     }
 
-    private async Task<string> ConvertImageToBase64(IFormFile imageFile)
+    private static async Task<string> ConvertImageToBase64(IFormFile imageFile)
     {
         if (imageFile == null || imageFile.Length == 0)
             return null;
@@ -158,6 +156,5 @@ public class DiabetesController : BaseApiController
             return Convert.ToBase64String(imageBytes);
         }
     }
-
 
 }

@@ -53,7 +53,39 @@ volume.forEach((field, index) => {
   dataList.right.push(data);
 });
 
+// สร้างฟังก์ชันสำหรับสลับลำดับของอาร์เรย์
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// สลับลำดับของเสียง
+shuffleArray(dataList.left);
+shuffleArray(dataList.right);
+
 export default dataList;
+
+export const radio = [
+  {
+    label: "ไม่เคย",
+    value: "0",
+  },
+  {
+    label: "เป็นครั้งคราว",
+    value: "1",
+  },
+  {
+    label: "ครั้งหนึ่ง",
+    value: "2",
+  },
+  {
+    label: "เกือบตลอด",
+    value: "3",
+  },
+];
 
 export const questions = [
   { id: 1, text: "ฉันมีปัญหาในการฟังเสียงโทรศัพท์" },

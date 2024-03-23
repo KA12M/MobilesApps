@@ -24,8 +24,12 @@ const SoundDisplayPage = ({ data }) => {
       handleProcess,
       current,
       handleIsTesting,
+      isTesting,
       data: dataList,
+      processResult,
+      hearingId,
     },
+    commonStore: { user },
   } = useStore();
 
   const [soundObj, setSound] = useState();
@@ -55,24 +59,26 @@ const SoundDisplayPage = ({ data }) => {
   }
 
   const playSoundRepeatedly = async (sound) => {
-    let delay = 3000;
-    // let delay = 300;
+    // let delay = 3000;
+    let delay = 500;
 
     for (let i = 0; i < dB.length; i++) {
       console.log("i", i);
       console.log("dB", dB[i]);
-      await sound.setVolumeAsync(dB[i] / 100, 0.0);
-      setVolume(dB[i]);
-      await sound.playAsync();
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      await sound.stopAsync();
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      await sound.playAsync();
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      await sound.stopAsync();
-      await new Promise((resolve) => setTimeout(resolve, delay));
+      if (isTesting) {
+        await sound.setVolumeAsync(dB[i] / 100.0, 0.0);
+        setVolume(dB[i]);
+        await sound.playAsync();
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        await sound.stopAsync();
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        await sound.playAsync();
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        await sound.stopAsync();
+        await new Promise((resolve) => setTimeout(resolve, delay));
 
-      setColorChange(i);
+        setColorChange(i);
+      }
     }
 
     // dB.map(async (_, i) => {
@@ -88,13 +94,24 @@ const SoundDisplayPage = ({ data }) => {
     //   setVolume(dB[i]);
     // });
 
-    handleProcess(data.id, dB[dB.length - 1]);
-    setCount((count) => count + 1);
-    clear();
-    setVolume(30);
+    if (isTesting) {
+      handleProcess(data.id, dB[dB.length - 1]);
+      setCount((count) => count + 1);
+      clear();
+      setVolume(30);
+
+      processResult(user.id, ear);
+
+      setCurrent(1);
+      setBtnResultReady(false);
+      handleIsTesting(false);
+    } else {
+      clear();
+    }
   };
 
   async function playSound() {
+    setCount((count) => count + 1);
     setColorChange(1);
     setVolume(30);
 
@@ -127,60 +144,68 @@ const SoundDisplayPage = ({ data }) => {
 
   return (
     <View style={styles.container}>
-      {count === 7 ? (
+      {/* {count === 7 ? (
         <Text style={styles.titleVolume}>เสร็จสิ้น</Text>
+      ) : ( */}
+      <Text style={styles.titleVolume}>{data.title.split("v")[1]} Hz</Text>
+      {/* )} */}
+
+      {isPlaying ? (
+        <View style={styles.progressStyle}>
+          <LottieView
+            source={lottieList.speaker}
+            style={{ height: 240, borderColor: "red", borderWidth: 1 }}
+            speed={0.7}
+            autoPlay
+            loop
+          />
+          <Progress value={progress} mx="4" />
+          {/* <Text> progress: {mapPercentageToValue(progress)}</Text> */}
+          <Text
+            style={{
+              fontSize: 25,
+              color: colorChange % 2 === 1 ? "red" : "white",
+              backgroundColor: "black",
+              padding: 10,
+              borderRadius: 20,
+            }}
+          >
+            dB: {volume}
+          </Text>
+        </View>
       ) : (
-        <Text style={styles.titleVolume}>{data.title.split("v")[1]} Hz</Text>
+        <Button
+          onPress={playSound}
+          isDisabled={count === 7 ? btnPlayIsReady : !btnPlayIsReady}
+          bgColor={theme.colors.bg.primary}
+        >
+          <Text style={styles.textBtn}>เล่นเสียง</Text>
+        </Button>
       )}
 
-      {count !== 7 && (
-        <>
-          {isPlaying ? (
-            <View style={styles.progressStyle}>
-              <LottieView
-                source={lottieList.speaker}
-                style={{ height: 240, borderColor: "red", borderWidth: 1 }}
-                speed={0.7}
-                autoPlay
-                loop
-              />
-              <Progress value={progress} mx="4" />
-              {/* <Text> progress: {mapPercentageToValue(progress)}</Text> */}
-              <Text
-                style={{
-                  fontSize: 25,
-                  color: colorChange % 2 === 1 ? "red" : "white",
-                  backgroundColor: "black",
-                  padding: 10,
-                  borderRadius: 20,
-                }}
-              >
-                dB: {volume}
-              </Text>
-            </View>
-          ) : (
-            <Button
-              onPress={playSound}
-              isDisabled={count === 7 ? btnPlayIsReady : !btnPlayIsReady}
-              bgColor={theme.colors.bg.primary}
-            >
-              <Text style={styles.textBtn}>เล่นเสียง</Text>
-            </Button>
-          )}
+      <View style={styles.btnProcess}>
+        <Button
+          isDisabled={btnPlayIsReady}
+          onPress={() => {
+            handleProcess(data.id, volume);
+            clear();
 
-          <View style={styles.btnProcess}>
-            <Button
-              isDisabled={btnPlayIsReady}
-              onPress={() => {
-                handleProcess(data.id, volume);
-                setCount((count) => count + 1);
-                clear();
-              }}
-              bgColor={theme.colors.bg.primary}
-            >
-              <Text style={styles.textBtn}>ได้ยิน</Text>
-            </Button>
-            {/* <Button
+            console.log("count", count);
+
+            if (count === 7) {
+              console.log("count === 7", count);
+              processResult(user.id, ear);
+
+              setCurrent(1);
+              setBtnResultReady(false);
+              handleIsTesting(false);
+            }
+          }}
+          bgColor={theme.colors.bg.primary}
+        >
+          <Text style={styles.textBtn}>ได้ยิน</Text>
+        </Button>
+        {/* <Button
           isDisabled={btnPlayIsReady}
           variant="ghost"
           colorScheme="danger"
@@ -191,11 +216,9 @@ const SoundDisplayPage = ({ data }) => {
         >
           <Text style={{ ...styles.textBtn, color: "red" }}>ไม่ได้ยิน</Text>
         </Button> */}
-          </View>
-        </>
-      )}
+      </View>
 
-      <View style={styles.btnNext}>
+      {/* <View style={styles.btnNext}>
         {current > dataList[ear].length && (
           <Button
             onPress={() => {
@@ -209,7 +232,7 @@ const SoundDisplayPage = ({ data }) => {
             <Text style={styles.textBtn}>กลับ</Text>
           </Button>
         )}
-      </View>
+      </View> */}
     </View>
   );
 };

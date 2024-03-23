@@ -21,7 +21,7 @@ import MyToast from "./../../components/MyToast";
 function LoginPage({ navigation }) {
   const { loading, register, loginByPhone } = useStore().commonStore;
 
-  const today = moment(new Date()).add(543, "year").format();
+  const today = moment(new Date()).format();
   const [date, setDate] = useState(today);
 
   const [formData, setFormData] = React.useState({
@@ -110,15 +110,22 @@ function LoginPage({ navigation }) {
 
                 <DatePicker
                   value={date}
-                  onChange={(value) =>
-                    setDate(moment(value).add(543, "year").format())
-                  }
+                  onChange={(value) => {
+                    console.log("value", moment(value).format("YYYY"));
+                    setDate(moment(value).format());
+                  }}
                   format="dd-mm-yyyy"
                   locale="th-TH" // ตั้งค่า locale เป็น 'th-TH' เพื่อให้ DatePicker เป็นภาษาไทย
                 />
 
                 <FormControl.Label>
-                  {date ? moment(date).format("LL") : "เลือกวันที่..."}
+                  <Text
+                    style={{
+                      fontSize: 17,
+                    }}
+                  >
+                    {date ? moment(date).format("LL") : "เลือกวันที่..."}
+                  </Text>
                 </FormControl.Label>
               </View>
 
