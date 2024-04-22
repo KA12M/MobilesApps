@@ -28,7 +28,7 @@ const UserDetailPage = () => {
     setSelectedUser(item);
   };
 
-  const setModeHearing = (item) => {
+  const setModeHearing = () => {
     setFormModeHearing(!formModeHearing);
   };
   

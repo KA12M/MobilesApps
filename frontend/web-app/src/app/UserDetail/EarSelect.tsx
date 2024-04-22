@@ -51,13 +51,7 @@ function EarSelect() {
 
   return (
     <div
-      style={{
-        padding: 40,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 80,
-      }}
+     className="responsiveearselect"
     >
       <Card
         style={{ width: "100%", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}
@@ -116,6 +110,7 @@ function EarSelect() {
           </div>
         </div>
       </Card>
+
     </div>
   );
 }

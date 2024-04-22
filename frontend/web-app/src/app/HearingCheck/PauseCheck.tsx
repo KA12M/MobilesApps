@@ -2,8 +2,8 @@ import { Row, Col, notification } from "antd";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RoutePath } from "../../utils/RoutePath";
-import { Card, Button } from 'antd';
-import { FaCheck } from 'react-icons/fa';
+import { Card, Button } from "antd";
+import { FaCheck } from "react-icons/fa";
 
 function PauseCheck() {
   const navigate = useNavigate();
@@ -29,22 +29,18 @@ function PauseCheck() {
     }
   }, [hasBothEars]);
 
-
   const HandleGoCheck = () => {
-    if(keyEarleft)
-    {
+    if (keyEarleft) {
       localStorage.setItem("ear1", "1");
-      localStorage.removeItem('keyEarleft');
-      localStorage.setItem("keyEarRight", '1');
+      localStorage.removeItem("keyEarleft");
+      localStorage.setItem("keyEarRight", "1");
     }
-    if(keyEarRight){
+    if (keyEarRight) {
       localStorage.setItem("ear0", "0");
-      localStorage.removeItem('keyEarRight');
-      localStorage.setItem("keyEarleft", '0');
+      localStorage.removeItem("keyEarRight");
+      localStorage.setItem("keyEarleft", "0");
     }
     navigate("/Check1000Hz");
-
-    
   };
 
   function processHearing(item) {
@@ -81,31 +77,31 @@ function PauseCheck() {
 
   const transformData = () => {
     const transformedData = { items: [] };
-  
+
     for (let ear = 0; ear < 2; ear++) {
       const item = {
         ear: ear,
       };
-  
+
       const frequencies = [250, 500, 1000, 2000, 4000, 6000, 8000];
-  
+
       for (let i = 0; i < frequencies.length; i++) {
         const score = localStorage.getItem(
           `score${ear === 0 ? "Left" : "Right"}${i + 1}` // ปรับ i + 1 เพื่อให้ได้เลขเท่ากับ index + 1
         );
         item[`v${frequencies[i]}`] = parseInt(score) || 0;
       }
-  
+
       item["result"] = processHearing(item);
-  
+
       transformedData.items.push(item);
     }
-  
+
     console.log("new", JSON.stringify(transformedData, null, 2));
-  
+
     return transformedData;
   };
-  
+
   const handleSubmit = async () => {
     try {
       const userId = localStorage.getItem("UserId");
@@ -152,107 +148,121 @@ function PauseCheck() {
     }
   };
 
-
   return (
-    <div>
+    <div className="responsivepausecheck">
       {hasBothEars ? (
-          <div className="load" style={{backgroundColor:'#fff',display:'flex',justifyContent:'center'}}>
-            <div className="dot-spinner">
-    <div className="dot-spinner__dot"></div>
-    <div className="dot-spinner__dot"></div>
-    <div className="dot-spinner__dot"></div>
-    <div className="dot-spinner__dot"></div>
-    <div className="dot-spinner__dot"></div>
-    <div className="dot-spinner__dot"></div>
-    <div className="dot-spinner__dot"></div>
-    <div className="dot-spinner__dot"></div>
-</div>
-          </div>
-      ):(<div>
-        <Row justify="center" align="middle" style={{ height: "60vh" }}>
-      <Col
-        flex={1}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          textAlign: "center",
-        }}
-      >
-<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      <Card style={{ width: 'fit-content' }}>
-        <Button
+        <div
+          className="load"
           style={{
-            height: '100px',
-            width: '220px',
-            fontSize: '25px',
-            fontWeight: 600,
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '10px',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-            cursor: 'pointer',
-            transition: 'background-color 0.3s',
-            marginBottom: '20px',
-            marginTop:'20px',
-            marginRight:'100px',
-            marginLeft:'100px',
-            
+            backgroundColor: "#fff",
+            display: "flex",
+            justifyContent: "center",
           }}
-          onClick={HandleGoCheck}
         >
-          ตรวจเช็คหู{ear0 ? 'ขวา' : 'ซ้าย'}
-        </Button>
-
-        <Button
-  style={{
-    height: '100px',
-    width: '220px',
-    fontWeight: 600,
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    border: 'none',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s',
-    marginBottom: '20px',
-    marginTop:'20px',
-    marginRight:'100px',
-    marginLeft:'100px',
-            fontSize: '25px',
-
-  }}
->
-   {ear1 ? <FaCheck size={45}  /> : <FaCheck size={45}  />}
-</Button>
-
-          <div>
-          <Button
-          style={{
-            height: '60px',
-            width: '220px',
-            fontSize: '25px',
-            fontWeight: 600,
-            backgroundColor: '#ff0000',
-            color: 'white',
-            border: 'none',
-            borderRadius: '10px',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-            cursor: 'pointer',
-            transition: 'background-color 0.3s',
-          }}
-          onClick={handleSubmit}
-        >
-          สิ้นสุดบทดสอบ
-        </Button>
+          <div className="dot-spinner">
+            <div className="dot-spinner__dot"></div>
+            <div className="dot-spinner__dot"></div>
+            <div className="dot-spinner__dot"></div>
+            <div className="dot-spinner__dot"></div>
+            <div className="dot-spinner__dot"></div>
+            <div className="dot-spinner__dot"></div>
+            <div className="dot-spinner__dot"></div>
+            <div className="dot-spinner__dot"></div>
           </div>
-      </Card>
-    </div>
-      </Col>
-    </Row>
-      </div>)}
+        </div>
+      ) : (
+        <div className="responsivepausecheck1" >
+          <Row justify="center" align="middle" className="responsivepausecheck2">
+            <Col
+              flex={1}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                textAlign: "center",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100vh",
+                }}
+              >
+                <Card style={{ width: "fit-content" }}>
+                  <Button
+                    style={{
+                      height: "100px",
+                      width: "220px",
+                      fontSize: "25px",
+                      fontWeight: 600,
+                      backgroundColor: "#4CAF50",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "10px",
+                      boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                      cursor: "pointer",
+                      transition: "background-color 0.3s",
+                      marginBottom: "20px",
+                      marginTop: "20px",
+                      marginRight: "100px",
+                      marginLeft: "100px",
+                    }}
+                    onClick={HandleGoCheck}
+                  >
+                    ตรวจเช็คหู{ear0 ? "ขวา" : "ซ้าย"}
+                  </Button>
+
+                  <Button
+                    style={{
+                      height: "100px",
+                      width: "220px",
+                      fontWeight: 600,
+                      backgroundColor: "#4CAF50",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "10px",
+                      boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                      cursor: "pointer",
+                      transition: "background-color 0.3s",
+                      marginBottom: "20px",
+                      marginTop: "20px",
+                      marginRight: "100px",
+                      marginLeft: "100px",
+                      fontSize: "25px",
+                    }}
+                  >
+                    {ear1 ? <FaCheck size={45} /> : <FaCheck size={45} />}
+                  </Button>
+
+                  <div>
+                    <Button
+                      style={{
+                        height: "60px",
+                        width: "220px",
+                        fontSize: "25px",
+                        fontWeight: 600,
+                        backgroundColor: "#ff0000",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "10px",
+                        boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                        cursor: "pointer",
+                        transition: "background-color 0.3s",
+                      }}
+                      onClick={handleSubmit}
+                    >
+                      สิ้นสุดบททดสอบ
+                    </Button>
+                  </div>
+                </Card>
+              </div>
+            </Col>
+          </Row>
+          <div className="responsivepausecheck3"></div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button, Radio } from "antd";
 import axios from "axios";
-import { notification } from 'antd';
+import { notification } from "antd";
 import { useNavigate } from "react-router-dom";
 import { RoutePath } from "../../utils/RoutePath";
+import html2pdf from "html2pdf.js";
+import { useStore } from "../../utils/store";
+import { observer } from "mobx-react-lite";
 
 function Assessmentform() {
   const navigate = useNavigate();
@@ -12,6 +15,19 @@ function Assessmentform() {
   const [getFMHT, setGetFMHT] = useState([]);
   const [isAllAnswered, setIsAllAnswered] = useState(false);
 
+  console.log("useScore",useScore)
+  useEffect(() => {
+    const userid = localStorage.getItem("UserId");
+
+    setUserId(userid);
+    return () => setUserId(null);
+  }, []);
+
+  const { setUserId, user, loading, hearings } =
+    useStore().useUserDetailActions;
+
+  console.log("user", user);
+
   const handleAnswer = (questionIndex, answer) => {
     const newAnswers: any = [...answers];
     newAnswers[questionIndex] = { id: questionIndex + 1, value: answer };
@@ -19,7 +35,8 @@ function Assessmentform() {
   };
 
   useEffect(() => {
-    const hasAllAnswered = answers.length === 15 && !answers.some(answer => answer === undefined);
+    const hasAllAnswered =
+      answers.length === 15 && !answers.some((answer) => answer === undefined);
     setIsAllAnswered(hasAllAnswered);
   }, [answers]);
 
@@ -76,17 +93,17 @@ function Assessmentform() {
     if (isAllAnswered) {
       const total = calculateTotalScore();
       setUseScore(total);
-  
+
       const answersJSON = JSON.stringify(answers);
-  
+
       try {
         const userId = localStorage.getItem("UserId");
-  
+
         const bodyData = {
           userId: userId,
           result: answersJSON,
         };
-  
+
         const response = await fetch(
           "http://localhost:5255/api/FMHT/CreateFMHT",
           {
@@ -97,18 +114,17 @@ function Assessmentform() {
             body: JSON.stringify(bodyData),
           }
         );
-  
+
         if (response.ok) {
           const data = await response.json();
           console.log("Upload success:", data);
           notification.success({
-            message: 'สำเร็จ',
-            description: 'บันทึกการประเมินการได้ยินเสร็จสิ้น',
+            message: "สำเร็จ",
+            description: "บันทึกการประเมินการได้ยินเสร็จสิ้น",
           });
-          setTimeout(() => {
-            navigate(RoutePath.userDetail(userId));
-          }, 5000);
-
+          // setTimeout(() => {
+          //   navigate(RoutePath.userDetail(userId));
+          // }, 5000);
         } else {
           console.error("Upload failed:", response.statusText);
         }
@@ -116,6 +132,11 @@ function Assessmentform() {
         console.error("Error uploading:", error);
       }
     }
+  };
+
+  const handleBack = async () => {
+    const userId = localStorage.getItem("UserId");
+    navigate(RoutePath.userDetail(userId));
   };
 
   const renderQuestions = () => {
@@ -141,7 +162,7 @@ function Assessmentform() {
       <React.Fragment key={index}>
         <div
           style={{
-            width: 500,
+            width: 430,
             border: "1px solid #000",
             paddingLeft: 5,
             paddingTop: 4,
@@ -157,7 +178,6 @@ function Assessmentform() {
             key={value}
             style={{
               border: "1px solid #000",
-              width: 161,
               paddingLeft: 5,
               paddingTop: 4,
               paddingBottom: 5,
@@ -179,6 +199,7 @@ function Assessmentform() {
                   getFMHT[index]?.id === index &&
                   parseInt(getFMHT[index]?.value) === value
                 }
+                className="custom-radio"
               />
             </Radio.Group>
           </div>
@@ -187,8 +208,53 @@ function Assessmentform() {
     ));
   };
 
+  const componentRef = useRef(null);
+
+  const handleDownloadPDF = () => {
+    const opt = {
+      filename: "assessment_form.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+    };
+
+    const downloadButton: any = document.querySelector("#downloadButton");
+    const submitButton: any = document.querySelector("#submitButton");
+    const submitButtonBack: any = document.querySelector("#submitButtonBack");
+
+    if (downloadButton) {
+      downloadButton.style.display = "none";
+    }
+
+    if (submitButton) {
+      submitButton.style.display = "none";
+    }
+
+    if (submitButtonBack) {
+      submitButtonBack.style.display = "none";
+    }
+
+    html2pdf()
+      .from(componentRef.current)
+      .set(opt)
+      .save()
+      .then(() => {
+        // เมื่อสร้าง PDF เสร็จแล้ว ให้แสดงปุ่ม
+        if (downloadButton) {
+          downloadButton.style.display = "block";
+        }
+        if (submitButton) {
+          submitButton.style.display = "block";
+        }
+
+        if (submitButtonBack) {
+          submitButtonBack.style.display = "block";
+        }
+      });
+  };
+
   return (
-    <div style={{ backgroundColor: "#fff" }}>
+    <div ref={componentRef} style={{ backgroundColor: "#fff" }}>
       <div>
         <div
           style={{
@@ -206,7 +272,7 @@ function Assessmentform() {
             (Thai-Version Five Minute Hearing Test: FMHT)
           </p>
           <p style={{ fontSize: 17, marginLeft: -300, fontWeight: 200 }}>
-           อธิบายตัวเลือกและความหมาย 4 ตัวเลือก ดังนี้
+            อธิบายตัวเลือกและความหมาย 4 ตัวเลือก ดังนี้
           </p>
         </div>
 
@@ -290,14 +356,12 @@ function Assessmentform() {
               marginBottom: 5,
             }}
           >
-            <span style={{ width: "16%", marginRight: 98, fontSize: 15 }}>
-              ครั้งหนึ่ง
-            </span>
-            <span style={{ width: "45%", fontSize: 15 }}>
-            ประสบปัญหาเหล่านี้หรือมีประสบการณ์ดังกล่าวบ่อยพอ ๆ
+            <span style={{ width: "24%", fontSize: 15 }}>ครั้งหนึ่ง</span>
+            <span style={{ width: "40%", fontSize: 15 }}>
+              ประสบปัญหาเหล่านี้หรือมีประสบการณ์ดังกล่าวบ่อยพอ ๆ
               กันกับช่วงเวลาที่ไม่เป็น
             </span>
-            <span style={{ width: "7%", marginLeft: 256, fontSize: 15 }}>
+            <span style={{ width: "7%", marginLeft: 317, fontSize: 15 }}>
               2
             </span>
           </div>
@@ -313,7 +377,7 @@ function Assessmentform() {
           >
             <span style={{ width: "24%", fontSize: 15 }}>เกือบตลอด</span>
             <span style={{ width: "40%", fontSize: 15 }}>
-            ประสบปัญหาเหล่านี้หรือมีประสบการณ์ดังกล่าวเป็นประจำ
+              ประสบปัญหาเหล่านี้หรือมีประสบการณ์ดังกล่าวเป็นประจำ
             </span>
             <span style={{ width: "7%", marginLeft: 317, fontSize: 15 }}>
               3
@@ -330,7 +394,7 @@ function Assessmentform() {
             alignItems: "center",
           }}
         >
-          <p style={{ fontSize: 17, marginLeft: -300, marginTop: -20 }}>
+          <p style={{ fontSize: 17, marginLeft: -140, marginTop: -20 }}>
             ผู้ทดสอบการได้ยินจะต้องตอบทุกข้อ โดยเลือกให้ตรงกับท่านมากที่สุด
           </p>
           <p style={{ marginTop: 10, fontSize: 18, fontWeight: 500 }}>
@@ -344,16 +408,15 @@ function Assessmentform() {
             display: "grid",
             gridTemplateColumns: "1fr repeat(4, minmax(0, 1fr))",
             // gap: "10px",
-            paddingLeft: 60,
-            paddingRight: 60,
+            paddingRight: 30,
+            paddingLeft: 30,
           }}
         >
           {/* หัวเรื่อง */}
           <div
             style={{
-              width: 500,
+              width: 430,
               border: "1px solid #000",
-              paddingLeft: 5,
               paddingTop: 4,
               paddingBottom: 5,
             }}
@@ -363,54 +426,50 @@ function Assessmentform() {
           <div
             style={{
               border: "1px solid #000",
-              width: 161,
-              paddingLeft: 5,
+
               paddingTop: 4,
               paddingBottom: 5,
               display: "flex",
               justifyContent: "center",
             }}
           >
-            <span>เกือบตลอด</span>
+            <span style={{ fontSize: 15 }}>เกือบตลอด</span>
           </div>
           <div
             style={{
               border: "1px solid #000",
-              width: 161,
-              paddingLeft: 5,
+
               paddingTop: 4,
               paddingBottom: 5,
               display: "flex",
               justifyContent: "center",
             }}
           >
-            <span>ครึ่งหนึ่ง</span>
+            <span style={{ fontSize: 15 }}>ครึ่งหนึ่ง</span>
           </div>
           <div
             style={{
               border: "1px solid #000",
-              width: 161,
-              paddingLeft: 5,
+
               paddingTop: 4,
               paddingBottom: 5,
               display: "flex",
               justifyContent: "center",
             }}
           >
-            <span>เป็นครั้งคราว</span>
+            <span style={{ fontSize: 15 }}>เป็นครั้งคราว</span>
           </div>
           <div
             style={{
               border: "1px solid #000",
-              width: 161,
-              paddingLeft: 5,
+
               paddingTop: 4,
               paddingBottom: 5,
               display: "flex",
               justifyContent: "center",
             }}
           >
-            <span>ไม่เคย</span>
+            <span style={{ fontSize: 15 }}>ไม่เคย</span>
           </div>
 
           {renderQuestions()}
@@ -418,9 +477,9 @@ function Assessmentform() {
           {/* รวม */}
           <div
             style={{
-              width: 500,
+              width: 430,
               border: "1px solid #000",
-              paddingLeft: 5,
+
               paddingTop: 4,
               paddingBottom: 5,
             }}
@@ -432,8 +491,6 @@ function Assessmentform() {
           <div
             style={{
               border: "1px solid #000",
-              width: 161,
-              paddingLeft: 5,
               paddingTop: 4,
               paddingBottom: 5,
               display: "flex",
@@ -445,8 +502,6 @@ function Assessmentform() {
           <div
             style={{
               border: "1px solid #000",
-              width: 161,
-              paddingLeft: 5,
               paddingTop: 4,
               paddingBottom: 5,
               display: "flex",
@@ -458,8 +513,6 @@ function Assessmentform() {
           <div
             style={{
               border: "1px solid #000",
-              width: 161,
-              paddingLeft: 5,
               paddingTop: 4,
               paddingBottom: 5,
               display: "flex",
@@ -471,8 +524,6 @@ function Assessmentform() {
           <div
             style={{
               border: "1px solid #000",
-              width: 161,
-              paddingLeft: 5,
               paddingTop: 4,
               paddingBottom: 5,
               display: "flex",
@@ -482,31 +533,104 @@ function Assessmentform() {
             <span></span>
           </div>
 
-          <Button onClick={handleSubmit} disabled={!isAllAnswered}>ประเมินการได้ยิน</Button>
+          <Button
+            id="submitButton"
+            onClick={handleSubmit}
+            disabled={!isAllAnswered}
+          >
+            ประเมินการได้ยิน
+          </Button>
         </div>
 
-            {useScore && (
- <div style={{ padding: "25px", border: "1px solid #ccc", borderRadius: "5px", marginTop: "20px",marginLeft:50,marginRight:50}}>
- <p style={{fontSize:20,fontWeight:600}}>ผลลัพทธ์</p>
- {useScore > 10 ? (
-   <div>
-     <p>การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} คะแนน ท่านควรไปพบแพทย์เพื่อตรวจการการได้ยิน</p>
-   </div>
- ) : (
-   <div>
-     <p>การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} คะแนน ท่านมีการได้ยินปกติ</p>
-   </div>
- )}
-</div>
+        {useScore >= 0 && (
+          <div
+            style={{
+              padding: "25px",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              marginTop: "20px",
+              marginLeft: 50,
+              marginRight: 50,
+            }}
+          >
+            <p style={{ fontSize: 20, fontWeight: 600 }}>ผลลัพธ์</p>
+            {useScore > 10 ? (
+              <div>
+                <p style={{ color: "red", fontWeight: 600 }}>
+                  การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} / 45 คะแนน (มีคะแนนเป็น {((useScore / 45) * 100).toFixed(2)}% ของคะแนนทั้งหมด)
+                  ท่านควรไปพบแพทย์เพื่อตรวจการการได้ยิน
+                </p>
+                
+              </div>
+            ) : (
+              <div>
+                <p style={{ color: "green", fontWeight: 600 }}>
+                  การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} / 45 คะแนน (มีคะแนนเป็น {((useScore / 45) * 100).toFixed(2)}% ของคะแนนทั้งหมด)
+                  ท่านมีการได้ยินปกติ
+                </p>
+              </div>
             )}
-       
+          </div>
+        )}
 
+        {useScore >= 0 && (
+          <div style={{ marginTop: 20 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                paddingRight: 60,
+              }}
+            >
+              <span style={{ fontSize: 20, fontWeight: 700 }}>
+                ชื่อผู้ใช้ : {user?.firstName} {user?.lastName}
+              </span>
+            </div>
 
-            
+            <div
+              style={{
+                marginTop: 30,
+                display: "flex",
+                justifyContent: "space-between",
+                paddingLeft: 60,
+                paddingRight: 60,
+              }}
+            >
+              <Button
+                id="submitButtonBack"
+                style={{
+                  width: 280,
+                  height: 50,
+                  fontSize: 20,
+                  backgroundColor: "#ff1616",
+                  color: "#fff",
+                  fontWeight: 600,
+                }}
+                onClick={handleBack}
+              >
+                กลับ
+              </Button>
+              <Button
+                id="downloadButton"
+                style={{
+                  width: 280,
+                  height: 50,
+                  fontSize: 20,
+                  backgroundColor: "#00cb58",
+                  color: "#fff",
+                  fontWeight: 600,
+                }}
+                onClick={handleDownloadPDF}
+              >
+                ดาวน์โหลดแบบสอบถาม PDF{" "}
+              </Button>
+            </div>
+          </div>
+        )}
         <div style={{ height: 50 }}></div>
       </div>
     </div>
   );
 }
 
-export default Assessmentform;
+export default observer(Assessmentform);

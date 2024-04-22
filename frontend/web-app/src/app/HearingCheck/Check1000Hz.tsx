@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Steps, Button, message, Card, notification } from "antd";
 import { GiSoundOff, GiSoundOn } from "react-icons/gi";
 import soundFile from "../../sound/1000Hz.mp4";
+// import soundFile from "../../sound/B_1000Hz_Used.mp4";
 import useSound from "use-sound";
 import { useNavigate } from "react-router-dom";
 
@@ -9,9 +10,10 @@ function Check1000Hz() {
   const navigate = useNavigate();
 
   const [changesound, setChangesound] = useState(0.3);
+
   const [changesoundDB, setChangesoundDB] = useState<any>();
 
-  const [dbcolor, setDbColor] = useState<any>()
+  const [dbcolor, setDbColor] = useState<any>();
 
   const [score, setScore] = useState<any>();
 
@@ -19,6 +21,11 @@ function Check1000Hz() {
     interrupt: true,
     volume: changesound,
   });
+
+  // const [play, { stop }] = useSound(soundFile, {
+  //   interrupt: true,
+  //   volume: changesound,
+  // });
   const [isSoundOn, setIsSoundOn] = useState(true);
 
   useEffect(() => {
@@ -29,13 +36,11 @@ function Check1000Hz() {
     }
   }, [isSoundOn, play]);
 
-
   useEffect(() => {
     setDbColor(!dbcolor);
   }, [changesoundDB]);
-  
-  console.log("dbcolor",dbcolor)
-  
+
+  console.log("dbcolor", dbcolor);
 
   const soundSequence = [
     { volume: 0.3, db: 30 },
@@ -58,7 +63,7 @@ function Check1000Hz() {
 
   const handleSoundSequence = async () => {
     for (const { volume, db } of soundSequence) {
-      const delay = 300
+      const delay = 3000;
       for (let i = 0; i < 2; i++) {
         setChangesound(volume);
         await play();
@@ -74,23 +79,22 @@ function Check1000Hz() {
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
       if (db === 91) {
-    const keyLeft = localStorage.getItem("keyEarleft");
-        if(keyLeft)
-        {
-          localStorage.setItem("scoreLeft1", '91');
+        const keyLeft = localStorage.getItem("keyEarleft");
+        if (keyLeft) {
+          localStorage.setItem("scoreLeft1", "91");
           notification.success({
-            message: 'สำเร็จ',
-            description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
+            message: "สำเร็จ",
+            description: "กำลังจะพาท่านไปยังความถี่ถัดไป",
           });
           setTimeout(() => {
             navigate("/Check2000Hz");
           }, 5000);
-          return
-        }else{
-          localStorage.setItem("scoreRight1", '91');
+          return;
+        } else {
+          localStorage.setItem("scoreRight1", "91");
           notification.success({
-            message: 'สำเร็จ',
-            description: 'กำลังจะพาท่านไปยังความถี่ถัดไป',
+            message: "สำเร็จ",
+            description: "กำลังจะพาท่านไปยังความถี่ถัดไป",
           });
           setTimeout(() => {
             navigate("/Check2000Hz");
@@ -101,6 +105,16 @@ function Check1000Hz() {
     }
   };
 
+  // useEffect(() => {
+  //   const playSound = async () => {
+  //     await play();
+  //   };
+  
+  //   playSound();
+  // }, []);
+  
+  
+
   console.log("score", score);
   console.log("isSoundOn", isSoundOn);
 
@@ -109,38 +123,35 @@ function Check1000Hz() {
     setIsSoundOn(false);
     setScore(changesoundDB);
 
-
     const keyLeft = localStorage.getItem("keyEarleft");
 
     const keyEarRight = localStorage.getItem("keyEarRight");
 
-    console.log("keyLeft",keyLeft)
+    console.log("keyLeft", keyLeft);
     if (keyLeft != null) {
       localStorage.setItem("scoreLeft1", changesoundDB);
     }
-    if(keyEarRight != null) {
+    if (keyEarRight != null) {
       localStorage.setItem("scoreRight1", changesoundDB);
     }
-
-
-
     navigate("/Check2000Hz");
     console.log("Score:", score);
   };
 
-
-
   return (
     <div
       style={{
-        padding: 40,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
       }}
     >
       <Card
-        style={{ width: "100%", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}
+        style={{
+          width: "100%",
+          height: 585,
+          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+        }}
       >
         <div className="steps-action">
           <div>
@@ -152,12 +163,20 @@ function Check1000Hz() {
                 flexDirection: "column",
               }}
             >
-              <p style={{ fontSize: 60, fontWeight: 700, marginBottom: 50 }}>
-                1000 Hz
-              </p>
+              <p className="responsivecheckfont1">1000 Hz</p>
               <GiSoundOn size={120} />
               {changesoundDB && (
-                <p style={{ fontSize: 24, marginTop: 10,fontWeight:700,backgroundColor: dbcolor ?'#000':'#fff45b',color: dbcolor ? '#ffffff':'#ff0000',padding:10,borderRadius:5}}>
+                <p
+                  style={{
+                    fontSize: 24,
+                    marginTop: 10,
+                    fontWeight: 700,
+                    backgroundColor: dbcolor ? "#000" : "#fff45b",
+                    color: dbcolor ? "#ffffff" : "#ff0000",
+                    padding: 10,
+                    borderRadius: 5,
+                  }}
+                >
                   ระดับเสียง: {changesoundDB}
                 </p>
               )}
@@ -175,11 +194,12 @@ function Check1000Hz() {
               onClick={saveDb}
               style={{ width: 200, height: 80, marginTop: 50, fontSize: 24 }}
             >
-              ได้ยิน
+              บันทึก
             </Button>
           </div>
         </div>
       </Card>
+      <div className="responsivecheck1000hz"></div>
     </div>
   );
 }

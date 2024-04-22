@@ -370,3 +370,585 @@ body {
   }
 
 /* load PauseCheck End */
+
+
+/* Download Pdf Start*/
+
+
+
+/* radio Start */
+
+.custom-radio input[type="radio"]:checked + .ant-radio-inner {
+  border-color: #16ff29; 
+  background-color: #09c122;
+}
+
+.custom-radio input[type="radio"]:not(:checked) + .ant-radio-inner {
+  border-color: #cccccc; 
+  background-color: #d8d8d8;
+}
+
+.responsivehearringcreate{
+  height: 80px;
+}
+
+
+textarea {
+  width: 80%;
+  box-sizing: border-box;
+}
+
+
+.responsiveearselect{
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 80px;
+}
+
+.responsivecheckfont1{
+  font-size: 60px;
+  font-weight: 700;
+  margin-bottom: 50px;
+}
+
+.responsivepausecheck2{
+  height: 60vh;
+}
+
+
+@media (min-width: 280px) {
+  /* .responsivepausecheck2{
+    margin-top: 355px;
+  } */
+
+}
+
+@media (max-width: 360px) {
+  /* .responsivepausecheck1{
+    margin-top: 95px;
+  } */
+}
+
+
+
+
+@media (max-width: 376px) {
+
+  .responsivepausecheck1{
+    margin-top: 110px;
+  }
+  
+
+  .responsivecheckfont1{
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 0px;
+  }
+
+  .responsiveearselect{
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+  }
+
+  .responsivehearringcreate{
+    height: 200px;
+  }
+}
+
+@media (max-width: 414px) {
+  /* .responsivepausecheck{
+    margin-top: -230px;
+  } */
+
+  .responsivepausecheck{
+    margin-top: -110px;
+  }
+
+  .responsivecheckfont1{
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 0px;
+  }
+
+  .responsiveearselect{
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+  }
+
+}
+
+@media (min-width: 412px) {
+  /* .responsivepausecheck2{
+    margin-top: 230px;
+  } */
+}
+
+@media (max-width: 430px) {
+
+  /* .responsivepausecheck{
+    margin-top: -245px;
+  } */
+
+  .responsivecheckfont1{
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 0px;
+  }
+  .responsiveearselect{
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+  }
+
+  .responsivehearringcreate{
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  /* .responsivepausecheck1{
+    margin-top: -295px;
+  } */
+
+  .responsivecheckfont1{
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 0px;
+  }
+  .responsiveearselect{
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+  }
+
+  .responsivehearringcreate{
+    height: 500px;
+  }
+
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  thead,
+  tbody,
+  tr,
+  td,
+  th {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr {
+    border: 1px solid #ccc;
+  }
+
+  td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    white-space: normal;
+    text-align: left;
+  }
+
+  td:before {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    content: attr(data-label);
+    font-weight: bold;
+  }
+}
+
+@media (max-width: 768px) {
+  textarea {
+    width: 90%;
+  }
+}
+
+@media (max-width: 576px) {
+  textarea {
+    width: 80%; 
+  }
+}
+
+
+
+
+@media (max-width: 768px) {
+  .responsivecheckfont1{
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 0px;
+  }
+  .responsive-button {
+    font-size: 15px;
+    padding: 8px 16px;
+  }
+  .responsivehearinglist {
+    min-height:7000px;
+    height: 100%;
+    overflow:hidden; 
+  }
+
+ 
+}
+
+@media (max-width: 576px) {
+  .responsivecheckfont1{
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 0px;
+  }
+  .responsive-button {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+}
+
+@media (min-width: 820px) {
+
+  .responsivepausecheck2{
+    margin-top: -320px;
+  }
+}
+
+@media (min-width: 853px) {
+  .responsivepausecheck3{
+    height: 1000px;
+  }
+}
+
+@media (min-width: 912px) {
+
+  .responsivepausecheck1{
+    margin-top: -465px;
+  }
+}
+
+@media (min-width: 1024px) {
+
+  .responsivepausecheck1{
+    margin-top: 335px;
+  }
+}
+
+@media (min-width: 768px) {
+
+  .responsivepausecheck2{
+    margin-top: -335px;
+  }
+}
+
+
+@media (max-width: 820px) {
+
+
+  /* .responsivepausecheck1{
+    margin-top: -295px;
+  } */
+
+  .responsivecheckfont1{
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 0px;
+  }
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  
+  
+
+
+  thead,
+  tbody,
+  tr,
+  td,
+  th {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr {
+    border: 1px solid #ccc;
+  }
+
+  td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    white-space: normal;
+    text-align: left;
+  }
+
+  td:before {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    content: attr(data-label);
+    font-weight: bold;
+  }
+  .responsivehearinglist {
+    min-height:7000px;
+    height: 100%;
+    overflow:hidden; 
+  }
+}
+
+@media (min-width: 820px) {
+  /* .responsivepausecheck1{
+    margin-top: -410px;
+  } */
+}
+
+@media (min-width: 853px) {
+  /* .responsivepausecheck1{
+    margin-top: -200px;
+  } */
+}
+
+
+@media (max-width: 912px) {
+
+  /* .responsivepausecheck1{
+    margin-top: -465px;
+  } */
+
+  .responsivecheckfont1{
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 0px;
+  }
+  .responsiveearselect{
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+  }
+
+
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  thead,
+  tbody,
+  tr,
+  td,
+  th {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr {
+    border: 1px solid #ccc;
+  }
+
+  td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    white-space: normal;
+    text-align: left;
+  }
+
+  td:before {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    content: attr(data-label);
+    font-weight: bold;
+  }
+  .responsivehearinglist {
+    min-height:7000px;
+    height: 100%;
+    overflow:hidden; 
+  }
+}
+
+
+@media (max-width: 1024px) {
+
+    
+  .responsivepausecheck{
+    margin-top: -225px;
+  }
+   
+  /* .responsivepausecheck2{
+    margin-top: 710px;
+  } */
+
+  .responsivecheckfont1{
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 0px;
+  }
+  .responsiveearselect{
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+  }
+
+
+  .responsivehearringcreate{
+    height: 400px;
+  }
+
+  
+  .responsivehearinglist {
+    min-height:7000px;
+    height: 100%;
+    overflow:hidden; 
+  }
+}
+
+@media (max-width: 1280px) {
+
+  /* .responsivepausecheck{
+    margin-top: -200px;
+    margin-left: -150px;
+  } */
+
+
+  .responsivecheckfont1{
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 0px;
+  }
+  .responsiveearselect{
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+  }
+
+  .responsivehearringcreate{
+    height: 400px;
+  }
+/* 
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  thead,
+  tbody,
+  tr,
+  td,
+  th {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr {
+    border: 1px solid #ccc;
+  }
+
+  td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    white-space: normal;
+    text-align: left;
+  }
+
+  td:before {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    content: attr(data-label);
+    font-weight: bold;
+  }
+  .responsivehearinglist {
+    min-height:7000px;
+    height: 100%;
+    overflow:hidden; 
+  } */
+}
+
+
+
+
+/* EyesCreate Responsive End */
+
+
+
+/* CheckHz Responsive Start */
+
+
+
+/* CheckHz Responsive End */
+
+
+
+/* HearingCreate Responsive Start */
+
+/* @media (max-width: 414px) {
+  .responsive-button-HearingCreate2 {
+    margin-top: -250px;
+  }
+} */
+/* HearingCreate Responsive End */

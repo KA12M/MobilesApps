@@ -112,11 +112,19 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
 
         setDiabetesDataRecheck(data);
 
+        let combinedNote = "";
+
         if (data.imageEyeRight != null) {
           const ConvertRight =
             data.resultRight === "ไม่เป็นเบาหวาน"
               ? []
               : JSON.parse(data.resultRight);
+
+              if (ConvertRight.length === 4) {
+                combinedNote += " ดวงตาขวาเป็นเบาหวานควรพบแพทย์";
+              } else if (ConvertRight.length === 2) {
+                setNote("");
+              }
           setDiabetesDataConvertRight(ConvertRight || null);
         }
 
@@ -125,15 +133,19 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
             data.resultLeft === "ไม่เป็นเบาหวาน"
               ? []
               : JSON.parse(data.resultLeft);
+
+              if (ConvertLeft.length === 4) {
+                combinedNote += " ดวงตาซ้ายเป็นเบาหวานควรพบแพทย์";
+              } else if (ConvertLeft.length === 2) {
+                setNote("");
+              }
+
           setDiabetesDataConvertLeft(ConvertLeft || null);
         }
 
-      if (data.resultLeft !== "ไม่เป็นเบาหวาน" && data.resultLeft !== "ไม่มีรูปภาพ") {
-        setNote("ดวงตาซ้ายเป็นเบาหวาน ควรพบแพทย์");
-      }
-      if (data.resultRight !== "ไม่เป็นเบาหวาน" && data.resultRight !== "ไม่มีรูปภาพ") {
-        setNote((prevNote) => prevNote + "\nดวงตาขวาเป็นเบาหวาน ควรพบแพทย์");
-      }
+       
+        setNote(combinedNote);
+        
 
         setDisableButton(true);
       } else {
@@ -267,7 +279,7 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                                   <div
                                     style={{
                                       width: item.Value ? item.Value : 0,
-                                      backgroundColor: "#02b01c",
+                                      backgroundColor: item.Key.startsWith('1-') || item.Key.startsWith('2-') || item.Key.startsWith('3-') || item.Key.startsWith('4-') ? 'red' : '#02b01c',
                                       height: 20,
                                     }}
                                   ></div>
@@ -318,7 +330,7 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                                   <div
                                     style={{
                                       width: item.Value ? item.Value : 0,
-                                      backgroundColor: "#02b01c",
+                                      backgroundColor: item.Key.startsWith('1-') || item.Key.startsWith('2-') || item.Key.startsWith('3-') || item.Key.startsWith('4-') ? 'red' : '#02b01c',
                                       height: 20,
                                     }}
                                   ></div>
@@ -362,81 +374,61 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
               </span>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-around",
-              }}
-            >
-              <span style={{ fontSize: 18, marginRight: 20 }}>ดวงตาซ้าย</span>
-              <span style={{ fontSize: 18 }}>ดวงตาขวา</span>
-            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+  <div style={{ marginBottom: 20, width: "100%" }}>
+    <div style={{ display: "flex", justifyContent: "space-around" }}>
+      <span style={{ fontSize: 18, marginRight: 20 }}>ดวงตาซ้าย</span>
+      <span style={{ fontSize: 18 }}>ดวงตาขวา</span>
+    </div>
 
-            <div
-              style={{
-                display: "flex",
-              }}
-            >
-              <div style={{width:'50%',paddingLeft:190}}>
-                {leftEyeImageUrl && (
-                  <img
-                    src={leftEyeImageUrl}
-                    alt="Left Eye"
-                    style={{ width: 125, height: 125, marginTop: 10,borderRadius:10}}
-                  />
-                )}
-              </div>
+    <div style={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap" }}>
+      <div style={{ width: "50%", textAlign: "center", marginBottom: 20 }}>
+        {leftEyeImageUrl && (
+          <img
+            src={leftEyeImageUrl}
+            alt="Left Eye"
+            style={{ width: "100%", maxWidth: 125, height: "auto", borderRadius: 10 }}
+          />
+        )}
+      </div>
 
-              <div style={{width:'50%',paddingLeft:200}}>
-                {rightEyeImageUrl && (
-                  <img
-                    src={rightEyeImageUrl}
-                    alt="Right Eye"
-                    style={{ width: 125, height: 125, marginTop: 10,borderRadius:10}}
-                  />
-                )}
-              </div>
-            </div>
+      <div style={{ width: "50%", textAlign: "center", marginBottom: 20 }}>
+        {rightEyeImageUrl && (
+          <img
+            src={rightEyeImageUrl}
+            alt="Right Eye"
+            style={{ width: "100%", maxWidth: 125, height: "auto", borderRadius: 10 }}
+          />
+        )}
+      </div>
+    </div>
+  </div>
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-around",
-                marginTop: 20,
-              }}
-            >
+  <div style={{ display: "flex", justifyContent: "space-between", width: "65%", marginBottom: 20 }}>
+    <div className="file-input-wrapperleft" style={{ marginRight: 10 }}>
+      เลือกรูปภาพ
+      <input
+        type="file"
+        onChange={handleLeftEyeChange}
+        ref={leftEyeInputRef}
+        disabled={disableButton}
+        className="file-input"
+      />
+    </div>
 
-            <div className="file-input-wrapperleft">
-              เลือกรูปภาพ
-              <input
-                type="file"
-                onChange={handleLeftEyeChange}
-                ref={leftEyeInputRef}
-                disabled={disableButton}
-                className="file-input"
-              />
-            </div>
+    <div className="file-input-wrapperright" style={{ marginLeft: 10 }}>
+      เลือกรูปภาพ
+      <input
+        type="file"
+        onChange={handleRightEyeChange}
+        ref={rightEyeInputRef}
+        disabled={disableButton}
+        className="file-input"
+      />
+    </div>
+  </div>
+</div>
 
-
-
-            <div className="file-input-wrapperright">
-              เลือกรูปภาพ
-              <input
-                type="file"
-                onChange={handleRightEyeChange}
-                ref={rightEyeInputRef}
-                disabled={disableButton}
-                className="file-input"
-              />
-            </div>
-            
-              {/* <input
-                type="file"
-                onChange={handleRightEyeChange}
-                ref={rightEyeInputRef}
-                disabled={disableButton}
-              /> */}
-            </div>
 
             <div style={{ textAlign: "center", marginTop: 40 }}>
               <textarea
@@ -463,6 +455,7 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                       fontSize: 17,
                       fontWeight: 600,
                     }}
+                    className="responsive-button"
                   >
                     บันทึก
                   </Button>
@@ -474,6 +467,7 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                       fontSize: 17,
                       fontWeight: 600,
                     }}
+                    className="responsive-button"
                   >
                     ยกเลิก
                   </Button>
@@ -525,7 +519,7 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                                   <div
                                     style={{
                                       width: item.Value ? item.Value : 0,
-                                      backgroundColor: "#02b01c",
+                                      backgroundColor: item.Key.startsWith('1-') || item.Key.startsWith('2-') || item.Key.startsWith('3-') || item.Key.startsWith('4-') ? 'red' : '#02b01c',
                                       height: 20,
                                     }}
                                   ></div>
@@ -566,7 +560,7 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                                   <div
                                     style={{
                                       width: item.Value ? item.Value : 0,
-                                      backgroundColor: "#02b01c",
+                                      backgroundColor: item.Key.startsWith('1-') || item.Key.startsWith('2-') || item.Key.startsWith('3-') || item.Key.startsWith('4-') ? 'red' : '#02b01c',
                                       height: 20,
                                     }}
                                   ></div>
@@ -586,6 +580,9 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
           </div>
         </form>
       )}
+    <div className="responsivehearinglist"></div>
+    <div className="responsiveeyecreate"></div>
+
     </div>
   );
 }

@@ -175,6 +175,7 @@ function Login() {
               <Form.Control
                 {...register("phone", { required: true })}
                 type="tel"
+                maxLength={10}
                 required
               />
             </Form.Group>

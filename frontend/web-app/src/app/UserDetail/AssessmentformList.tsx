@@ -8,6 +8,12 @@ const AssessmentformList = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
 
+
+  // const handleEdit = (i) => {
+  //   console.log("handleEdit ",i)
+  // }
+  
+
   const columns = [
     {
       title: "เวลา",
@@ -38,18 +44,26 @@ const AssessmentformList = () => {
       align: "center",
       render: (result) => (
         <div style={{ textAlign: "center" }}>
-          {sumValues(result) > 10 ? <div><p style={{color:'red',fontWeight:'600'}}>ท่านควรไปพบแพทย์</p></div>: <div><p style={{color:'green',fontWeight:'600'}}>ท่านมีการได้ยินปกติ</p></div>}
+          {sumValues(result) > 10 ? (
+            <div>
+              <p style={{ color: 'red', fontWeight: '600' }}>ท่านควรไปพบแพทย์</p>
+            </div>
+          ) : (
+              <div>
+                <p style={{ color: 'green', fontWeight: '600' }}>ท่านมีการได้ยินปกติ</p>
+              </div>
+            )}
         </div>
       ),
     },
     // {
-    //   title: "",
+    //   title: "แก้ไข",
     //   dataIndex: "result",
     //   key: "result",
     //   align: "center",
-    //   render: (result) => (
-    //     <div>
-    //       <Button>แก้ไข</Button>
+    //   render: (result, record) => (
+    //     <div style={{ textAlign: "center" }}>
+    //       <Button onClick={() => handleEdit(record)}>แก้ไข</Button>
     //     </div>
     //   ),
     // },

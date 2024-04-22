@@ -141,8 +141,8 @@ function Check8000Hz() {
   };
 
   return (
-    <div style={{ padding: 40, display: "flex", justifyContent: "center", alignItems: "center" }}>
-<Card style={{ width: "100%", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+<Card style={{ width: "100%",height:585, boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}>
 
       <div className="steps-action">
         <div>
@@ -154,7 +154,7 @@ function Check8000Hz() {
               flexDirection: "column",
             }}
           >
-            <p style={{ fontSize: 60, fontWeight: 700, marginBottom: 50 }}>8000 Hz</p>
+            <p className="responsivecheckfont1">8000 Hz</p>
             <GiSoundOn size={120} />
             {changesoundDB && (
                 <p style={{ fontSize: 24, marginTop: 10,fontWeight:700,backgroundColor: dbcolor ?'#000':'#fff45b',color: dbcolor ? '#ffffff':'#ff0000',padding:10,borderRadius:5}}>

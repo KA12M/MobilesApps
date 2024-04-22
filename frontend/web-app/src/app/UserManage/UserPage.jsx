@@ -19,7 +19,7 @@ dayjs.extend(utc);
 const UserPage = () => {
   const navigate = useNavigate();
 
-  const { loadUsers, data, pagination, createUser } = useStore().useUserActions;
+  const { loadUsers, data, createUser } = useStore().useUserActions;
 
   const [show, setShow] = useState(false);
 
@@ -267,9 +267,10 @@ const filteredData = data.filter(
             <Form.Group className="mb-3">
               <Form.Label>เบอร์โทรศัพท์</Form.Label>
               <Form.Control
-                {...register("phone", { required: true })}
+                {...register("phone", { required: true, })}
                 type="tel"
                 required
+                maxLength={10}
               />
             </Form.Group>
 

@@ -4,10 +4,17 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { useStore } from "../../utils/store";
 import { notification } from 'antd';
-import ExcelJS, { Workbook } from 'exceljs';
+import ExcelJS from 'exceljs';
+import PropTypes from 'prop-types';
 
 const EyesList = ({setMode,hearings}) => {
 
+  EyesList.propTypes = {
+    setMode: PropTypes.func.isRequired,
+    hearings: PropTypes.shape({
+      diabetes: PropTypes.object,
+    }).isRequired,
+  };
 
   const { loadHearing,user } =
   useStore().useUserDetailActions;
@@ -144,8 +151,8 @@ const EyesList = ({setMode,hearings}) => {
       row.height = 115; 
   });
 
-  worksheet.eachRow({ includeEmpty: true }, function(row, rowNumber) {
-    row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+  worksheet.eachRow({ includeEmpty: true }, function(row) {
+    row.eachCell({ includeEmpty: true }, function(cell) {
       cell.alignment = { horizontal: 'center' };
     });
   });
@@ -250,8 +257,8 @@ const EyesList = ({setMode,hearings}) => {
         row.height = 115; 
     });
 
-    worksheet.eachRow({ includeEmpty: true }, function(row, rowNumber) {
-      row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+    worksheet.eachRow({ includeEmpty: true }, function(row) {
+      row.eachCell({ includeEmpty: true }, function(cell) {
         cell.alignment = { horizontal: 'center' };
       });
     });
@@ -290,7 +297,8 @@ const EyesList = ({setMode,hearings}) => {
   const admin = localStorage.getItem("UserAdmin")
  
   return (
-    <Card>
+    <div>
+      <Card>
       <Card.Body
         style={{
           display: "flex",
@@ -299,7 +307,7 @@ const EyesList = ({setMode,hearings}) => {
         }}
       >
         <div>
-          <Card.Text style={{fontSize:18,fontWeight:700}}>ผลการทดสอบการมองเห็น</Card.Text>
+          <Card.Text style={{fontSize:18,fontWeight:700}}>ผลการตรวจโรคเบาหวานเข้าจอประสาทตา</Card.Text>
         </div>
         
         <div style={{ display: "flex", flexDirection: "column" }}>
@@ -342,9 +350,8 @@ const EyesList = ({setMode,hearings}) => {
   </thead>
   <tbody>
   {hearings?.diabetes?.value?.map((item) => {
-    // กำหนดสีตามค่าที่ต้องการ
-    const leftEyeColor = item.imageEyeLeft ? 'green' : 'red'; // สีเขียวหรือสีแดงสำหรับดวงตาซ้าย
-    const rightEyeColor = item.imageEyeRight ? 'green' : 'red'; // สีเขียวหรือสีแดงสำหรับดวงตาขวา
+    const leftEyeColor = item.imageEyeLeft ? 'green' : 'red'; 
+    const rightEyeColor = item.imageEyeRight ? 'green' : 'red'; 
 
     // กำหนดค่าในหมายเหตุ
     const leftEyeNote = item.imageEyeLeft ? 'เบาหวาน ควรพบแพทย์' : 'ไม่มีรูปภาพ'; // ค่าของดวงตาซ้าย
@@ -386,7 +393,11 @@ const EyesList = ({setMode,hearings}) => {
 
       </Card.Body>
     </Card>
+    <div className="responsivehearinglist"></div>
+    </div>
+
   );
 };
 
 export default EyesList;
+
