@@ -2,13 +2,23 @@
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Configuration;
 
 namespace Domain;
 
 public class DataContext : DbContext
 {
-    public DataContext(DbContextOptions<DataContext> options) : base(options)
+    private readonly IConfiguration _configuration;
+
+    public DataContext(DbContextOptions<DataContext> options,IConfiguration configuration) : base(options)
     {
+        _configuration = configuration;
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DbConnection"));
     }
 
     public DbSet<User> Users { get; set; }

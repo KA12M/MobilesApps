@@ -27,11 +27,9 @@ import AssessmentformList from "../app/UserDetail/AssessmentformList";
 export const Routes = (
   <Route path={RoutePath.home} element={<App />}>
     <Route path="*" element={<div>Page Not Found </div>} />
-
     <Route path="/UserPage" element={<UserPage />} />
     <Route path="/EyesCreate" element={<EyesCreate />} />
     <Route path="/EarSelect" element={<EarSelect />} />
-
     <Route path="/Check250Hz" element={<Check250Hz />} />
     <Route path="/Check500Hz" element={<Check500Hz />} />
     <Route path="/Check1000Hz" element={<Check1000Hz />} />
@@ -41,13 +39,9 @@ export const Routes = (
     <Route path="/Check8000Hz" element={<Check8000Hz />} />
     <Route path="/PauseCheck" element={<PauseCheck />} />
     <Route path="/HearringCreate" element={<HearringCreate />} />
-
     <Route path="/Assessmentform" element={<Assessmentform />} />
     <Route path="/AssessmentformList" element={<AssessmentformList />} />
-
     <Route path="/" element={<Login />} />
-
-
     <Route path="/user/:userId" element={<UserDetailPage />} />
   </Route>
 );

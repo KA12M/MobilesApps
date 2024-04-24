@@ -29,7 +29,8 @@ builder.Services.AddCors(options =>
                         "http://coms.kru.ac.th",
                         "http://localhost:5173",
                         "http://localhost:3000",
-                        "http://localhost:5255");
+                        "http://localhost:5255",
+                        "http://10.103.0.16");
     });
 });
 
@@ -42,11 +43,12 @@ builder.Services.AddPredictionEnginePool<MLDiabetes.ModelInput, MLDiabetes.Model
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    //options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
-    options.UseSqlite(builder.Configuration.GetConnectionString("DbConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
+    //options.UseSqlite(builder.Configuration.GetConnectionString("DbConnection"));
 });
 
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+
 
 var app = builder.Build();
 
@@ -65,8 +67,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.MapFallbackToController("Index", "Fallback");
+
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
