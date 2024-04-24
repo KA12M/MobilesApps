@@ -60,9 +60,9 @@ const DiabetesCalculate = function ({ navigation }) {
     getDiabete(user?.id);
   }, []);
 
-  console.log("loading", loading);
-  console.log("userId", user?.id);
-  console.log("diabete", diabete);
+  // console.log("loading", loading);
+  // console.log("userId", user?.id);
+  // console.log("diabete", diabete);
 
   // const setPhoto = async (result) => {
   //   setImage(result.assets[0].uri);

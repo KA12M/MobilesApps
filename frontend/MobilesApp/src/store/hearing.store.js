@@ -16,6 +16,8 @@ export default class HearingStore {
   hearingResult = "";
   resultDoctor = "";
   loading = false;
+  hearingId = null;
+  FMHTByUser = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -40,7 +42,10 @@ export default class HearingStore {
   getFMHTByUserId = async (userId) => {
     try {
       const res = await API.fmht.GetFMHTByUserId(userId);
-      return res;
+
+      runInAction(() => {
+        this.FMHTByUser = res;
+      });
     } catch (error) {
       throw error;
     }
@@ -63,7 +68,19 @@ export default class HearingStore {
   addHearingByUserId = async (data) => {
     try {
       var res = await API.hearing.createHearing(data);
-      console.log("res :", res);
+      console.log("res add :", res);
+      return res;
+    } catch (error) {
+      console.log("error", error);
+      throw error;
+    }
+  };
+
+  updateHearingItemById = async (data, hearingId) => {
+    try {
+      var res = await API.hearing.updateHearing(data, hearingId);
+      console.log("res update :", res);
+      return res;
     } catch (error) {
       console.log("error", error);
       throw error;
@@ -76,7 +93,7 @@ export default class HearingStore {
   // ประมวลผล
   handleProcess = (id, volume) => {
     this.data[this.ear] = this.data[this.ear].map((el) => {
-      if (el.id == id) el.isHeard = volume;
+      if (el.id == id) el.isHeard = volume === 0 ? 30 : volume;
       return el;
     });
     this.setCurrent(
@@ -91,22 +108,40 @@ export default class HearingStore {
   setEar = (ear) => (this.ear = ear);
 
   // ประมวลผลข้อมูลลง result
-  processResult = (userId, navigation, note) => {
+  processResult = async (userId, ear) => {
     const result = transformData(this.data);
 
     this.result = result;
 
     const data = {
       userId: userId,
-      note: note,
+      note: "",
       ...result,
     };
 
-    console.log("data send", data);
+    const dataForm = ear === "left" ? data.items[0] : data.items[1];
 
-    this.addHearingByUserId(data).then(() => {
-      navigation.goBack();
-    });
+    console.log("data send", dataForm);
+
+    console.log("this.hearingId", this.hearingId);
+
+    if (this.hearingId === null) {
+      const res = await this.addHearingByUserId({ ...data, items: [dataForm] });
+
+      this.hearingId = res.id;
+
+      console.log("this.hearingId", this.hearingId);
+      console.log("res add p", res);
+    } else {
+      await this.updateHearingItemById(dataForm, this.hearingId);
+
+      this.hearingId = null;
+      console.log("res update");
+    }
+
+    // this.addHearingByUserId(data).then(() => {
+    //   navigation.goBack();
+    // });
   };
 
   // เช็คความพร้อมของข้อมูล
@@ -153,11 +188,11 @@ export default class HearingStore {
   processHearingLevels = (data) => {
     let arrayHearing = [];
     data.map((item) => {
-      const { v500, v1000, v2000 } = item;
+      const { ear, v500, v1000, v2000 } = item;
 
       const total = (v500 + v1000 + v2000) / 3;
 
-      arrayHearing = [...arrayHearing, check(total)];
+      arrayHearing = [...arrayHearing, { id: ear, name: check(total) }];
     });
 
     runInAction(() => {
@@ -172,7 +207,7 @@ export default class HearingStore {
 
       const total = (v500 + v1000 + v2000 + v4000) / 4;
 
-      console.log("total", v500, v1000, v2000, v4000);
+      // console.log("total", v500, v1000, v2000, v4000);
       arrayResult = [...arrayResult, total];
     });
 
@@ -180,6 +215,8 @@ export default class HearingStore {
       this.resultDoctor = arrayResult;
     });
   };
+
+  reCheckEachValue = (value) => check(value);
 }
 
 // function แปลงข้อมูลซ้ายขวาที่ใช้ในแอพเป็นข้อมูลที่จะบันทึกลง db

@@ -15,6 +15,8 @@ const RenderData = function ({ data, noImage, title }) {
 
   const revert = (title === "ตาซ้าย" && "row") || "row-reverse";
 
+  console.log("data", data);
+
   return (
     <Center paddingTop={4}>
       <View
@@ -26,23 +28,16 @@ const RenderData = function ({ data, noImage, title }) {
       >
         <View>
           {title === "ตาซ้าย" && (
-            <Button
-              bgColor={theme.colors.bg.primary}
-              style={{ fontSize: 25 }}
-              disabled
-            >
-              {title}
+            <Button bgColor="rose.600" style={{ fontSize: 25 }} disabled>
+              <Text style={{ fontSize: 20, color: "white" }}>{title}</Text>
             </Button>
           )}
         </View>
+
         <View>
           {title === "ตาขวา" && (
-            <Button
-              bgColor={theme.colors.bg.primary}
-              style={{ fontSize: 25 }}
-              disabled
-            >
-              {title}
+            <Button bgColor="blue.500" color="black" disabled>
+              <Text style={{ fontSize: 20 }}>{title}</Text>
             </Button>
           )}
         </View>
@@ -70,7 +65,13 @@ const RenderData = function ({ data, noImage, title }) {
                           justifyContent: title === "ตาซ้าย" ? "" : "flex-end",
                         }}
                       >
-                        <Text style={{ fontSize: 16 }}>{item.Key}</Text>
+                        <Text style={{ fontSize: 16 }}>
+                          {item.Key === "No_DR"
+                            ? "โอกาสไม่เป็นเบาหวาน"
+                            : item.Key === "DR"
+                            ? "โอกาสเป็นเบาหวาน"
+                            : item.Key}
+                        </Text>
                       </View>
                       <HStack space={3}>
                         <View
@@ -87,8 +88,16 @@ const RenderData = function ({ data, noImage, title }) {
                           >
                             <Progress
                               width="75%"
-                              colorScheme="red"
-                              value={item.Value * 100}
+                              // colorScheme={
+                              //   title === "ตาซ้าย" ? "green" : "yellow"
+                              // }
+                              _filledTrack={{
+                                bg:
+                                  item.Key === "No_DR"
+                                    ? "green.500"
+                                    : "rose.500",
+                              }}
+                              value={item.Value}
                               height={5}
                               style={{
                                 flexDirection: revert,
@@ -102,7 +111,7 @@ const RenderData = function ({ data, noImage, title }) {
                                 marginRight: 10,
                               }}
                             >
-                              {(item.Value * 100).toFixed(3)} %
+                              {item.Value.toFixed(3)} %
                             </Text>
                           </View>
                         </View>

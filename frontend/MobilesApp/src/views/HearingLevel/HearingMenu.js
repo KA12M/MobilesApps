@@ -11,7 +11,6 @@ const { sizes, colors, fonts, space } = theme;
 
 const HearingMenu = ({ navigation }) => {
   const {
-    hearingStore: { getFMHTByUserId },
     commonStore: { user },
   } = useStore();
   const [visible, setVisible] = useState(false);
@@ -21,7 +20,7 @@ const HearingMenu = ({ navigation }) => {
   const setDialogDocs = () => setVisibleDocs(!visibleDocs);
 
   const handleTest = () => {
-    setDialog();
+    // setDialog();
     navigation.navigate("hearing-testing");
   };
 
@@ -32,23 +31,39 @@ const HearingMenu = ({ navigation }) => {
 
   //user?.id
   const handleDocs = async () => {
-    const res = await getFMHTByUserId(user?.id);
+    // const res = await getFMHTByUserId(user?.id);
 
-    navigation.navigate("assessment-docs", { state: res ? res : null });
+    // navigation.navigate("assessment-docs", { state: res ? res : null });
+    navigation.navigate("assessment-docs");
   };
 
   return (
     <SafeArea>
       <ScrollView style={styles.container}>
         <View style={styles.btnContainer}>
-          <Btn label="ทดสอบ" onPress={setDialog} />
           <Btn
-            label="ประวัติการทดสอบ"
-            onPress={() => navigation.navigate("histories-testing")}
+            label="ทดสอบการได้ยิน"
+            onPress={handleTest}
+            bgColor={colors.bg.primary}
           />
-          <Btn label="เอกสารการประเมิน" onPress={handleDocs} />
+          <Btn
+            label="แสดงผลทดสอบการได้ยิน"
+            onPress={() => navigation.navigate("histories-testing")}
+            bgColor={colors.bg.primary}
+          />
+          <Btn
+            label="แบบสอบถาม (FMHT)"
+            onPress={handleDocs}
+            bgColor={colors.bg.redLight}
+          />
+          <Btn
+            label="แสดงผลการประเมิน (FMHT)"
+            onPress={() => navigation.navigate("histories-AssmentDocs")}
+            bgColor={colors.bg.redLight}
+          />
         </View>
       </ScrollView>
+
       <MyDialog
         title="ทดสอบการได้ยิน"
         content="ทดสอบ"
@@ -70,10 +85,10 @@ const HearingMenu = ({ navigation }) => {
 
 export default HearingMenu;
 
-const Btn = ({ label, onPress = () => {} }) => {
+const Btn = ({ label, onPress = () => {}, bgColor = "red" }) => {
   return (
     <Button
-      style={{ backgroundColor: colors.bg.primary }}
+      style={{ backgroundColor: bgColor }}
       borderColor="blue"
       borderWidth={space[0]}
       onPress={onPress}
@@ -97,6 +112,6 @@ const styles = StyleSheet.create({
   btnText: {
     fontFamily: fonts.primary,
     color: colors.text.light,
-    fontSize: sizes[4],
+    fontSize: sizes[3],
   },
 });

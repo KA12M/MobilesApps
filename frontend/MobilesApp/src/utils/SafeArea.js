@@ -12,7 +12,6 @@ export const SafeArea = ({ children }) => {
     <SafeAreaProvider
       style={{
         flex: 1,
-        backgroundColor: theme.colors.bg.lightGray,
         //  paddingTop: insets.top
       }}
     >
