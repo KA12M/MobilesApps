@@ -57,6 +57,11 @@ function HearingPage({ navigation }) {
   //   newHearing(user.id);
   // };
 
+  // const left =
+  //   data[ear] !== undefined && checkIsHeardNull("left") ? true : false;
+  // const right =
+  //   data[ear] !== undefined && checkIsHeardNull("right") ? true : false;
+
   const left = data.left[6].isHeard !== null;
   const right = data.right[6].isHeard !== null;
 

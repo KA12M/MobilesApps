@@ -42,7 +42,7 @@ const SoundDisplayPage = ({ data }) => {
 
   const [count, setCount] = useState(0);
 
-  const [colorChange, setColorChange] = useState(1);
+  const [colorChange, setColorChange] = useState(true);
 
   useEffect(() => {
     return () => (soundObj ? clear() : undefined);
@@ -53,31 +53,32 @@ const SoundDisplayPage = ({ data }) => {
     setProgress(0);
     setBtnPlayIsReady(true);
     setIsPlaying(false);
+    await soundObj.stopAsync();
     if (soundObj) await soundObj.unloadAsync();
     setSound(null);
-    setVolume(30);
   }
 
   const playSoundRepeatedly = async (sound) => {
     // let delay = 3000;
-    let delay = 500;
+    let delay = 3000;
+
+    await sound.playFromPositionAsync(2000);
+    await sound.playAsync();
 
     for (let i = 0; i < dB.length; i++) {
       console.log("i", i);
       console.log("dB", dB[i]);
-      if (isTesting) {
-        await sound.setVolumeAsync(dB[i] / 100.0, 0.0);
-        setVolume(dB[i]);
-        await sound.playAsync();
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        await sound.stopAsync();
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        await sound.playAsync();
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        await sound.stopAsync();
-        await new Promise((resolve) => setTimeout(resolve, delay));
 
-        setColorChange(i);
+      if (isPlaying) {
+        // await sound.setVolumeAsync(dB[i] / 100.0, 0.0);
+
+        setVolume(dB[i]);
+
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        // await sound.stopAsync();
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        // await sound.playAsync();
+        setColorChange((colorChange) => !colorChange);
       }
     }
 
@@ -93,21 +94,7 @@ const SoundDisplayPage = ({ data }) => {
     //   await new Promise((resolve) => setTimeout(resolve, delay));
     //   setVolume(dB[i]);
     // });
-
-    // if (isTesting) {
-    //   handleProcess(data.id, dB[dB.length - 1]);
-    //   setCount((count) => count + 1);
-    //   clear();
-    //   setVolume(30);
-
-    //   processResult(user.id, ear);
-
-    //   setCurrent(1);
-    //   setBtnResultReady(false);
-    //   handleIsTesting(false);
-    // } else {
-    //   clear();
-    // }
+    console.log("before if isTesting", count);
 
     if (isTesting) {
       handleProcess(data.id, dB[dB.length - 1]);
@@ -115,6 +102,8 @@ const SoundDisplayPage = ({ data }) => {
     } else {
       clear();
     }
+
+    console.log("before if count === 7", count);
 
     if (count === 6) {
       processResult(user.id, ear);
@@ -127,12 +116,16 @@ const SoundDisplayPage = ({ data }) => {
 
       clear();
     }
+
+    await sound.stopAsync();
   };
 
   async function playSound() {
     setCount((count) => count + 1);
-    setColorChange(1);
+    setColorChange((colorChange) => !colorChange);
     setVolume(30);
+
+    console.log("setCount playsound", count);
 
     if (soundObj) clear();
 
@@ -140,9 +133,7 @@ const SoundDisplayPage = ({ data }) => {
     setBtnPlayIsReady(false);
 
     console.log(data.title, ": Loading Sound");
-    const { sound } = await Audio.Sound.createAsync(data.soundUrl, {
-      volume: 0.3,
-    });
+    const { sound } = await Audio.Sound.createAsync(data.soundUrl);
 
     setSound(sound);
 
@@ -160,6 +151,8 @@ const SoundDisplayPage = ({ data }) => {
         setProgress((status.positionMillis / status.durationMillis) * 100);
     });
   }
+
+  console.log("volume", volume);
 
   return (
     <View style={styles.container}>
@@ -183,7 +176,7 @@ const SoundDisplayPage = ({ data }) => {
           <Text
             style={{
               fontSize: 25,
-              color: colorChange % 2 === 1 ? "red" : "white",
+              color: colorChange ? "red" : "white",
               backgroundColor: "black",
               padding: 10,
               borderRadius: 20,
@@ -195,7 +188,7 @@ const SoundDisplayPage = ({ data }) => {
       ) : (
         <Button
           onPress={playSound}
-          isDisabled={count === 7 ? btnPlayIsReady : !btnPlayIsReady}
+          isDisabled={count > 7 ? btnPlayIsReady : !btnPlayIsReady}
           bgColor={theme.colors.bg.primary}
         >
           <Text style={styles.textBtn}>เล่นเสียง</Text>
@@ -208,6 +201,8 @@ const SoundDisplayPage = ({ data }) => {
           onPress={async () => {
             handleProcess(data.id, volume);
             clear();
+
+            await soundObj.stopAsync();
 
             if (count === 7) {
               console.log("count === 7", count);

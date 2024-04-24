@@ -25,11 +25,12 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
-            .WithOrigins("http://10.103.0.15",
-                        "http://coms.kru.ac.th",
-                        "http://localhost:5173",
-                        "http://localhost:3000",
-                        "http://localhost:5255");
+            .SetIsOriginAllowed(x => true);
+            //.WithOrigins("http://10.103.0.15",
+            //            "http://coms.kru.ac.th",
+            //            "http://localhost:5173",
+            //            "http://localhost:3000",
+            //            "http://localhost:5255");
     });
 });
 
@@ -43,7 +44,7 @@ builder.Services.AddPredictionEnginePool<MLDiabetes.ModelInput, MLDiabetes.Model
 builder.Services.AddDbContext<DataContext>(options =>
 {
     //options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
-    options.UseSqlite(builder.Configuration.GetConnectionString("DbConnection"));
+    //options.UseSqlite(builder.Configuration.GetConnectionString("DbConnection"));
 });
 
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
@@ -65,8 +66,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.MapFallbackToController("Index", "Fallback");
+
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();

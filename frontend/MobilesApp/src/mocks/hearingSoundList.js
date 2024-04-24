@@ -12,20 +12,38 @@ export let volume = [
   "v500",
 ];
 
+// const zH250 = require("../../assets/sounds/final/B_250Hz_Used.mp3");
+// const zH500 = require("../../assets/sounds/final/B_500Hz_Used.mp3");
+// const zH1000 = require("../../assets/sounds/final/B_1000Hz_Used.mp3");
+// const zH2000 = require("../../assets/sounds/final/B_2000Hz_Used.mp3");
+// const zH4000 = require("../../assets/sounds/final/B_4000Hz_Used.wav");
+// const zH6000 = require("../../assets/sounds/final/B_6000Hz_Used.wav");
+// const zH8000 = require("../../assets/sounds/final/B_8000Hz_Used.wav");
+
+// const zH250 = require("../../assets/sounds/final/B_8000Hz_Used.wav");
+// const zH500 = require("../../assets/sounds/final/B_8000Hz_Used.wav");
+// const zH1000 = require("../../assets/sounds/final/B_8000Hz_Used.wav");
+// const zH2000 = require("../../assets/sounds/final/B_8000Hz_Used.wav");
+// const zH4000 = require("../../assets/sounds/final/B_8000Hz_Used.wav");
+// const zH6000 = require("../../assets/sounds/final/B_8000Hz_Used.wav");
+// const zH8000 = require("../../assets/sounds/final/B_8000Hz_Used.wav");
+
+const zH250 = require("../../assets/sounds/250Hz_sine-wave.mp4");
+const zH500 = require("../../assets/sounds/500Hz_sine-wave.mp3");
 const zH1000 = require("../../assets/sounds/1000Hz_sine-wave.mp3");
 const zH2000 = require("../../assets/sounds/2000Hz_sine-wave.mp3");
 const zH4000 = require("../../assets/sounds/4000Hz_sine-wave.mp3");
 const zH6000 = require("../../assets/sounds/6000Hz_sine-wave.mp3");
 const zH8000 = require("../../assets/sounds/8000Hz_sine-wave.mp3");
-const zH250 = require("../../assets/sounds/250Hz_sine-wave.mp4");
-const zH500 = require("../../assets/sounds/500Hz_sine-wave.mp3");
 
 export const sound = [zH1000, zH2000, zH4000, zH6000, zH8000, zH250, zH500];
 
 // export const dB = [-10, 5, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-export const dB = [
-  30, 20, 25, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 91,
-];
+// export const dB = [
+//   30, 20, 25, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 91,
+// ];
+
+export const dB = [30, 20, 20, 25, 30, 35, 40, 45, 48, 48];
 
 // for (let i = 0; i < 2; i++) {
 //   for (let v = 0; v < volume.length; v++) {

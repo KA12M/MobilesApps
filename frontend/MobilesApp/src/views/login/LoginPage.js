@@ -6,10 +6,11 @@ import {
   ScrollView,
   SafeAreaView,
   ToastAndroid,
+  Button as ButtonN,
 } from "react-native";
 import { Button, FormControl, Heading, Input } from "native-base";
 import { observer } from "mobx-react-lite";
-import DatePicker from "@dietime/react-native-date-picker";
+// import DatePicker from "@dietime/react-native-date-picker";
 import moment from "moment";
 import "moment/locale/th";
 
@@ -18,11 +19,16 @@ import { SafeArea } from "../../utils/SafeArea";
 import { useStore } from "./../../store/store";
 import MyToast from "./../../components/MyToast";
 
+import DateTimePicker from "@react-native-community/datetimepicker";
+
 function LoginPage({ navigation }) {
   const { loading, register, loginByPhone } = useStore().commonStore;
 
-  const today = moment(new Date()).format();
-  const [date, setDate] = useState(today);
+  // const today = moment(new Date()).format();
+  // const [date, setDate] = useState(today);
+
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
 
   const [formData, setFormData] = React.useState({
     firstName: "",
@@ -83,6 +89,11 @@ function LoginPage({ navigation }) {
 
   const setModeLogin = () => setLoginMode(!loginMode);
 
+  const onChange = (e, selectedDate) => {
+    setDate(selectedDate);
+    setShow(false);
+  };
+
   return (
     <SafeAreaView>
       <ScrollView>
@@ -108,7 +119,28 @@ function LoginPage({ navigation }) {
                   <Text style={{ fontSize: 23 }}>ปี</Text>
                 </View>
 
-                <DatePicker
+                <ButtonN
+                  title="เลือก"
+                  onPress={() => setShow(true)}
+                  style={{
+                    borderRadius: 20,
+                  }}
+                />
+
+                {show && (
+                  <DateTimePicker
+                    value={date}
+                    mode="date"
+                    is24Hour={true}
+                    onChange={onChange}
+                    format="dd-mm-yyyy"
+                    dateFormat="dd-mm-yyyy"
+                    locale="th-TH"
+                    maximumDate={new Date()}
+                  />
+                )}
+
+                {/* <DatePicker
                   value={date}
                   onChange={(value) => {
                     console.log("value", moment(value).format("YYYY"));
@@ -116,7 +148,7 @@ function LoginPage({ navigation }) {
                   }}
                   format="dd-mm-yyyy"
                   locale="th-TH" // ตั้งค่า locale เป็น 'th-TH' เพื่อให้ DatePicker เป็นภาษาไทย
-                />
+                /> */}
 
                 <FormControl.Label>
                   <Text
@@ -124,7 +156,7 @@ function LoginPage({ navigation }) {
                       fontSize: 17,
                     }}
                   >
-                    {date ? moment(date).format("LL") : "เลือกวันที่..."}
+                    {moment(date).add("year", +543).format("LL")}
                   </Text>
                 </FormControl.Label>
               </View>
