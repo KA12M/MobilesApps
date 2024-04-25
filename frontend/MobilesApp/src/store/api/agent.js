@@ -1,6 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "https://4016-202-28-123-199.ngrok-free.app/api";
+axios.defaults.baseURL = "https://tee.kru.ac.th/ear-eye/api";
 
 const multipartForm = {
   headers: { "Content-Type": "multipart/form-data" },

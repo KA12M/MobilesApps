@@ -21,7 +21,7 @@ public class DiabetesController : BaseApiController
         _context = context;
         _mapper = mapper;
     }
-
+     
     [HttpPost("[action]")]
     public async Task<IActionResult> RecheckDiabete([FromForm] TestDiabete request)
     {

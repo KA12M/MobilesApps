@@ -7,6 +7,7 @@ import { RoutePath } from "../../utils/RoutePath";
 import html2pdf from "html2pdf.js";
 import { useStore } from "../../utils/store";
 import { observer } from "mobx-react-lite";
+import { pathServer } from "../../hooks/api/agent";
 
 function Assessmentform() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ function Assessmentform() {
   const [getFMHT, setGetFMHT] = useState([]);
   const [isAllAnswered, setIsAllAnswered] = useState(false);
 
-  console.log("useScore",useScore)
+  console.log("useScore", useScore);
   useEffect(() => {
     const userid = localStorage.getItem("UserId");
 
@@ -68,7 +69,7 @@ function Assessmentform() {
     (async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5255/api/FMHT/GetFMHTByUserId?userId=${userId}`
+          pathServer + `FMHT/GetFMHTByUserId?userId=${userId}`
         );
 
         const data = response.data.result;
@@ -104,16 +105,13 @@ function Assessmentform() {
           result: answersJSON,
         };
 
-        const response = await fetch(
-          "http://localhost:5255/api/FMHT/CreateFMHT",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(bodyData),
-          }
-        );
+        const response = await fetch(pathServer + "FMHT/CreateFMHT", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyData),
+        });
 
         if (response.ok) {
           const data = await response.json();
@@ -557,16 +555,17 @@ function Assessmentform() {
             {useScore > 10 ? (
               <div>
                 <p style={{ color: "red", fontWeight: 600 }}>
-                  การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} / 45 คะแนน (มีคะแนนเป็น {((useScore / 45) * 100).toFixed(2)}% ของคะแนนทั้งหมด)
-                  ท่านควรไปพบแพทย์เพื่อตรวจการการได้ยิน
+                  การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} / 45 คะแนน
+                  (มีคะแนนเป็น {((useScore / 45) * 100).toFixed(2)}%
+                  ของคะแนนทั้งหมด) ท่านควรไปพบแพทย์เพื่อตรวจการการได้ยิน
                 </p>
-                
               </div>
             ) : (
               <div>
                 <p style={{ color: "green", fontWeight: 600 }}>
-                  การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} / 45 คะแนน (มีคะแนนเป็น {((useScore / 45) * 100).toFixed(2)}% ของคะแนนทั้งหมด)
-                  ท่านมีการได้ยินปกติ
+                  การประเมินผลการคัดกรองของท่านได้คะแนน {useScore} / 45 คะแนน
+                  (มีคะแนนเป็น {((useScore / 45) * 100).toFixed(2)}%
+                  ของคะแนนทั้งหมด) ท่านมีการได้ยินปกติ
                 </p>
               </div>
             )}

@@ -27,22 +27,25 @@ import AssessmentformList from "../app/UserDetail/AssessmentformList";
 export const Routes = (
   <Route path={RoutePath.home} element={<App />}>
     <Route path="*" element={<div>Page Not Found </div>} />
-    <Route path="/UserPage" element={<UserPage />} />
-    <Route path="/EyesCreate" element={<EyesCreate />} />
-    <Route path="/EarSelect" element={<EarSelect />} />
-    <Route path="/Check250Hz" element={<Check250Hz />} />
-    <Route path="/Check500Hz" element={<Check500Hz />} />
-    <Route path="/Check1000Hz" element={<Check1000Hz />} />
-    <Route path="/Check2000Hz" element={<Check2000Hz />} />
-    <Route path="/Check4000Hz" element={<Check4000Hz />} />
-    <Route path="/Check6000Hz" element={<Check6000Hz />} />
-    <Route path="/Check8000Hz" element={<Check8000Hz />} />
-    <Route path="/PauseCheck" element={<PauseCheck />} />
-    <Route path="/HearringCreate" element={<HearringCreate />} />
-    <Route path="/Assessmentform" element={<Assessmentform />} />
-    <Route path="/AssessmentformList" element={<AssessmentformList />} />
-    <Route path="/" element={<Login />} />
-    <Route path="/user/:userId" element={<UserDetailPage />} />
+    <Route path={RoutePath.userPage} element={<UserPage />} />
+    <Route path={RoutePath.eyesCreate} element={<EyesCreate />} />
+    <Route path={RoutePath.earSelect} element={<EarSelect />} />
+    <Route path={RoutePath.check250Hz} element={<Check250Hz />} />
+    <Route path={RoutePath.check500Hz} element={<Check500Hz />} />
+    <Route path={RoutePath.check1000Hz} element={<Check1000Hz />} />
+    <Route path={RoutePath.check2000Hz} element={<Check2000Hz />} />
+    <Route path={RoutePath.check4000Hz} element={<Check4000Hz />} />
+    <Route path={RoutePath.check6000Hz} element={<Check6000Hz />} />
+    <Route path={RoutePath.check8000Hz} element={<Check8000Hz />} />
+    <Route path={RoutePath.pauseCheck} element={<PauseCheck />} />
+    <Route path={RoutePath.hearringCreate} element={<HearringCreate />} />
+    <Route path={RoutePath.assessmentform} element={<Assessmentform />} />
+    <Route
+      path={RoutePath.assessmentformList}
+      element={<AssessmentformList />}
+    />
+    <Route path={RoutePath.home} element={<Login />} />
+    <Route path={RoutePath.userDetailPath} element={<UserDetailPage />} />
   </Route>
 );
 

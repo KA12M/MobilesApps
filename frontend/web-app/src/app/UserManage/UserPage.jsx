@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Container, Button, Modal, Form, Dropdown, DropdownButton } from "react-bootstrap";
+import {
+  Container,
+  Button,
+  Modal,
+  Form,
+  Dropdown,
+  DropdownButton,
+} from "react-bootstrap";
 import { observer } from "mobx-react-lite";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -12,7 +19,7 @@ import { DatePicker, Table, notification } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import th from "antd/lib/date-picker/locale/th_TH";
-import { useLocation} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 dayjs.extend(utc);
 
@@ -26,7 +33,7 @@ const UserPage = () => {
   const location = useLocation();
   const locationData = location.state?.userData;
 
-  console.log("locationData",locationData)
+  console.log("locationData", locationData);
 
   const {
     register,
@@ -37,7 +44,7 @@ const UserPage = () => {
 
   useEffect(() => {
     loadUsers();
-    localStorage.removeItem('UserId');
+    localStorage.removeItem("UserId");
   }, []);
 
   const handleClose = () => setShow(false);
@@ -49,42 +56,37 @@ const UserPage = () => {
       reset();
       handleClose();
       notification.success({
-        message: 'สำเร็จ',
-        description: 'สมัครสมาชิกเสร็จสิ้น',
+        message: "สำเร็จ",
+        description: "สมัครสมาชิกเสร็จสิ้น",
       });
     });
   }
 
   useEffect(() => {
-    localStorage.setItem("UserAdmin",'1');
-  }, [])
-
-
-  
+    localStorage.setItem("UserAdmin", "1");
+  }, []);
 
   const [sortOrder, setSortOrder] = useState("asc");
   const [idSortOrder, setIdSortOrder] = useState("asc");
 
-
   const [searchTerm, setSearchTerm] = useState("");
 
-const handleSearchChange = (event) => {
-  setSearchTerm(event.target.value);
-};
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
 
-const filteredData = data.filter(
-  (user) =>
-    (user.firstName &&
-      (user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.lastName.toLowerCase().includes(searchTerm.toLowerCase()))) ||
-    (user.lastName &&
-      (user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.lastName.toLowerCase().includes(searchTerm.toLowerCase()))) ||
-    (user.phone && user.phone.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (user.id.toString().includes(searchTerm.toLowerCase())) 
-);
-
-
+  const filteredData = data.filter(
+    (user) =>
+      (user.firstName &&
+        (user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.lastName.toLowerCase().includes(searchTerm.toLowerCase()))) ||
+      (user.lastName &&
+        (user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.lastName.toLowerCase().includes(searchTerm.toLowerCase()))) ||
+      (user.phone &&
+        user.phone.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      user.id.toString().includes(searchTerm.toLowerCase())
+  );
 
   const handleDelete = async (item) => {
     const swalOptions = {
@@ -103,11 +105,9 @@ const filteredData = data.filter(
           `http://localhost:5255/api/User/RemoveUser?userId=${item}`
         );
         notification.success({
-          message: 'สำเร็จ',
-          description: 'ลบสมาชิกเสร็จสิ้น',
+          message: "สำเร็จ",
+          description: "ลบสมาชิกเสร็จสิ้น",
         });
-
-
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการลบ:", error);
         Swal.fire("ข้อผิดพลาด!", "มีบางอย่างผิดพลาดในการลบรายการ", "error");
@@ -115,7 +115,6 @@ const filteredData = data.filter(
       loadUsers();
     }
   };
-
 
   const [selectedDate, setSelectedDate] = useState(null);
 
@@ -126,23 +125,22 @@ const filteredData = data.filter(
     setSelectedDate(localDate);
   };
 
-
   const logout = () => {
     localStorage.clear();
-    navigate("/");
-  }
+    navigate(RoutePath.home);
+  };
 
   const columns = [
     {
-      title: 'รหัส',
-      dataIndex: 'id',
-      key: 'id',
-      sorter: (a, b) => idSortOrder === 'asc' ? a.id - b.id : b.id - a.id,
+      title: "รหัส",
+      dataIndex: "id",
+      key: "id",
+      sorter: (a, b) => (idSortOrder === "asc" ? a.id - b.id : b.id - a.id),
     },
     {
-      title: 'ชื่อ-นามสกุล',
-      dataIndex: 'name',
-      key: 'name',
+      title: "ชื่อ-นามสกุล",
+      dataIndex: "name",
+      key: "name",
       sorter: (a, b) => {
         const nameA = (a.firstName || "").toUpperCase();
         const nameB = (b.firstName || "").toUpperCase();
@@ -157,30 +155,30 @@ const filteredData = data.filter(
       render: (text, record) => `${record.firstName} ${record.lastName}`,
     },
     {
-      title: 'เบอร์โทรศัพท์',
-      dataIndex: 'phone',
-      key: 'phone',
+      title: "เบอร์โทรศัพท์",
+      dataIndex: "phone",
+      key: "phone",
     },
     {
-      title: 'วันเกิด',
-      dataIndex: 'birthday',
-      key: 'birthday',
+      title: "วันเกิด",
+      dataIndex: "birthday",
+      key: "birthday",
       render: (text, record) => formatISODateToThaiDate(record.birthday),
     },
     {
-      title: 'อายุ',
-      dataIndex: 'age',
-      key: 'age',
+      title: "อายุ",
+      dataIndex: "age",
+      key: "age",
     },
     {
-      title: 'หมายเหตุ',
-      dataIndex: 'note',
-      key: 'note',
+      title: "หมายเหตุ",
+      dataIndex: "note",
+      key: "note",
     },
     {
-      title: 'อื่นๆ',
-      dataIndex: 'action',
-      key: 'action',
+      title: "อื่นๆ",
+      dataIndex: "action",
+      key: "action",
       render: (text, record) => (
         <DropdownButton title="เลือก" variant="secondary">
           <Dropdown.Item onClick={() => handleDelete(record.id)}>
@@ -214,12 +212,10 @@ const filteredData = data.filter(
           + เพิ่มข้อมูลผู้ใช้
         </Button>
 
-        <Button  className="mb-2" variant="warning"  onClick={logout}>
+        <Button className="mb-2" variant="warning" onClick={logout}>
           ออกจากระบบ
         </Button>
-       
       </div>
-      
 
       <Table
         columns={columns}
@@ -234,7 +230,6 @@ const filteredData = data.filter(
         // }}
         bordered
         rowKey="id"
-        
       />
 
       {/* <PaginationWidget pagination={pagination} /> */}
@@ -267,7 +262,7 @@ const filteredData = data.filter(
             <Form.Group className="mb-3">
               <Form.Label>เบอร์โทรศัพท์</Form.Label>
               <Form.Control
-                {...register("phone", { required: true, })}
+                {...register("phone", { required: true })}
                 type="tel"
                 required
                 maxLength={10}

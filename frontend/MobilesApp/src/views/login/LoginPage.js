@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { Button, FormControl, Heading, Input } from "native-base";
 import { observer } from "mobx-react-lite";
-// import DatePicker from "@dietime/react-native-date-picker";
 import moment from "moment";
 import "moment/locale/th";
 

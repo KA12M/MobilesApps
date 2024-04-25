@@ -13,7 +13,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference> 
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.7" /> 
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
@@ -27,6 +28,14 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\image-upload\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\assets\howler-ed476824.js" />
+    <None Include="wwwroot\assets\html2canvas-111be967.js" />
+    <None Include="wwwroot\assets\index-918294b8.js" />
+    <None Include="wwwroot\assets\index.es-eac37484.js" />
+    <None Include="wwwroot\assets\purify.es-41e8c302.js" />
   </ItemGroup>
 
 </Project>

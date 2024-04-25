@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { RoutePath } from "../../utils/RoutePath";
 import { Card, Button } from "antd";
 import { FaCheck } from "react-icons/fa";
+import { pathServer } from "../../hooks/api/agent";
 
 function PauseCheck() {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ function PauseCheck() {
       localStorage.removeItem("keyEarRight");
       localStorage.setItem("keyEarleft", "0");
     }
-    navigate("/Check1000Hz");
+    navigate(RoutePath.check1000Hz);
   };
 
   function processHearing(item) {
@@ -118,16 +119,13 @@ function PauseCheck() {
         items: transformedData.items,
       };
 
-      const response = await fetch(
-        "http://localhost:5255/api/Hearing/AddHearingByUserId",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(bodyData),
-        }
-      );
+      const response = await fetch(pathServer + "Hearing/AddHearingByUserId", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -171,8 +169,12 @@ function PauseCheck() {
           </div>
         </div>
       ) : (
-        <div className="responsivepausecheck1" >
-          <Row justify="center" align="middle" className="responsivepausecheck2">
+        <div className="responsivepausecheck1">
+          <Row
+            justify="center"
+            align="middle"
+            className="responsivepausecheck2"
+          >
             <Col
               flex={1}
               style={{

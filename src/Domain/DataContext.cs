@@ -14,11 +14,11 @@ public class DataContext : DbContext
         _configuration = configuration;
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DbConnection"));
-    }
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //{
+    //    base.OnConfiguring(optionsBuilder);
+    //    optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DbConnection"));
+    //}
 
     public DbSet<User> Users { get; set; }
     public DbSet<Sickness> Sicknesses { get; set; }

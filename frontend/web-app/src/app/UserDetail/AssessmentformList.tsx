@@ -3,16 +3,16 @@ import { Button, Table } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import dayjs from "dayjs";
+import { RoutePath } from "../../utils/RoutePath";
+import { pathServer } from "../../hooks/api/agent";
 
 const AssessmentformList = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
 
-
   // const handleEdit = (i) => {
   //   console.log("handleEdit ",i)
   // }
-  
 
   const columns = [
     {
@@ -22,7 +22,7 @@ const AssessmentformList = () => {
       align: "center",
       render: (text) => (
         <div style={{ textAlign: "center" }}>
-          {dayjs(text).locale('th').format("DD MMMM YYYY ")}
+          {dayjs(text).locale("th").format("DD MMMM YYYY ")}
         </div>
       ),
     },
@@ -32,9 +32,7 @@ const AssessmentformList = () => {
       key: "result",
       align: "center",
       render: (result) => (
-        <div style={{ textAlign: "center" }}>
-          {sumValues(result)}
-        </div>
+        <div style={{ textAlign: "center" }}>{sumValues(result)}</div>
       ),
     },
     {
@@ -46,13 +44,17 @@ const AssessmentformList = () => {
         <div style={{ textAlign: "center" }}>
           {sumValues(result) > 10 ? (
             <div>
-              <p style={{ color: 'red', fontWeight: '600' }}>ท่านควรไปพบแพทย์</p>
+              <p style={{ color: "red", fontWeight: "600" }}>
+                ท่านควรไปพบแพทย์
+              </p>
             </div>
           ) : (
-              <div>
-                <p style={{ color: 'green', fontWeight: '600' }}>ท่านมีการได้ยินปกติ</p>
-              </div>
-            )}
+            <div>
+              <p style={{ color: "green", fontWeight: "600" }}>
+                ท่านมีการได้ยินปกติ
+              </p>
+            </div>
+          )}
         </div>
       ),
     },
@@ -74,7 +76,7 @@ const AssessmentformList = () => {
       const userId = localStorage.getItem("UserId");
       try {
         const response = await axios.get(
-          `http://localhost:5255/api/FMHT/GetFMHTByUserId?userId=${userId}`
+          `${pathServer}FMHT/GetFMHTByUserId?userId=${userId}`
         );
         setData(response.data);
       } catch (error) {
@@ -86,14 +88,14 @@ const AssessmentformList = () => {
   }, []);
 
   const HandleToAssessment = () => {
-    navigate("/Assessmentform");
-    window.scrollTo(0, 0); 
-  }
+    navigate(RoutePath.assessmentform);
+    window.scrollTo(0, 0);
+  };
 
   const sumValues = (result) => {
     let totalScore = 0;
     const resultArray = JSON.parse(result);
-    resultArray.forEach(item => {
+    resultArray.forEach((item) => {
       const value = parseInt(item.value);
       switch (value) {
         case 3:
@@ -111,11 +113,15 @@ const AssessmentformList = () => {
     });
     return totalScore;
   };
-  
 
   return (
     <div style={{ padding: 30, position: "relative" }}>
-      <Button onClick={HandleToAssessment} style={{ position: "absolute", top: -30, right: 30 }}>เพิ่มทดสอบการประเมิน</Button>
+      <Button
+        onClick={HandleToAssessment}
+        style={{ position: "absolute", top: -30, right: 30 }}
+      >
+        เพิ่มทดสอบการประเมิน
+      </Button>
       <Table columns={columns} dataSource={data} />
     </div>
   );

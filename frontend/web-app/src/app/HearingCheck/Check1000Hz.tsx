@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Steps, Button, message, Card, notification } from "antd";
 import { GiSoundOff, GiSoundOn } from "react-icons/gi";
-import soundFile from "../../sound/1000Hz.mp4";
+// import soundFile from "../../sound/1000Hz.mp4";
 // import soundFile from "../../sound/B_1000Hz_Used.mp4";
 import useSound from "use-sound";
 import { useNavigate } from "react-router-dom";
+import { RoutePath } from "../../utils/RoutePath";
+import { pathImageServer } from "../../hooks/api/agent";
 
 function Check1000Hz() {
   const navigate = useNavigate();
+
+  const soundFile = pathImageServer + "1000Hz-dd42a4c4.mp4";
 
   const [changesound, setChangesound] = useState(0.3);
 
@@ -87,7 +91,7 @@ function Check1000Hz() {
             description: "กำลังจะพาท่านไปยังความถี่ถัดไป",
           });
           setTimeout(() => {
-            navigate("/Check2000Hz");
+            navigate(RoutePath.check2000Hz);
           }, 5000);
           return;
         } else {
@@ -97,7 +101,7 @@ function Check1000Hz() {
             description: "กำลังจะพาท่านไปยังความถี่ถัดไป",
           });
           setTimeout(() => {
-            navigate("/Check2000Hz");
+            navigate(RoutePath.check2000Hz);
           }, 5000);
         }
         return;
@@ -109,11 +113,9 @@ function Check1000Hz() {
   //   const playSound = async () => {
   //     await play();
   //   };
-  
+
   //   playSound();
   // }, []);
-  
-  
 
   console.log("score", score);
   console.log("isSoundOn", isSoundOn);
@@ -134,7 +136,7 @@ function Check1000Hz() {
     if (keyEarRight != null) {
       localStorage.setItem("scoreRight1", changesoundDB);
     }
-    navigate("/Check2000Hz");
+    navigate(RoutePath.check2000Hz);
     console.log("Score:", score);
   };
 

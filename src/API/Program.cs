@@ -25,12 +25,13 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
-            .WithOrigins("http://10.103.0.15",
-                        "http://coms.kru.ac.th",
-                        "http://localhost:5173",
-                        "http://localhost:3000",
-                        "http://localhost:5255",
-                        "http://10.103.0.16");
+            //.WithOrigins("http://10.103.0.15",
+            //            "http://coms.kru.ac.th",
+            //            "http://localhost:5173",
+            //            "http://localhost:3000",
+            //            "http://localhost:5255",
+            //            "http://10.103.0.16");
+            .SetIsOriginAllowed(x => true);
     });
 });
 
@@ -49,15 +50,14 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors("CorsPolicy");

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Button } from "react-bootstrap";
+import agent, { Recheck, pathServer } from "../../hooks/api/agent";
 
 function EyesCreate({ setMode, userId, selectedUserDetail }) {
   const [leftEyeImage, setLeftEyeImage] = useState<any>(null);
@@ -45,17 +46,15 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
       Userid: userId,
     };
     try {
-      const response = await fetch(
-        "http://localhost:5255/api/Diabetes/CreateDiabete",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(bodyData),
-        }
-      );
+      const response = await fetch(pathServer + "Diabetes/CreateDiabete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
+      });
 
+      // const response = await createeye(bodyData);
       if (response.ok) {
         const data = await response.json();
         console.log("Upload success:", data);
@@ -79,7 +78,6 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
 
         setDisableButton(true);
         window.location.reload();
-
       } else {
         console.error("Upload failed:", response.statusText);
       }
@@ -95,14 +93,7 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
     formData.append("ImageEyeRight", rightEyeImage);
     formData.append("Note", note);
     try {
-      const response = await fetch(
-        "http://localhost:5255/api/Diabetes/RecheckDiabete",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
+      const response = await Recheck(formData);
       if (response.ok) {
         const data = await response.json();
         console.log("Upload success:", data);
@@ -120,11 +111,11 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
               ? []
               : JSON.parse(data.resultRight);
 
-              if (ConvertRight.length === 4) {
-                combinedNote += " ดวงตาขวาเป็นเบาหวานควรพบแพทย์";
-              } else if (ConvertRight.length === 2) {
-                setNote("");
-              }
+          if (ConvertRight.length === 4) {
+            combinedNote += " ดวงตาขวาเป็นเบาหวานควรพบแพทย์";
+          } else if (ConvertRight.length === 2) {
+            setNote("");
+          }
           setDiabetesDataConvertRight(ConvertRight || null);
         }
 
@@ -134,18 +125,16 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
               ? []
               : JSON.parse(data.resultLeft);
 
-              if (ConvertLeft.length === 4) {
-                combinedNote += " ดวงตาซ้ายเป็นเบาหวานควรพบแพทย์";
-              } else if (ConvertLeft.length === 2) {
-                setNote("");
-              }
+          if (ConvertLeft.length === 4) {
+            combinedNote += " ดวงตาซ้ายเป็นเบาหวานควรพบแพทย์";
+          } else if (ConvertLeft.length === 2) {
+            setNote("");
+          }
 
           setDiabetesDataConvertLeft(ConvertLeft || null);
         }
 
-       
         setNote(combinedNote);
-        
 
         setDisableButton(true);
       } else {
@@ -175,8 +164,7 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
     if (rightEyeInputRef.current) rightEyeInputRef.current.value = null;
   };
 
-
-  console.log("selectedUserDetailselectedUserDetail",selectedUserDetail)
+  console.log("selectedUserDetailselectedUserDetail", selectedUserDetail);
 
   return (
     <div style={{ width: "100%", padding: 35, backgroundColor: "#fff" }}>
@@ -213,7 +201,7 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
             style={{
               display: "flex",
               justifyContent: "space-around",
-              marginLeft:-40
+              marginLeft: -40,
             }}
           >
             <div style={{}}>
@@ -225,11 +213,15 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
             </div>
 
             <div style={{}}>
-              {selectedUserDetail.imageEyeRight != null ? <img
-                src={selectedUserDetail.imageEyeRight}
-                alt="Right Eye"
-                style={{ width: 125, height: 125, marginTop: 10 }}
-              />: <div></div>}
+              {selectedUserDetail.imageEyeRight != null ? (
+                <img
+                  src={selectedUserDetail.imageEyeRight}
+                  alt="Right Eye"
+                  style={{ width: 125, height: 125, marginTop: 10 }}
+                />
+              ) : (
+                <div></div>
+              )}
             </div>
           </div>
 
@@ -279,13 +271,19 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                                   <div
                                     style={{
                                       width: item.Value ? item.Value : 0,
-                                      backgroundColor: item.Key.startsWith('1-') || item.Key.startsWith('2-') || item.Key.startsWith('3-') || item.Key.startsWith('4-') ? 'red' : '#02b01c',
+                                      backgroundColor:
+                                        item.Key.startsWith("1-") ||
+                                        item.Key.startsWith("2-") ||
+                                        item.Key.startsWith("3-") ||
+                                        item.Key.startsWith("4-")
+                                          ? "red"
+                                          : "#02b01c",
                                       height: 20,
                                     }}
                                   ></div>
                                 </div>
                                 <span style={{ marginLeft: 10 }}>
-                                  {(item.Value).toFixed(3)}%
+                                  {item.Value.toFixed(3)}%
                                 </span>
                               </div>
                             </div>
@@ -330,13 +328,19 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                                   <div
                                     style={{
                                       width: item.Value ? item.Value : 0,
-                                      backgroundColor: item.Key.startsWith('1-') || item.Key.startsWith('2-') || item.Key.startsWith('3-') || item.Key.startsWith('4-') ? 'red' : '#02b01c',
+                                      backgroundColor:
+                                        item.Key.startsWith("1-") ||
+                                        item.Key.startsWith("2-") ||
+                                        item.Key.startsWith("3-") ||
+                                        item.Key.startsWith("4-")
+                                          ? "red"
+                                          : "#02b01c",
                                       height: 20,
                                     }}
                                   ></div>
                                 </div>
                                 <span style={{ marginLeft: 10 }}>
-                                  {(item.Value).toFixed(3)}%
+                                  {item.Value.toFixed(3)}%
                                 </span>
                               </div>
                             </div>
@@ -374,61 +378,111 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
               </span>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-  <div style={{ marginBottom: 20, width: "100%" }}>
-    <div style={{ display: "flex", justifyContent: "space-around" }}>
-      <span style={{ fontSize: 18, marginRight: 20 }}>ดวงตาซ้าย</span>
-      <span style={{ fontSize: 18 }}>ดวงตาขวา</span>
-    </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <div style={{ marginBottom: 20, width: "100%" }}>
+                <div
+                  style={{ display: "flex", justifyContent: "space-around" }}
+                >
+                  <span style={{ fontSize: 18, marginRight: 20 }}>
+                    ดวงตาซ้าย
+                  </span>
+                  <span style={{ fontSize: 18 }}>ดวงตาขวา</span>
+                </div>
 
-    <div style={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap" }}>
-      <div style={{ width: "50%", textAlign: "center", marginBottom: 20 }}>
-        {leftEyeImageUrl && (
-          <img
-            src={leftEyeImageUrl}
-            alt="Left Eye"
-            style={{ width: "100%", maxWidth: 125, height: "auto", borderRadius: 10 }}
-          />
-        )}
-      </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-around",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "50%",
+                      textAlign: "center",
+                      marginBottom: 20,
+                    }}
+                  >
+                    {leftEyeImageUrl && (
+                      <img
+                        src={leftEyeImageUrl}
+                        alt="Left Eye"
+                        style={{
+                          width: "100%",
+                          maxWidth: 125,
+                          height: "auto",
+                          borderRadius: 10,
+                        }}
+                      />
+                    )}
+                  </div>
 
-      <div style={{ width: "50%", textAlign: "center", marginBottom: 20 }}>
-        {rightEyeImageUrl && (
-          <img
-            src={rightEyeImageUrl}
-            alt="Right Eye"
-            style={{ width: "100%", maxWidth: 125, height: "auto", borderRadius: 10 }}
-          />
-        )}
-      </div>
-    </div>
-  </div>
+                  <div
+                    style={{
+                      width: "50%",
+                      textAlign: "center",
+                      marginBottom: 20,
+                    }}
+                  >
+                    {rightEyeImageUrl && (
+                      <img
+                        src={rightEyeImageUrl}
+                        alt="Right Eye"
+                        style={{
+                          width: "100%",
+                          maxWidth: 125,
+                          height: "auto",
+                          borderRadius: 10,
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
 
-  <div style={{ display: "flex", justifyContent: "space-between", width: "65%", marginBottom: 20 }}>
-    <div className="file-input-wrapperleft" style={{ marginRight: 10 }}>
-      เลือกรูปภาพ
-      <input
-        type="file"
-        onChange={handleLeftEyeChange}
-        ref={leftEyeInputRef}
-        disabled={disableButton}
-        className="file-input"
-      />
-    </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "65%",
+                  marginBottom: 20,
+                }}
+              >
+                <div
+                  className="file-input-wrapperleft"
+                  style={{ marginRight: 10 }}
+                >
+                  เลือกรูปภาพ
+                  <input
+                    type="file"
+                    onChange={handleLeftEyeChange}
+                    ref={leftEyeInputRef}
+                    disabled={disableButton}
+                    className="file-input"
+                  />
+                </div>
 
-    <div className="file-input-wrapperright" style={{ marginLeft: 10 }}>
-      เลือกรูปภาพ
-      <input
-        type="file"
-        onChange={handleRightEyeChange}
-        ref={rightEyeInputRef}
-        disabled={disableButton}
-        className="file-input"
-      />
-    </div>
-  </div>
-</div>
-
+                <div
+                  className="file-input-wrapperright"
+                  style={{ marginLeft: 10 }}
+                >
+                  เลือกรูปภาพ
+                  <input
+                    type="file"
+                    onChange={handleRightEyeChange}
+                    ref={rightEyeInputRef}
+                    disabled={disableButton}
+                    className="file-input"
+                  />
+                </div>
+              </div>
+            </div>
 
             <div style={{ textAlign: "center", marginTop: 40 }}>
               <textarea
@@ -519,13 +573,19 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                                   <div
                                     style={{
                                       width: item.Value ? item.Value : 0,
-                                      backgroundColor: item.Key.startsWith('1-') || item.Key.startsWith('2-') || item.Key.startsWith('3-') || item.Key.startsWith('4-') ? 'red' : '#02b01c',
+                                      backgroundColor:
+                                        item.Key.startsWith("1-") ||
+                                        item.Key.startsWith("2-") ||
+                                        item.Key.startsWith("3-") ||
+                                        item.Key.startsWith("4-")
+                                          ? "red"
+                                          : "#02b01c",
                                       height: 20,
                                     }}
                                   ></div>
                                 </div>
                                 <span style={{ marginLeft: 10 }}>
-                                  {(item.Value).toFixed(3)}%
+                                  {item.Value.toFixed(3)}%
                                 </span>
                               </div>
                             </div>
@@ -560,13 +620,19 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
                                   <div
                                     style={{
                                       width: item.Value ? item.Value : 0,
-                                      backgroundColor: item.Key.startsWith('1-') || item.Key.startsWith('2-') || item.Key.startsWith('3-') || item.Key.startsWith('4-') ? 'red' : '#02b01c',
+                                      backgroundColor:
+                                        item.Key.startsWith("1-") ||
+                                        item.Key.startsWith("2-") ||
+                                        item.Key.startsWith("3-") ||
+                                        item.Key.startsWith("4-")
+                                          ? "red"
+                                          : "#02b01c",
                                       height: 20,
                                     }}
                                   ></div>
                                 </div>
                                 <span style={{ marginLeft: 10 }}>
-                                  {(item.Value).toFixed(3)}%
+                                  {item.Value.toFixed(3)}%
                                 </span>
                               </div>
                             </div>
@@ -580,9 +646,8 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
           </div>
         </form>
       )}
-    <div className="responsivehearinglist"></div>
-    <div className="responsiveeyecreate"></div>
-
+      <div className="responsivehearinglist"></div>
+      <div className="responsiveeyecreate"></div>
     </div>
   );
 }

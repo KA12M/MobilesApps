@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using Application.Core;
+using Domain;
 using Domain.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,23 @@ namespace API.Controllers
         }
 
         [HttpGet("[action]")]
+        public string GetString()
+        { 
+            return "goof เองจ้าา";
+        }
+
+        [HttpGet("[action]")]
         public async Task<ActionResult<List<FMHT>>> GetFMHT()
         {
-            var result = await _context.FMHTs.ToListAsync();
-
-            return Ok(result.OrderByDescending(a => a.CreatedAt).ToList());
+            try
+            {
+                var result = await _context.FMHTs.ToListAsync();
+                return Ok(result.OrderByDescending(a => a.CreatedAt).ToList());
+            } catch (Exception ex)
+            {
+               
+                return BadRequest(ex); 
+            } 
         }
 
         [HttpGet("[action]")] 
