@@ -147,9 +147,11 @@ function PauseCheck() {
   };
 
   return (
+    // <div className="responsivepausecheck">
     <div className="responsivepausecheck">
       {hasBothEars ? (
-        <div
+        <div className="responsivepausecheck4">
+          <div
           className="load"
           style={{
             backgroundColor: "#fff",
@@ -167,6 +169,7 @@ function PauseCheck() {
             <div className="dot-spinner__dot"></div>
             <div className="dot-spinner__dot"></div>
           </div>
+        </div>
         </div>
       ) : (
         <div className="responsivepausecheck1">

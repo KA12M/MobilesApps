@@ -818,6 +818,13 @@ textarea {
 
 @media (max-width: 1024px) {
 
+  .responsivepausecheck1{
+    margin-top: 330px;
+  }
+
+  .responsivepausecheck4{
+    margin-top: 170px;
+  }
     
   .responsivepausecheck{
     margin-top: -225px;

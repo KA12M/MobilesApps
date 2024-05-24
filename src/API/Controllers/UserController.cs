@@ -50,7 +50,8 @@ public class UserController : BaseApiController
         return HandleResult(await Mediator.Send(new CreateByName.Command { User = user }));
     }
 
-    [HttpPut("[action]")]
+    //[HttpPut("[action]")]
+    [HttpPost("[action]")]
     public async Task<ActionResult> EditUser(UserDTO user)
     {
         return HandleResult(await Mediator.Send(new EditUser.Command { User = user }));
@@ -73,7 +74,8 @@ public class UserController : BaseApiController
         return Ok(await _context.SaveChangesAsync() > 0 ? user : StatusCode(StatusCodes.Status400BadRequest));
     }
 
-    [HttpDelete("[action]")]
+    //[HttpOptions]
+    [HttpPost("[action]")]
     public async Task<ActionResult> RemoveUser(int userId)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
@@ -86,5 +88,6 @@ public class UserController : BaseApiController
             ? StatusCode(StatusCodes.Status200OK) 
             : StatusCode(StatusCodes.Status400BadRequest));
     }
+
 
 }

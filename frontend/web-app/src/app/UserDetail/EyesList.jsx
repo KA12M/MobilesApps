@@ -36,11 +36,7 @@ const EyesList = ({ setMode, hearings }) => {
     const result = await Swal.fire(swalOptions);
     if (result.isConfirmed) {
       try {
-        // await agent.eye.delete(item.id);
-        await axios.delete(
-          pathServer + `Diabetes/RemoveDiabete?eyeId=${item.id}`
-        );
-        // agent.eye.delete(item.id);
+        await agent.eye.delete(item.id);
         notification.success({
           message: "สำเร็จ",
           description: "ลบข้อมูลการตรวจตาเสร็จสิ้น",
@@ -327,6 +323,8 @@ const EyesList = ({ setMode, hearings }) => {
   };
 
   const admin = localStorage.getItem("UserAdmin");
+
+
 
   return (
     <div>

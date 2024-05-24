@@ -12,8 +12,8 @@ import { pathImageServer } from "../../hooks/api/agent";
 function EarSelect() {
   const navigate = useNavigate();
 
-  const EarLeft = "earleft.png";
-  const EarRight = "earright.png";
+  const EarLeft = "earleft-0577f066.png";
+  const EarRight = "earright-17ae63d5.png";
 
   const selectEarLeft = () => {
     localStorage.setItem("ear0", "0");

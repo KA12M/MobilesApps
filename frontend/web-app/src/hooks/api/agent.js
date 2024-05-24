@@ -6,6 +6,8 @@ export const pathImageServer =
 
 export const pathServer = import.meta.env.VITE_API_URL;
 
+export const pathassets = "https://tee.kru.ac.th/ear-eye/assets/"
+
 axios.defaults.baseURL = pathServer;
 
 axios.defaults.withCredentials = true;
@@ -43,17 +45,28 @@ export const Recheck = async (formData) =>
 //     body: JSON.stringify(bodyData),
 //   });
 
+
+export const EditDetailUser = async (data) => 
+await fetch(pathServer + "User/EditUser", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(data),
+})
+
 export default {
   user: {
     list: (params) => request.get("/User/GetUsers", { params }),
     one: (userId) => request.get("/User/" + userId),
     newUser: (data) => request.post("/User/Register", data),
     login: (phone) => request.post(`/User/LoginByPhone?phone=${phone}`),
+    deleteUser: (userId) => request.post("/User/RemoveUser?userId="+ userId)
   },
   hearing: {
     list: (userId) => request.get("/Hearing/GetAllByUserId?userId=" + userId),
   },
-  // eye: {
-  //   delete: (id) => request.del("/Diabetes/RemoveDiabete?eyeId=" + id),
-  // },
+  eye: {
+    delete: (id) => request.post("/Diabetes/RemoveDiabete?eyeId=" + id),
+  },
 };

@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Button, Card, Table } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Button, Card, Dropdown, DropdownButton, Table } from "react-bootstrap";
 import { formatISODateToThaiDate } from "../../utils/dateFormat";
 import {
   Chart,
@@ -13,6 +13,8 @@ import { Line } from "react-chartjs-2";
 import ExcelJS from "exceljs";
 import { useStore } from "../../utils/store";
 import PropTypes from "prop-types";
+import html2pdf from "html2pdf.js";
+import { notification } from "antd";
 
 Chart.register(
   CategoryScale,
@@ -131,6 +133,8 @@ const HearingList = ({ hearings, setModeHearing }) => {
     localStorage.removeItem("keyEarleft");
   }, []);
 
+  const admin = localStorage.getItem("UserAdmin");
+
   const exportToExcelAll = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Hearing Data");
@@ -241,7 +245,6 @@ const HearingList = ({ hearings, setModeHearing }) => {
       };
     });
 
-    // ใช้การกรองข้อมูลเฉพาะ id ที่ระบุ
     const hearing = hearings?.hearing?.value?.find((item) => item.id === id);
     hearing?.items.forEach((subItem) => {
       worksheet.addRow([
@@ -290,6 +293,51 @@ const HearingList = ({ hearings, setModeHearing }) => {
         console.error("ไม่สามารถสร้างไฟล์ Excel ได้");
       }
     }
+  };
+
+  const [hidenbutton, setHidenbutton] = useState(false);
+  const generatePDF = (itemId) => {
+    console.log(itemId);
+    const element = document.getElementById(itemId);
+    const opt = {
+      margin: -0.4,
+      filename: "hearing_report.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+    };
+
+    const downloadButton = document.querySelector("#downloadButton");
+
+    if (downloadButton) {
+      downloadButton.style.display = "none";
+    }
+
+    setHidenbutton(true);
+
+    new Promise((resolve, _) => {
+      setTimeout(() => {
+        resolve();
+      }, 1000); // รอ 1 วินาที
+    }).then(() => {
+      downloadButton.style.display = "none";
+      element.style.transform = "scale(0.8)";
+      html2pdf()
+        .from(element)
+        .set(opt)
+        .save()
+        .then(() => {
+          if (downloadButton) {
+            downloadButton.style.display = "block";
+          }
+          setHidenbutton(false);
+          element.style.transform = "scale(1)";
+          notification.success({
+            message: "สำเร็จ",
+            description: "สร้างไฟล์ PDF สำเร็จ",
+          });
+        });
+    });
   };
 
   return (
@@ -361,7 +409,7 @@ const HearingList = ({ hearings, setModeHearing }) => {
           </div>
         </Card.Body>
         <Card.Body>
-          <div style={{ display: "flex" }}>
+          {/* <div style={{ display: "flex" }}>
             <div style={{ marginTop: -20, marginRight: 50 }}>
               <p>การแบ่งระดับความผิดปกติของการได้ยิน</p>
               <p>1.การได้ยินปรกติ (Normal Hearing)</p>
@@ -376,21 +424,40 @@ const HearingList = ({ hearings, setModeHearing }) => {
               <p>5.ระดับรุนแรง (Severe Hearing Loss)</p>
               <p>6.ระดับหูหนวก (Profound Hearing Loss)</p>
             </div>
-          </div>
+          </div> */}
 
-          <Table>
-            <thead >
-              <tr style={{ textAlign: "center" }}>
-                <th style={{ width: 150 }}>วันที่</th>
-                <th style={{ width: 730 }}>ผล</th>
-                {/* <th>หมายเหตุ</th> */}
-                <th></th>
+          <Table style={{ border: "3px solid black" }}>
+            <thead>
+              <tr
+                style={{ textAlign: "center", borderBottom: "2px solid black" }}
+              >
+                <th
+                  style={{
+                    width: 300,
+                    borderRight: "2px solid black",
+                    borderBottom: "2px solid black",
+                  }}
+                >
+                  วันที่
+                </th>
+                <th
+                  style={{
+                    width: 730,
+                    borderRight: "2px solid black",
+                    borderBottom: "2px solid black",
+                  }}
+                >
+                  ผล
+                </th>
+                <th style={{ borderBottom: "2px solid black" }}></th>
               </tr>
             </thead>
             <tbody>
               {hearings?.hearing?.value?.map((item) => (
-                <tr key={item.id}>
-                  <td>{formatISODateToThaiDate(item.createdAt)}</td>
+                <tr key={item.id} id={item.id}>
+                  <td style={{ fontSize: 17 }}>
+                    {formatISODateToThaiDate(item.createdAt)}
+                  </td>
                   <td>
                     <Table>
                       <thead>
@@ -534,6 +601,32 @@ const HearingList = ({ hearings, setModeHearing }) => {
                     )}
 
                     <div>
+                      <div>
+                        <Card.Text style={{ fontSize: 18, fontWeight: 700 }}>
+                          ผลการทดสอบการได้ยิน
+                        </Card.Text>
+                      </div>
+
+                      <div
+                        style={{ display: "flex", marginTop: 30, width: 800 }}
+                      >
+                        <div style={{ marginTop: -20, marginRight: 50 }}>
+                          <p>การแบ่งระดับความผิดปกติของการได้ยิน</p>
+                          <p>1.การได้ยินปรกติ (Normal Hearing)</p>
+                          <p>2.ระดับน้อย (Mild Hearing Loss)</p>
+                          <p>3.ระดับปานกลาง (Moderate Hearing Loss)</p>
+                        </div>
+
+                        <div style={{ marginTop: 20 }}>
+                          <p>
+                            4.ระดับปานกลางค่อนข้างรุนแรง (Moderately Severe
+                            Hearing Loss)
+                          </p>
+                          <p>5.ระดับรุนแรง (Severe Hearing Loss)</p>
+                          <p>6.ระดับหูหนวก (Profound Hearing Loss)</p>
+                        </div>
+                      </div>
+
                       <p style={{ fontSize: 20, fontWeight: 600 }}>ผลสรุป</p>
                       {item.items.map((subItem) => (
                         <div key={subItem.id}>
@@ -662,7 +755,7 @@ const HearingList = ({ hearings, setModeHearing }) => {
                     </div>
                   </td>
                   <td style={{ textAlign: "center" }}>
-                    <Button onClick={() => exportToExcel(item.id)}>
+                    {/* <Button onClick={() => exportToExcel(item.id)}>
                       <svg
                         style={{ marginRight: 10, marginBottom: 2 }}
                         className="css-i6dzq1"
@@ -682,7 +775,19 @@ const HearingList = ({ hearings, setModeHearing }) => {
                         <polyline points="10 9 9 9 8 9" />
                       </svg>
                       ดาวน์โหลดข้อมูล
-                    </Button>
+                    </Button> */}
+
+                    <div style={{ display: hidenbutton ? "none" : "block" }}>
+                      <DropdownButton title="เลือก" variant="secondary">
+                        {admin && <Dropdown.Item>ลบ</Dropdown.Item>}
+                        <Dropdown.Item onClick={() => exportToExcel(item.id)}>
+                          ดาวน์โหลดข้อมูล Excel
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => generatePDF(item.id)}>
+                          ดาวน์โหลดข้อมูล PDF
+                        </Dropdown.Item>
+                      </DropdownButton>
+                    </div>
                   </td>
 
                   {/* <td>{item.note}</td> */}
@@ -690,7 +795,6 @@ const HearingList = ({ hearings, setModeHearing }) => {
               ))}
             </tbody>
           </Table>
-
         </Card.Body>
       </Card>
       <div className="responsivehearinglist"></div>

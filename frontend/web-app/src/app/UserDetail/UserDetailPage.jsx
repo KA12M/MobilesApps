@@ -14,7 +14,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/th"; // นำเข้า locale สำหรับภาษาไทย
 import HearringCreate from "./HearringCreate";
 import { RoutePath } from "../../utils/RoutePath";
-import { pathServer } from "../../hooks/api/agent";
+import { EditDetailUser, pathServer } from "../../hooks/api/agent";
 
 const UserDetailPage = () => {
   const { id: userId } = useParams();
@@ -119,14 +119,14 @@ const UserDetailPage = () => {
       note: noteuser,
     };
     try {
-      const response = await fetch(pathServer + "User/EditUser", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bodyData),
-      });
-
+      // const response = await fetch(pathServer + "User/EditUser", {
+      //   method: "PUT",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(bodyData),
+      // });
+      const response = await EditDetailUser(bodyData);
       if (response.ok) {
         const data = await response.json();
         console.log("Upload success:", data);

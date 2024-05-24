@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import th from "antd/lib/date-picker/locale/th_TH";
 import { useLocation } from "react-router-dom";
+import agent from "../../hooks/api/agent";
 
 dayjs.extend(utc);
 
@@ -101,9 +102,10 @@ const UserPage = () => {
     const result = await Swal.fire(swalOptions);
     if (result.isConfirmed) {
       try {
-        await axios.delete(
-          `http://localhost:5255/api/User/RemoveUser?userId=${item}`
-        );
+        // await axios.delete(
+        //   `http://localhost:5255/api/User/RemoveUser?userId=${item}`
+        // );
+        await agent.user.deleteUser(item)
         notification.success({
           message: "สำเร็จ",
           description: "ลบสมาชิกเสร็จสิ้น",
