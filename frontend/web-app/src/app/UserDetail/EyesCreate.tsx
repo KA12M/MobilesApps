@@ -54,7 +54,6 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
         body: JSON.stringify(bodyData),
       });
 
-      // const response = await createeye(bodyData);
       if (response.ok) {
         const data = await response.json();
         console.log("Upload success:", data);
@@ -97,14 +96,9 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
       if (response.ok) {
         const data = await response.json();
         console.log("Upload success:", data);
-
-        // Handle data
         setDiabetesData(data);
-
         setDiabetesDataRecheck(data);
-
         let combinedNote = "";
-
         if (data.imageEyeRight != null) {
           const ConvertRight =
             data.resultRight === "ไม่เป็นเบาหวาน"
@@ -139,7 +133,6 @@ function EyesCreate({ setMode, userId, selectedUserDetail }) {
         setDisableButton(true);
       } else {
         console.error("Upload failed:", response.statusText);
-        // Handle other non-JSON responses
         const text = await response.text();
       }
     } catch (error) {

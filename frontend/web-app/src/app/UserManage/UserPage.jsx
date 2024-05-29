@@ -21,6 +21,7 @@ import utc from "dayjs/plugin/utc";
 import th from "antd/lib/date-picker/locale/th_TH";
 import { useLocation } from "react-router-dom";
 import agent from "../../hooks/api/agent";
+import FooterComponent from "../Footer/Footer";
 
 dayjs.extend(utc);
 
@@ -102,9 +103,6 @@ const UserPage = () => {
     const result = await Swal.fire(swalOptions);
     if (result.isConfirmed) {
       try {
-        // await axios.delete(
-        //   `http://localhost:5255/api/User/RemoveUser?userId=${item}`
-        // );
         await agent.user.deleteUser(item)
         notification.success({
           message: "สำเร็จ",
@@ -195,7 +193,8 @@ const UserPage = () => {
   ];
 
   return (
-    <Container className="main pt-4">
+    <div>
+      <Container className="main pt-4">
       <div className="mb-4" style={{ width: "700", fontSize: 28 }}>
         ข้อมูลผู้ใช้งาน
       </div>
@@ -222,20 +221,9 @@ const UserPage = () => {
       <Table
         columns={columns}
         dataSource={filteredData}
-        // pagination={{
-        //   current: pagination.currentPage,
-        //   total: pagination.totalCount,
-        //   pageSize: pagination.pageSize,
-        //   onChange: (page, pageSize) => {
-        //     loadUsers(page, pageSize);
-        //   },
-        // }}
         bordered
         rowKey="id"
       />
-
-      {/* <PaginationWidget pagination={pagination} /> */}
-
       <Modal show={show} onHide={handleClose} style={{ zIndex: 9999 }}>
         <Modal.Header closeButton>
           <Modal.Title>เพิ่มข้อมูลผู้ใช้</Modal.Title>
@@ -276,7 +264,7 @@ const UserPage = () => {
               <div style={{ zIndex: 999999 }}>
                 <DatePicker
                   selected={selectedDate}
-                  getPopupContainer={(trigger) => trigger.parentNode} // กันโดน modal ทับ
+                  getPopupContainer={(trigger) => trigger.parentNode} 
                   onChange={handleDateChange}
                   format="YYYY-MM-DD"
                   locale={th}
@@ -298,6 +286,9 @@ const UserPage = () => {
         </Modal.Body>
       </Modal>
     </Container>
+
+    <FooterComponent/>
+    </div>
   );
 };
 

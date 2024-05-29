@@ -88,7 +88,7 @@ function PauseCheck() {
 
       for (let i = 0; i < frequencies.length; i++) {
         const score = localStorage.getItem(
-          `score${ear === 0 ? "Left" : "Right"}${i + 1}` // ปรับ i + 1 เพื่อให้ได้เลขเท่ากับ index + 1
+          `score${ear === 0 ? "Left" : "Right"}${i + 1}`
         );
         item[`v${frequencies[i]}`] = parseInt(score) || 0;
       }

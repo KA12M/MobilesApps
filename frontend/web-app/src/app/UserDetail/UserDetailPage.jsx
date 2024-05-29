@@ -11,10 +11,11 @@ import EyesList from "./EyesList";
 import EyesCreate from "./EyesCreate";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
-import "dayjs/locale/th"; // นำเข้า locale สำหรับภาษาไทย
+import "dayjs/locale/th"; 
 import HearringCreate from "./HearringCreate";
 import { RoutePath } from "../../utils/RoutePath";
 import { EditDetailUser, pathServer } from "../../hooks/api/agent";
+import FooterComponent from "../Footer/Footer";
 
 const UserDetailPage = () => {
   const { id: userId } = useParams();
@@ -106,7 +107,6 @@ const UserDetailPage = () => {
   if (loading || !user) return null;
 
   const handleSubmit = async (e) => {
-    // e.preventDefault();
     const newSelectedDate = dayjs(selectedDate).add(1, "day");
     const bodyData = {
       id: userId,
@@ -119,13 +119,6 @@ const UserDetailPage = () => {
       note: noteuser,
     };
     try {
-      // const response = await fetch(pathServer + "User/EditUser", {
-      //   method: "PUT",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(bodyData),
-      // });
       const response = await EditDetailUser(bodyData);
       if (response.ok) {
         const data = await response.json();
@@ -162,7 +155,8 @@ const UserDetailPage = () => {
   };
 
   return (
-    <Container className="main pt-4">
+    <div>
+      <Container className="main pt-4" style={{marginBottom:15}}>
       <Card className="mb-4" body>
         <div className="d-flex justify-content-between align-items-center">
           <div>
@@ -341,6 +335,8 @@ const UserDetailPage = () => {
         </Tab>
       </Tabs>
     </Container>
+    <FooterComponent/>
+    </div>
   );
 };
 

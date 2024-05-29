@@ -54,7 +54,7 @@ public class HearingController : BaseApiController
         return HandleResult(await Mediator.Send(new EditHearing.Command { UserId = userId, Hearing = hearing }));
     }
 
-    [HttpDelete("{id}")]
+    [HttpPost("[action]")]
     public async Task<ActionResult> DeleteHearing(int id)
     {
         return HandleResult(await Mediator.Send(new DeleteHearing.Command { Id = id }));

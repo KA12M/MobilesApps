@@ -41,11 +41,6 @@ function Assessmentform() {
     setIsAllAnswered(hasAllAnswered);
   }, [answers]);
 
-  // useEffect(() => {
-  //   const total = calculateTotalScore();
-  //   setUseScore(total);
-  // }, [answers]);
-
   console.log("answers");
 
   const calculateTotalScore = () => {
@@ -120,9 +115,6 @@ function Assessmentform() {
             message: "สำเร็จ",
             description: "บันทึกการประเมินการได้ยินเสร็จสิ้น",
           });
-          // setTimeout(() => {
-          //   navigate(RoutePath.userDetail(userId));
-          // }, 5000);
         } else {
           console.error("Upload failed:", response.statusText);
         }
@@ -237,7 +229,6 @@ function Assessmentform() {
       .set(opt)
       .save()
       .then(() => {
-        // เมื่อสร้าง PDF เสร็จแล้ว ให้แสดงปุ่ม
         if (downloadButton) {
           downloadButton.style.display = "block";
         }
@@ -405,7 +396,6 @@ function Assessmentform() {
           style={{
             display: "grid",
             gridTemplateColumns: "1fr repeat(4, minmax(0, 1fr))",
-            // gap: "10px",
             paddingRight: 30,
             paddingLeft: 30,
           }}

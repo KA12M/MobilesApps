@@ -4,10 +4,9 @@ import soundFile from "../../sound/1000Hz.mp4";
 import { useNavigate } from "react-router-dom";
 import { TbEar } from "react-icons/tb";
 import { PiEarBold } from "react-icons/pi";
-// import EarLeft from "../../image/earleft.png";
-// import EarRight from "../../image/earright.png";
 import { RoutePath } from "../../utils/RoutePath";
 import { pathImageServer } from "../../hooks/api/agent";
+import FooterComponent from "../Footer/Footer";
 
 function EarSelect() {
   const navigate = useNavigate();
@@ -53,7 +52,8 @@ function EarSelect() {
   }, []);
 
   return (
-    <div className="responsiveearselect">
+    <div>
+      <div className="responsiveearselect">
       <Card
         style={{ width: "100%", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}
       >
@@ -79,13 +79,11 @@ function EarSelect() {
                     flexDirection: "column",
                     height: "100%",
                     cursor: "pointer",
-                    borderRight: "1px solid #000", // เพิ่มเส้นแบ่งด้านขวาของปุ่ม "หูซ้าย"
+                    borderRight: "1px solid #000", 
                   }}
                   onClick={selectEarLeft}
                 >
-                  {/* <PiEarBold style={{ fontSize: 150 }} /> */}
                   <img
-                    // src={EarLeft}
                     src={pathImageServer + EarLeft}
                     alt="right_ear_icon"
                     style={{ width: 150, height: 150 }}
@@ -102,13 +100,11 @@ function EarSelect() {
                     flexDirection: "column",
                     height: "100%",
                     cursor: "pointer",
-                    borderLeft: "1px solid #000", // เพิ่มเส้นแบ่งด้านซ้ายของปุ่ม "หูขวา"
+                    borderLeft: "1px solid #000", 
                   }}
                   onClick={selectEarRight}
                 >
-                  {/* <TbEar style={{ fontSize: 150 }} /> */}
                   <img
-                    // src={EarRight}
                     src={pathImageServer + EarRight}
                     alt="right_ear_icon"
                     style={{ width: 150, height: 150 }}
@@ -121,6 +117,7 @@ function EarSelect() {
           </div>
         </div>
       </Card>
+    </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Card, Dropdown, DropdownButton, Table } from "react-bootstrap";
 import { formatISODateToThaiDate } from "../../utils/dateFormat";
 import {
@@ -15,6 +15,8 @@ import { useStore } from "../../utils/store";
 import PropTypes from "prop-types";
 import html2pdf from "html2pdf.js";
 import { notification } from "antd";
+import agent from "../../hooks/api/agent";
+import Swal from "sweetalert2";
 
 Chart.register(
   CategoryScale,
@@ -25,7 +27,6 @@ Chart.register(
 );
 
 const HearingList = ({ hearings, setModeHearing }) => {
-  // แก้ Error แดง
   HearingList.propTypes = {
     hearings: PropTypes.shape({
       hearing: PropTypes.shape({
@@ -35,7 +36,7 @@ const HearingList = ({ hearings, setModeHearing }) => {
     setModeHearing: PropTypes.func.isRequired,
   };
 
-  const { user } = useStore().useUserDetailActions;
+  const { loadHearing, user } = useStore().useUserDetailActions;
 
   console.log("hearings?.hearing?.value?", hearings?.hearing.value);
 
@@ -58,7 +59,7 @@ const HearingList = ({ hearings, setModeHearing }) => {
             subItem.ear === 0
               ? "rgba(255, 255, 255, 0.953)"
               : "rgb(246, 246, 246)";
-          const borderWidth = subItem.ear === 0 ? 3 : 3; // กำหนดความหนาของเส้นสำหรับกาบาท
+          const borderWidth = subItem.ear === 0 ? 3 : 3; 
           return {
             label: subItem.ear === 0 ? "หูซ้าย" : "หูขวา",
             data: [
@@ -75,15 +76,14 @@ const HearingList = ({ hearings, setModeHearing }) => {
             backgroundColor: backgroundColor,
             pointStyle: pointStyle,
             pointRadius: pointRadius,
-            // tension: 0,
             borderWidth: borderWidth,
             pointRotation: 0,
           };
         } else {
-          return null; // ไม่สร้าง dataset ถ้า subItem.v เป็น 0
+          return null; 
         }
       })
-      .filter((dataset) => dataset !== null); // กรอง dataset ที่ไม่มีค่า null
+      .filter((dataset) => dataset !== null); 
 
     return {
       labels: ["250", "500", "1000", "2000", "4000", "6000", "8000"],
@@ -134,6 +134,8 @@ const HearingList = ({ hearings, setModeHearing }) => {
   }, []);
 
   const admin = localStorage.getItem("UserAdmin");
+
+  const [hidenbutton, setHidenbutton] = useState(false);
 
   const exportToExcelAll = async () => {
     const workbook = new ExcelJS.Workbook();
@@ -213,10 +215,75 @@ const HearingList = ({ hearings, setModeHearing }) => {
         console.error("ไม่สามารถสร้างไฟล์ Excel ได้");
       }
     }
+    notification.success({
+      message: "สำเร็จ",
+      description: "สร้างไฟล์ Excel สำเร็จ",
+    });
+  };
+
+  const handleDelete = async (item) => {
+    console.log("item", item);
+    const swalOptions = {
+      title: "คุณแน่ใจหรือไม่?",
+      text: "คุณต้องการลบรายการนี้หรือไม่?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "ใช่, ลบทิ้ง",
+      cancelButtonText: "ยกเลิก",
+      reverseButtons: true,
+    };
+    const result = await Swal.fire(swalOptions);
+    if (result.isConfirmed) {
+      try {
+        const test = await agent.hearing.delete(item);
+        console.log("test", test);
+        notification.success({
+          message: "สำเร็จ",
+          description: "ลบข้อมูลการทดสอบการได้ยินสร็จสิ้น",
+        });
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการลบ:", error);
+        Swal.fire("ข้อผิดพลาด!", "มีบางอย่างผิดพลาดในการลบรายการ", "error");
+      }
+    }
+    loadHearing(user.id);
+  };
+
+  const componentRef = useRef(null);
+
+  const generatePDFAll = () => {
+    const opt = {
+      margin: [-15.5, -0.5, 0, 0],
+      filename: "hearing_reportAll.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+    };
+
+    setHidenbutton(true);
+
+    new Promise((resolve, _) => {
+      setTimeout(() => {
+        resolve();
+      }, 1000); 
+    }).then(() => {
+      componentRef.current.style.transform = "scale(0.8)";
+      html2pdf()
+        .from(componentRef.current)
+        .set(opt)
+        .save()
+        .then(() => {
+          componentRef.current.style.transform = "scale(1)";
+          setHidenbutton(false);
+          notification.success({
+            message: "สำเร็จ",
+            description: "สร้างไฟล์ PDF สำเร็จ",
+          });
+        });
+    });
   };
 
   const exportToExcel = async (id) => {
-    // เพิ่มพารามิเตอร์ id
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Hearing Data");
     const userName = user.firstName + "" + user.lastName;
@@ -244,7 +311,6 @@ const HearingList = ({ hearings, setModeHearing }) => {
         fgColor: { argb: "E8E8E8" },
       };
     });
-
     const hearing = hearings?.hearing?.value?.find((item) => item.id === id);
     hearing?.items.forEach((subItem) => {
       worksheet.addRow([
@@ -276,7 +342,7 @@ const HearingList = ({ hearings, setModeHearing }) => {
     const blob = new Blob([buffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-    const fileName = `hearing_data_single_${userName}.xlsx`;
+    const fileName = `hearing_databyId_${userName}.xlsx`;
 
     if (navigator.msSaveBlob) {
       navigator.msSaveBlob(blob, fileName);
@@ -295,13 +361,12 @@ const HearingList = ({ hearings, setModeHearing }) => {
     }
   };
 
-  const [hidenbutton, setHidenbutton] = useState(false);
   const generatePDF = (itemId) => {
     console.log(itemId);
     const element = document.getElementById(itemId);
     const opt = {
       margin: -0.4,
-      filename: "hearing_report.pdf",
+      filename: "hearing_reportById.pdf",
       image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
@@ -318,7 +383,7 @@ const HearingList = ({ hearings, setModeHearing }) => {
     new Promise((resolve, _) => {
       setTimeout(() => {
         resolve();
-      }, 1000); // รอ 1 วินาที
+      }, 1000);
     }).then(() => {
       downloadButton.style.display = "none";
       element.style.transform = "scale(0.8)";
@@ -362,70 +427,21 @@ const HearingList = ({ hearings, setModeHearing }) => {
             >
               ตรวจสอบหู
             </Button>
-            <button
-              className="download-button"
-              style={{
-                display: hearings?.hearing?.value?.length ? "block" : "none",
-              }}
-            >
-              <div className="docs">
-                <svg
-                  className="css-i6dzq1"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  fill="none"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  height={20}
-                  width={20}
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line y2={13} x2={8} y1={13} x1={16} />
-                  <line y2={17} x2={8} y1={17} x1={16} />
-                  <polyline points="10 9 9 9 8 9" />
-                </svg>
-                ดาวน์โหลดข้อมูลทั้งหมด
-              </div>
-              <div onClick={exportToExcelAll} className="download">
-                <svg
-                  className="css-i6dzq1"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  fill="none"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  height={24}
-                  width={24}
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line y2={3} x2={12} y1={15} x1={12} />
-                </svg>
-              </div>
-            </button>
+
+            <div style={{ display: "flex", marginLeft: 5 }}>
+              <DropdownButton
+                title="ดาวน์โหลดข้อมูลทั้งหมด"
+                variant="secondary"
+              >
+                <Dropdown.Item onClick={exportToExcelAll}>Excel</Dropdown.Item>
+                <Dropdown.Item onClick={generatePDFAll}>PDF</Dropdown.Item>
+              </DropdownButton>
+            </div>
           </div>
         </Card.Body>
-        <Card.Body>
-          {/* <div style={{ display: "flex" }}>
-            <div style={{ marginTop: -20, marginRight: 50 }}>
-              <p>การแบ่งระดับความผิดปกติของการได้ยิน</p>
-              <p>1.การได้ยินปรกติ (Normal Hearing)</p>
-              <p>2.ระดับน้อย (Mild Hearing Loss)</p>
-              <p>3.ระดับปานกลาง (Moderate Hearing Loss)</p>
-            </div>
-
-            <div style={{ marginTop: 20 }}>
-              <p>
-                4.ระดับปานกลางค่อนข้างรุนแรง (Moderately Severe Hearing Loss)
-              </p>
-              <p>5.ระดับรุนแรง (Severe Hearing Loss)</p>
-              <p>6.ระดับหูหนวก (Profound Hearing Loss)</p>
-            </div>
-          </div> */}
-
+        <Card.Body
+          ref={componentRef}
+        >
           <Table style={{ border: "3px solid black" }}>
             <thead>
               <tr
@@ -755,31 +771,16 @@ const HearingList = ({ hearings, setModeHearing }) => {
                     </div>
                   </td>
                   <td style={{ textAlign: "center" }}>
-                    {/* <Button onClick={() => exportToExcel(item.id)}>
-                      <svg
-                        style={{ marginRight: 10, marginBottom: 2 }}
-                        className="css-i6dzq1"
-                        strokeLinejoin="round"
-                        strokeLinecap="round"
-                        fill="none"
-                        strokeWidth={2}
-                        stroke="currentColor"
-                        height={20}
-                        width={20}
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                        <line y2={13} x2={8} y1={13} x1={16} />
-                        <line y2={17} x2={8} y1={17} x1={16} />
-                        <polyline points="10 9 9 9 8 9" />
-                      </svg>
-                      ดาวน์โหลดข้อมูล
-                    </Button> */}
-
-                    <div style={{ display: hidenbutton ? "none" : "block" }}>
+                    <div
+                      id="downloadButton"
+                      style={{ display: hidenbutton ? "none" : "block" }}
+                    >
                       <DropdownButton title="เลือก" variant="secondary">
-                        {admin && <Dropdown.Item>ลบ</Dropdown.Item>}
+                        {admin && (
+                          <Dropdown.Item onClick={() => handleDelete(item.id)}>
+                            ลบ
+                          </Dropdown.Item>
+                        )}
                         <Dropdown.Item onClick={() => exportToExcel(item.id)}>
                           ดาวน์โหลดข้อมูล Excel
                         </Dropdown.Item>

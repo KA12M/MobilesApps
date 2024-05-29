@@ -7,6 +7,8 @@ import { notification } from "antd";
 import ExcelJS from "exceljs";
 import PropTypes from "prop-types";
 import agent, { pathServer } from "../../hooks/api/agent";
+import { useRef, useState } from "react";
+import html2pdf from "html2pdf.js";
 
 const EyesList = ({ setMode, hearings }) => {
   EyesList.propTypes = {
@@ -47,6 +49,87 @@ const EyesList = ({ setMode, hearings }) => {
       }
       loadHearing(user.id);
     }
+  };
+
+  const [hidenbutton, setHidenbutton] = useState(false);
+  const componentRef = useRef(null);
+
+  const generatePDFAll = () => {
+    const opt = {
+      margin: [0, 0, 0, 0],
+      filename: "Eye_reportAll.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+    };
+
+    setHidenbutton(true);
+
+    new Promise((resolve, _) => {
+      setTimeout(() => {
+        resolve();
+      }, 1000); 
+    }).then(() => {
+      componentRef.current.style.transform = "scale(0.8)";
+      html2pdf()
+        .from(componentRef.current)
+        .set(opt)
+        .save()
+        .then(() => {
+          componentRef.current.style.transform = "scale(1)";
+          setHidenbutton(false);
+          notification.success({
+            message: "สำเร็จ",
+            description: "สร้างไฟล์ PDF สำเร็จ",
+          });
+        });
+    });
+  };
+
+
+  const generatePDF = (itemId) => {
+    console.log(itemId);
+    const element = document.getElementById(itemId);
+    const opt = {
+      margin: [0.2, 0, 0, 0],
+
+      filename: "Eye_reportById.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+    };
+
+    const downloadButton = document.querySelector("#downloadButton");
+
+    if (downloadButton) {
+      downloadButton.style.display = "none";
+    }
+
+    setHidenbutton(true);
+
+    new Promise((resolve, _) => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    }).then(() => {
+      downloadButton.style.display = "none";
+      element.style.transform = "scale(0.8)";
+      html2pdf()
+        .from(element)
+        .set(opt)
+        .save()
+        .then(() => {
+          if (downloadButton) {
+            downloadButton.style.display = "block";
+          }
+          setHidenbutton(false);
+          element.style.transform = "scale(1)";
+          notification.success({
+            message: "สำเร็จ",
+            description: "สร้างไฟล์ PDF สำเร็จ",
+          });
+        });
+    });
   };
 
   const tableHeaderStyle = {
@@ -182,7 +265,7 @@ const EyesList = ({ setMode, hearings }) => {
     const blob = new Blob([buffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-    const fileName = `eyes_data_single_${userName}.xlsx`;
+    const fileName = `eyes_databyId_${userName}.xlsx`;
 
     if (navigator.msSaveBlob) {
       navigator.msSaveBlob(blob, fileName);
@@ -349,7 +432,7 @@ const EyesList = ({ setMode, hearings }) => {
             >
               ตรวจสอบตา
             </Button>
-            <button
+            {/* <button
               className="download-button"
               style={{
                 display: hearings?.diabetes?.value?.length ? "block" : "none",
@@ -392,10 +475,20 @@ const EyesList = ({ setMode, hearings }) => {
                   <line y2={3} x2={12} y1={15} x1={12} />
                 </svg>
               </div>
-            </button>
+              
+            </button> */}
+            <div style={{ display: "flex", marginLeft: 5 }}>
+              <DropdownButton
+                title="ดาวน์โหลดข้อมูลทั้งหมด"
+                variant="secondary"
+              >
+                <Dropdown.Item onClick={exportToExcelAll}>Excel</Dropdown.Item>
+                <Dropdown.Item onClick={generatePDFAll}>PDF</Dropdown.Item>
+              </DropdownButton>
+            </div>
           </div>
         </Card.Body>
-        <Card.Body>
+        <Card.Body ref={componentRef} >
           <Table style={{ borderCollapse: "collapse", width: "100%" }}>
             <thead style={{ backgroundColor: "#f2f2f2" }}>
               <tr style={{ textAlign: "center" }}>
@@ -410,17 +503,15 @@ const EyesList = ({ setMode, hearings }) => {
               {hearings?.diabetes?.value?.map((item) => {
                 const leftEyeColor = item?.imageEyeLeft ? "green" : "red";
                 const rightEyeColor = item?.imageEyeRight ? "green" : "red";
-
-                // กำหนดค่าในหมายเหตุ
                 const leftEyeNote = item?.imageEyeLeft
                   ? "เบาหวาน ควรพบแพทย์"
-                  : "ไม่มีรูปภาพ"; // ค่าของดวงตาซ้าย
+                  : "ไม่มีรูปภาพ"; 
                 const rightEyeNote = item?.imageEyeRight
                   ? "เบาหวาน ควรพบแพทย์"
-                  : "ไม่มีรูปภาพ"; // ค่าของดวงตาขวา
+                  : "ไม่มีรูปภาพ"; 
 
                 return (
-                  <tr key={item?.id} style={{ textAlign: "center" }}>
+                  <tr key={item?.id} style={{ textAlign: "center" }}  id={item?.id}>
                     <td style={tableCellStyle}>
                       {formatISODateToThaiDate(item?.createdAt)}
                     </td>
@@ -452,6 +543,7 @@ const EyesList = ({ setMode, hearings }) => {
                     </td>
                     <td style={tableCellStyle}>{item?.note}</td>
                     <td style={tableCellStyle}>
+                      <div id="downloadButton" style={{ display: hidenbutton ? "none" : "block" }}>
                       <DropdownButton title="เลือก" variant="secondary">
                         {admin && (
                           <Dropdown.Item onClick={() => handleDelete(item)}>
@@ -462,9 +554,13 @@ const EyesList = ({ setMode, hearings }) => {
                           รายละเอียด
                         </Dropdown.Item>
                         <Dropdown.Item onClick={() => exportToExcel(item.id)}>
-                          ดาวน์โหลดข้อมูล
+                          ดาวน์โหลดข้อมูล Excel
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => generatePDF(item.id)}>
+                          ดาวน์โหลดข้อมูล PDF
                         </Dropdown.Item>
                       </DropdownButton>
+                      </div>
                     </td>
                   </tr>
                 );

@@ -9,12 +9,7 @@ import { pathServer } from "../../hooks/api/agent";
 const AssessmentformList = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
-
-  // const handleEdit = (i) => {
-  //   console.log("handleEdit ",i)
-  // }
-
-  const columns = [
+  const columns:any = [
     {
       title: "เวลา",
       dataIndex: "createdAt",
@@ -58,17 +53,6 @@ const AssessmentformList = () => {
         </div>
       ),
     },
-    // {
-    //   title: "แก้ไข",
-    //   dataIndex: "result",
-    //   key: "result",
-    //   align: "center",
-    //   render: (result, record) => (
-    //     <div style={{ textAlign: "center" }}>
-    //       <Button onClick={() => handleEdit(record)}>แก้ไข</Button>
-    //     </div>
-    //   ),
-    // },
   ];
 
   useEffect(() => {

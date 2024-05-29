@@ -65,6 +65,10 @@ export default {
   },
   hearing: {
     list: (userId) => request.get("/Hearing/GetAllByUserId?userId=" + userId),
+    delete: (id) => {
+      console.log("Deleting item with id:", id);
+      return axios.post(`/Hearing/DeleteHearing?id=${id}`);
+    },
   },
   eye: {
     delete: (id) => request.post("/Diabetes/RemoveDiabete?eyeId=" + id),

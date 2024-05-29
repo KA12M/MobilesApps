@@ -15,17 +15,6 @@ function HearringCreate({ setModeHearing, setModeAssess }) {
   const toggleFMHT = () => {
     setShowFMHT(true);
   };
-  // const HandleToAssessment = () => {
-  //   navigate("/Assessmentform");
-  //   window.scrollTo(0, 0);
-  //   }
-
-  //   const HandleToAssessmentList = () => {
-  //     // navigate("/AssessmentformList");
-  //     window.scrollTo(0, 0);
-  //     setModeAssess(true);
-  //   }
-
   return (
     <div style={{ width: "auto", height: "auto", overflowY: "auto" }}>
       <div style={{ paddingLeft: 50, paddingTop: 50 }}>

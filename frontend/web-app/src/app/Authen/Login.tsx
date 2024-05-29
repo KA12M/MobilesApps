@@ -18,6 +18,7 @@ import { useStore } from "../../utils/store";
 import { observer } from "mobx-react-lite";
 import { RoutePath } from "../../utils/RoutePath";
 import agent from "../../hooks/api/agent";
+import FooterComponent from "../Footer/Footer";
 
 function Login() {
   const navigate = useNavigate();
@@ -73,10 +74,6 @@ function Login() {
     }
   };
 
-  // const handleRegister = () => {
-  //   navigate("Register");
-  // };
-
   const { loadUsers, data, pagination, createUser } = useStore().useUserActions;
 
   const [show, setShow] = useState(false);
@@ -111,7 +108,8 @@ function Login() {
   };
 
   return (
-    <div
+    <div>
+      <div
       style={{
         display: "flex",
         justifyContent: "center",
@@ -224,6 +222,8 @@ function Login() {
 
         <div className="flex-rowLogin"></div>
       </div>
+    </div>
+    <FooterComponent/>
     </div>
   );
 }

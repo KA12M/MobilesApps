@@ -88,6 +88,10 @@ public class DiabetesController : BaseApiController
             : StatusCode(StatusCodes.Status400BadRequest));
     }
 
+
+
+
+
     private static async Task<string> PredictAll(IFormFile file)
     {
         byte[] imageBytes;
